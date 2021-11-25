@@ -124,4 +124,10 @@ compileQuerydsl{
 configurations {
 	querydsl.extendsFrom compileClasspath
 }
+
+/* comileQuerydsl.doFirst 추가: 재컴파일 시 q파일을 모두 지우도록 */
+compileQuerydsl.doFirst {
+	if(file(querydslDir).exists())
+		delete(file(querydslDir))
+}
 //querydsl 추가 끝
