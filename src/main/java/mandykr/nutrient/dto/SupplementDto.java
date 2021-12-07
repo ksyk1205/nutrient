@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SupplementsDto {
+public class SupplementDto {
     private Long id;
     private String name;
 }
