@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class SupplementRepositoryTests {
+class SupplementRepositoryTest {
 	@Autowired
 	SupplementRepository supplementRepository;
 
