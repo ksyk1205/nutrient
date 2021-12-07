@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static mandykr.nutrient.entity.QSupplements.*;
+import static mandykr.nutrient.entity.QSupplement.*;
 
 @Repository
 public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
@@ -26,9 +26,9 @@ public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
     public List<SupplementDto> search(SupplementSearchCondition condition) {
         List<SupplementDto> result = queryFactory
                 .select(Projections.fields(SupplementDto.class,
-                        supplements.id,
-                        supplements.id))
-                .from(supplements)
+                        supplement.id,
+                        supplement.id))
+                .from(supplement)
                 .where(supplementsNameEq(condition.getName()))
                 .fetch();
 
@@ -37,6 +37,6 @@ public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
 
     // supplementsName 비교 조건절
     public BooleanExpression supplementsNameEq(String supplementsNameCond) {
-        return supplements.name.eq(String.valueOf(supplementsNameCond));
+        return supplement.name.eq(String.valueOf(supplementsNameCond));
     }
 }
