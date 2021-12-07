@@ -5,19 +5,19 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SupplementsSearchCondition {
+public class SupplementSearchCondition {
     private Long id;
     private String name;
 
-    public SupplementsSearchCondition(Long id) {
+    public SupplementSearchCondition(Long id) {
         this.id = id;
     }
 
-    public SupplementsSearchCondition(String name) {
+    public SupplementSearchCondition(String name) {
         this.name = name;
     }
 
-    public SupplementsSearchCondition(Long id, String name) {
+    public SupplementSearchCondition(Long id, String name) {
         this.id = id;
         this.name = name;
     }

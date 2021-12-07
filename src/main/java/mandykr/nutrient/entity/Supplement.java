@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Supplements {
+public class Supplement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
