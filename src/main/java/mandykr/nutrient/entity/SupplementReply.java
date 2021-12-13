@@ -41,11 +41,13 @@ public class SupplementReply {
         SupplementReply supplementReply= new SupplementReply(id,content,supplement);
         return supplementReply;
     }
+    //==업데이트 메소드==//
 
-    public SupplementReply(){
+
+
+    protected SupplementReply(){
 
     }
-
     protected SupplementReply(Long id,String content,Supplement supplement){
         this.id = id;
         this.supplement = supplement;

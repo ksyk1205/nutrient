@@ -38,7 +38,9 @@ dependencies {
 
 	// jpa binding parameter log 확인
 	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.7.1")
-
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+	// api 스트링 도와주는 유틸
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 	// html 컴파일로 thymeleaf 변경 반영
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 
