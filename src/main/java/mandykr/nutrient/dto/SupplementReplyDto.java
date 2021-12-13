@@ -29,6 +29,7 @@ public class SupplementReplyDto {
     public SupplementReplyDto() {
 
     }
+
     public SupplementReply makeSupplementReply(Long id,SupplementReplyDto supplementReplyDto){
         SupplementReply supplementReply = SupplementReply.makeSupplementReply(id,supplementReplyDto.content
                 , supplementReplyDto.supplement);
