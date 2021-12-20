@@ -2,14 +2,15 @@ package mandykr.nutrient.service;
 
 import mandykr.nutrient.dto.StarRateDto;
 import mandykr.nutrient.entity.StarRate;
-import org.junit.jupiter.api.Assertions;
+import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.repository.SupplementRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -17,23 +18,33 @@ class StarRateServiceTest {
 
     @Autowired
     StarRateService starRateService;
+    @Autowired
+    SupplementRepository supplementRepository;
 
     @Test
-    public void createTest(){
-        StarRateDto starRateDto = new StarRateDto();
-        starRateDto.setStarNumber(12L);
-        StarRateDto tmpDto = starRateService.createStarRate(starRateDto);
+    public void createStarRate(){
+        Supplement supplement = new Supplement();
+        supplement.setRanking(0.0);
+        supplement.setName("test");
+        Supplement supplement1 = supplementRepository.save(supplement);
 
-        Assertions.assertEquals(tmpDto.getId(),starRateService.getStarRate(tmpDto.getId()).getId());
+        StarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2L);
+        starRateService.createStarRate(supplement1.getId(),5L);
+
+        Assertions.assertThat(supplementRepository.findById(supplement1.getId()).get().getRanking()).isEqualTo(3.5);
     }
 
     @Test
-    public void getTest(){
-        StarRateDto starRateDto = new StarRateDto();
-        starRateDto.setStarNumber(12L);
-        StarRateDto tmpDto = starRateService.createStarRate(starRateDto);
+    public void updateStarRate(){
+        Supplement supplement = new Supplement();
+        supplement.setRanking(0.0);
+        supplement.setName("test");
+        Supplement supplement1 = supplementRepository.save(supplement);
 
-        Assertions.assertEquals(1,starRateService.getStarRateList().size());
+        StarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2L);
+        starRateService.updateStarRate(supplement1.getId(),starRateDto.getId(),5L);
+
+        Assertions.assertThat(supplementRepository.findById(supplement1.getId()).get().getRanking()).isEqualTo(5.0);
     }
 
 }
