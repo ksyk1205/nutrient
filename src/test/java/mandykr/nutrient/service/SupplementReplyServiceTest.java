@@ -1,6 +1,7 @@
 package mandykr.nutrient.service;
 
 import mandykr.nutrient.dto.SupplementReplyDto;
+import mandykr.nutrient.dto.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.entity.SupplementReply;
 import mandykr.nutrient.repository.SupplementRepository;
@@ -8,8 +9,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.annotation.Persistent;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -23,23 +27,30 @@ class SupplementReplyServiceTest {
     @Autowired
     SupplementRepository supplementRepository;
 
+    @Persistent
+    EntityManager entityManager;
+
 
     @Test
-    //@Rollback(value = false)
     public void 영양제_조회_테스트() throws Exception{
         //given
         Supplement supplement = new Supplement();
         supplement.setName("test");
 
-        SupplementReplyDto supplementReplyDto1 = new SupplementReplyDto();
-        supplementReplyDto1.setContent("testReply1");
-        SupplementReplyDto supplementReplyDto2 = new SupplementReplyDto();
-        supplementReplyDto2.setContent("testReply2");
+        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
+        supplementReplyRequest1.setContent("testReply1");
+
+        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
+        supplementReplyRequest2.setContent("testReply1-1");
 
         //when
         Supplement saveSupplement = supplementRepository.save(supplement);
-        supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyDto1);
-        supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyDto2);
+        SupplementReply saveSupplementReply1 = supplementReplyService
+                .createSupplementReply(supplement.getId(),supplementReplyRequest1)
+                .get();
+        SupplementReply saveSupplementReply2 = supplementReplyService
+                .createSupplementReply(supplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2)
+                .get();
 
         List<SupplementReply> supplementReplies
                 = supplementReplyService.getSupplementReplyBySupplement(saveSupplement.getId());
@@ -47,21 +58,21 @@ class SupplementReplyServiceTest {
         //then
         Assertions.assertEquals(2,supplementReplies.size());
     }
-
     @Test
     public void 영양제_전체_조회() throws Exception{
         Supplement supplement = new Supplement();
         supplement.setName("test");
 
-        SupplementReplyDto supplementReplyDto1 = new SupplementReplyDto();
-        supplementReplyDto1.setContent("testReply1");
-        SupplementReplyDto supplementReplyDto2 = new SupplementReplyDto();
-        supplementReplyDto2.setContent("testReply2");
+        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
+        supplementReplyRequest1.setContent("testReply1");
+
+        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
+        supplementReplyRequest2.setContent("testReply2");
 
         //when
         Supplement saveSupplement = supplementRepository.save(supplement);
-        supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyDto1);
-        supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyDto2);
+        supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyRequest1);
+        supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyRequest2);
 
         List<SupplementReply> supplementReplies
                 = supplementReplyService.getSupplementReplyList();
@@ -69,42 +80,76 @@ class SupplementReplyServiceTest {
         //then
         Assertions.assertEquals(2,supplementReplies.size());
     }
-    
+
     @Test
     public void 업데이트_댓글() throws Exception{
         //given
         Supplement supplement = new Supplement();
         supplement.setName("test");
 
-        SupplementReplyDto supplementReplyDto = new SupplementReplyDto();
-        supplementReplyDto.setContent("testReply");
+        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
+        supplementReplyRequest1.setContent("testReply1");
+
+        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
+        supplementReplyRequest2.setContent("testReply1-1");
+
+        SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
+        supplementReplyRequest3.setContent("testReply2");
+
 
         //when
         Supplement saveSupplement = supplementRepository.save(supplement);
-        Long id = supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyDto).get().getId();
-        supplementReplyDto.setContent("testReply23");
-        supplementReplyService.updateSupplementReply(id,supplementReplyDto);
+        SupplementReply saveSupplementReply1 = supplementReplyService
+                .createSupplementReply(supplement.getId(),supplementReplyRequest1)
+                .get();
+        SupplementReply saveSupplementReply2 = supplementReplyService
+                .createSupplementReply(supplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2)
+                .get();
+        SupplementReply saveSupplementReply3 = supplementReplyService
+                .createSupplementReply(supplement.getId(),supplementReplyRequest3)
+                .get();
+
+        supplementReplyRequest2.setContent("test1-1(수정)");
+        supplementReplyService.updateSupplementReply(saveSupplementReply2.getId(),supplementReplyRequest2);
 
         //then
-        Assertions.assertEquals("testReply23",supplementReplyService.getSupplementReply(id).getContent());
+        Assertions.assertEquals("test1-1(수정)",supplementReplyService.getSupplementReply(saveSupplementReply2.getId()).getContent());
     }
-    
-    
+
     @Test
+    @Rollback(false)
     public void 삭제_댓글() throws Exception{
         //given
         Supplement supplement = new Supplement();
         supplement.setName("test");
 
-        SupplementReplyDto supplementReplyDto = new SupplementReplyDto();
-        supplementReplyDto.setContent("testReply");
+        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
+        supplementReplyRequest1.setContent("testReply1");
+
+        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
+        supplementReplyRequest2.setContent("testReply1-1");
+
+        SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
+        supplementReplyRequest3.setContent("testReply1-2");
+
 
         //when
         Supplement saveSupplement = supplementRepository.save(supplement);
-        Long id = supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyDto).get().getId();
+        SupplementReply saveSupplementReply1 = supplementReplyService
+                .createSupplementReply(supplement.getId(),supplementReplyRequest1)
+                .get();
+        SupplementReply saveSupplementReply2 = supplementReplyService
+                .createSupplementReply(supplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2)
+                .get();
+        SupplementReply saveSupplementReply3 = supplementReplyService
+                .createSupplementReply(supplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest3)
+                .get();
 
-        supplementReplyService.deleteSupplementReply(id);
+        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId());
+
         //then
-        Assertions.assertThrows(NoSuchElementException.class,()->supplementReplyService.getSupplementReply(id));
+        Assertions.assertThrows(NoSuchElementException.class,()->supplementReplyService.getSupplementReply(saveSupplementReply1.getId()));
+        //Assertions.assertEquals(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag(),
+          //      false);
     }
 }

@@ -1,14 +1,19 @@
 package mandykr.nutrient.entity;
 
 import lombok.Getter;
-import lombok.Setter;
-import mandykr.nutrient.dto.SupplementReplyDto;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
+import java.awt.print.Book;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class SupplementReply {
 
     @Id
@@ -18,40 +23,85 @@ public class SupplementReply {
 
     private String content;
 
-    private Long groupId;
+    private int orders;
 
-    private Long orders;
 
-    @Column(name = "CREATE_AT")
-    private LocalDateTime createAt;
-    @Column(name = "UPDATE_AT")
-    private LocalDateTime updateAt;
+    //DB 테이블이 필요~~
+    //좋아요 / 싫어요 기능 추가 여부
+
+    //삭제된 내역
+    private Boolean deleteFlag;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_ID")
+    private SupplementReply parent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUPPLEMENT_ID")
     private Supplement supplement;
 
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<SupplementReply> children = new ArrayList<>();
 
-    //@ManyToOne
-    //private Member member;
 
-    //==생성 메소드 ==//
-    public static SupplementReply makeSupplementReply(Long id,String content,Supplement supplement){
-        //뒤에 생성되는곳만 바꾸기 위해서는 여기만 바꾸면 된다.
-        SupplementReply supplementReply= new SupplementReply(id,content,supplement);
-        return supplementReply;
+
+    public SupplementReply(String content, SupplementReply parent,Supplement supplement) {
+        //대댓글 생성
+        this(null,content, parent.getOrders()+1,false, parent,supplement);
     }
-    //==업데이트 메소드==//
-
-
-
-    protected SupplementReply(){
-
+    public SupplementReply(String content,Supplement supplement) {
+        //처음 생성
+        this(null,content, 1,false, null,supplement);
     }
-    protected SupplementReply(Long id,String content,Supplement supplement){
+    public SupplementReply(Long id,SupplementReply supplementReply) {
+        //삭제 댓글
+        this(id,supplementReply.getContent(), supplementReply.getOrders(),true, supplementReply.getParent(),supplementReply.getSupplement());
+    }
+
+    public SupplementReply(Long id, String content, int orders, boolean deleteFlag, SupplementReply parent,Supplement supplement) {
+        //로직 검증
+        //validation
+        //contents는 비어있으면 안된다.
+        /*
+        checkArgument(
+                isEmpty(content) || content.length() <= 1000,
+                "contents length must be less than 1000 characters"
+        );
+        */
         this.id = id;
-        this.supplement = supplement;
         this.content = content;
+        this.orders = orders;
+        this.deleteFlag = deleteFlag;
+        this.parent = parent;
+        this.supplement = supplement;
     }
 
+
+    static public class Builder {
+        private Long id;
+        private String content;
+        private int orders;
+        private boolean deleteFlag;
+        private SupplementReply parent;
+        private Supplement supplement;
+
+        public Builder(SupplementReply supplementReply) {
+            this.id = supplementReply.id;
+            this.content = supplementReply.content;
+            this.orders = supplementReply.orders;
+            this.deleteFlag = supplementReply.deleteFlag;
+            this.parent = supplementReply.parent;
+            this.supplement = supplementReply.supplement;
+        }
+        public SupplementReply build(){
+            return new SupplementReply(
+              id,
+              content,
+              orders,
+                    deleteFlag,
+                    parent,
+              supplement
+            );
+        }
+    }
 }
