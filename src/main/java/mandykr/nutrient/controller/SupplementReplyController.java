@@ -2,34 +2,42 @@ package mandykr.nutrient.controller;
 
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.SupplementReplyDto;
-import mandykr.nutrient.entity.SupplementReply;
+import mandykr.nutrient.dto.request.SupplementReplyRequest;
 import mandykr.nutrient.service.SupplementReplyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static mandykr.nutrient.util.ApiUtils.ApiResult;
 import static mandykr.nutrient.util.ApiUtils.success;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/supplement-reply")
 public class SupplementReplyController {
     private final SupplementReplyService supplementReplyService;
 
-    @GetMapping("/supplement-reply/{id}") //영양제 ID 조회
-    public ApiResult<List<SupplementReplyDto>> getSupplementReplyBySupplement(@PathVariable Long id){
+    /**
+     * 해당 영양제ID 의 모든 댓글 보기
+     */
+    @GetMapping("{supplementId}")
+    public ApiResult<List<SupplementReplyDto>> getSupplementReplyBySupplement(@PathVariable Long supplementId){
         return success(
                 supplementReplyService
-                        .getSupplementReplyBySupplement(id)
+                        .getSupplementReplyBySupplement(supplementId)
                         .stream()
                         .map(SupplementReplyDto::new)
                         .collect(Collectors.toList())
         );
     }
-
-    @GetMapping("/supplement-reply")
+    
+    /**
+     * 모든 댓글 보기
+     */
+    @GetMapping("")
     public ApiResult<List<SupplementReplyDto>> getSupplementReplyList(){
         return success(supplementReplyService
                 .getSupplementReplyList()
@@ -38,32 +46,67 @@ public class SupplementReplyController {
                 .collect(Collectors.toList())
         );
     }
-
-    @PutMapping("/supplement-reply/{id}")
+    
+    /**
+     * 처음 댓글 달기
+     */
+    @PostMapping("{supplementId}")
     public ApiResult<SupplementReplyDto> createSupplementReply(
-            @PathVariable Long supplementId
-            , SupplementReplyDto supplementReplyDto){
+            @PathVariable("supplementId") Long supplementId
+            ,@RequestBody @Valid SupplementReplyRequest request){
         return success(supplementReplyService
-                .createSupplementReply(supplementId,supplementReplyDto)
+                .createSupplementReply(supplementId,request)
                 .map(SupplementReplyDto::new)
                 .get()
         );
     }
-
-    @DeleteMapping("/supplement-reply/{id}")
+    /**
+     * 대댓글 달기
+     */
+    /**
+     *
+     * @param supplementId
+     * @param replyId
+     * @param supplementReplyRequest
+     * @return
+     */
+    @PostMapping("{supplementId}/{replyId}")
+    public ApiResult<SupplementReplyDto> createSupplementReplyByReply(
+            @PathVariable("supplementId") Long supplementId
+            ,@PathVariable("replyId") Long replyId
+            ,@RequestBody @Valid SupplementReplyRequest supplementReplyRequest){
+        return success(supplementReplyService
+                .createSupplementReply(supplementId,replyId,supplementReplyRequest)
+                .map(SupplementReplyDto::new)
+                .get()
+        );
+    }
+    /**
+     *
+     * @param replyId
+     * @param supplementReplyRequest
+     * @return
+     *         댓글 수정
+     */
+    @PutMapping("{replyId}")
+    public ApiResult<SupplementReplyDto> updSupplementReply(
+            @PathVariable Long replyId
+            ,  @Valid SupplementReplyRequest supplementReplyRequest){
+        return success(supplementReplyService
+                .updateSupplementReply(replyId,supplementReplyRequest)
+                .map(SupplementReplyDto::new)
+                .get()
+        );
+    }
+    /**
+     * 대댓글 삭제
+     * 만약 중간에 있는것을 삭제한다면? 고민좀...
+     */
+    @DeleteMapping("{id}")
     public void deleteSupplementReply(
             @PathVariable Long supplementId){
         supplementReplyService.deleteSupplementReply(supplementId);
     }
 
-    @PostMapping("/supplement-reply/{id}")
-    public ApiResult<SupplementReplyDto> updSupplementReply(
-            @PathVariable Long supplementId
-            , SupplementReplyDto supplementReplyDto){
-        return success(supplementReplyService
-                .updateSupplementReply(supplementId,supplementReplyDto)
-                .map(SupplementReplyDto::new)
-                .get()
-        );
-    }
+
 }
