@@ -117,7 +117,6 @@ class SupplementReplyServiceTest {
     }
 
     @Test
-    @Rollback(false)
     public void 삭제_댓글() throws Exception{
         //given
         Supplement supplement = new Supplement();
@@ -148,7 +147,7 @@ class SupplementReplyServiceTest {
         supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId());
 
         //then
-        Assertions.assertThrows(NoSuchElementException.class,()->supplementReplyService.getSupplementReply(saveSupplementReply1.getId()));
+        Assertions.assertThrows(NoSuchElementException.class,()->supplementReplyService.getSupplementReply(saveSupplementReply2.getId()));
         //Assertions.assertEquals(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag(),
           //      false);
     }

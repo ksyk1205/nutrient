@@ -1,7 +1,6 @@
 package mandykr.nutrient.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +12,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SupplementReply {
 
     @Id
@@ -40,68 +41,4 @@ public class SupplementReply {
     @JoinColumn(name = "SUPPLEMENT_ID")
     private Supplement supplement;
 
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
-    private List<SupplementReply> children = new ArrayList<>();
-
-
-
-    public SupplementReply(String content, SupplementReply parent,Supplement supplement) {
-        //대댓글 생성
-        this(null,content, parent.getOrders()+1,false, parent,supplement);
-    }
-    public SupplementReply(String content,Supplement supplement) {
-        //처음 생성
-        this(null,content, 1,false, null,supplement);
-    }
-    public SupplementReply(Long id,SupplementReply supplementReply) {
-        //삭제 댓글
-        this(id,supplementReply.getContent(), supplementReply.getOrders(),true, supplementReply.getParent(),supplementReply.getSupplement());
-    }
-
-    public SupplementReply(Long id, String content, int orders, boolean deleteFlag, SupplementReply parent,Supplement supplement) {
-        //로직 검증
-        //validation
-        //contents는 비어있으면 안된다.
-        /*
-        checkArgument(
-                isEmpty(content) || content.length() <= 1000,
-                "contents length must be less than 1000 characters"
-        );
-        */
-        this.id = id;
-        this.content = content;
-        this.orders = orders;
-        this.deleteFlag = deleteFlag;
-        this.parent = parent;
-        this.supplement = supplement;
-    }
-
-
-    static public class Builder {
-        private Long id;
-        private String content;
-        private int orders;
-        private boolean deleteFlag;
-        private SupplementReply parent;
-        private Supplement supplement;
-
-        public Builder(SupplementReply supplementReply) {
-            this.id = supplementReply.id;
-            this.content = supplementReply.content;
-            this.orders = supplementReply.orders;
-            this.deleteFlag = supplementReply.deleteFlag;
-            this.parent = supplementReply.parent;
-            this.supplement = supplementReply.supplement;
-        }
-        public SupplementReply build(){
-            return new SupplementReply(
-              id,
-              content,
-              orders,
-                    deleteFlag,
-                    parent,
-              supplement
-            );
-        }
-    }
 }
