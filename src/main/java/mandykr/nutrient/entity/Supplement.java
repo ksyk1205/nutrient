@@ -20,5 +20,5 @@ public class Supplement {
 
     private String name;
 
-
+    private Double ranking; //별점
 }
