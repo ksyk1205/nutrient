@@ -16,7 +16,7 @@ public class StarRate {
     @Column(name = "STAR_RATE_ID")
     private Long id; //영양제 별점 번호
 
-    private Long starNumber; //별점 갯수
+    private int starNumber; //별점 갯수
 
     @ManyToOne
     @JoinColumn(name = "SUPPLEMENT_ID") //외래키
@@ -26,13 +26,13 @@ public class StarRate {
     //private Member member;
 
     //등록을 위한 생성자
-    public StarRate(Long starNumber, Supplement supplement) {
+    public StarRate(int starNumber, Supplement supplement) {
         this.starNumber = starNumber;
         this.supplement = supplement;
     }
 
     //수정을 위한 생성자
-    public StarRate(Long id, Long starNumber, Supplement supplement) {
+    public StarRate(Long id, int starNumber, Supplement supplement) {
         this.id = id;
         this.starNumber = starNumber;
         this.supplement = supplement;
