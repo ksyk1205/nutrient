@@ -45,7 +45,7 @@ public class SupplementCategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<mandykr.nutrient.entity.SupplementCategory> getSupplementList() {
+    public List<SupplementCategory> getSupplementList() {
         return categoryRepository.findAll();
     }
 

@@ -20,7 +20,7 @@ public class SupplementCategory {
 
     private int level;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_category_id")
     private SupplementCategory parentCategory;
 

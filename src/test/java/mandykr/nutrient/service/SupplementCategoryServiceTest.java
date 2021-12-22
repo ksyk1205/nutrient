@@ -24,7 +24,7 @@ class SupplementCategoryServiceTest {
         SupplementCategoryDto categoryDto =
                 new SupplementCategoryDto(1L, "카테고리1", 1,
                         new SupplementCategoryDto(2L, "카테고리2", 0, null));
-        given(categoryRepository.findById(1L)).willReturn(Optional.of(new mandykr.nutrient.entity.SupplementCategory("카테고리", 0, null)));
+        given(categoryRepository.findById(1L)).willReturn(Optional.of(new SupplementCategory("카테고리", 0, null)));
 
         SupplementCategory category = categoryService.updateCategory(categoryDto);
 

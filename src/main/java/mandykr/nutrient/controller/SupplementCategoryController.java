@@ -16,7 +16,7 @@ import static mandykr.nutrient.util.ApiUtils.*;
 public class SupplementCategoryController {
     private final SupplementCategoryService categoryService;
 
-    @GetMapping("/gategory/{id}")
+    @GetMapping("/category/{id}")
     public ApiResult<SupplementCategoryDto> getCategory(@PathVariable Long id) {
         return success(
                 new SupplementCategoryDto(categoryService.getCategory(id))
