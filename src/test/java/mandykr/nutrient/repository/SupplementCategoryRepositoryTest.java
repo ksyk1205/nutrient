@@ -1,10 +1,7 @@
 package mandykr.nutrient.repository;
 
 import mandykr.nutrient.entity.SupplementCategory;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -26,6 +23,11 @@ class SupplementCategoryRepositoryTest {
     void setup() {
         parentCategory = new SupplementCategory("오메가369/피쉬오일", 0);
         category = new SupplementCategory("오메가3", 1, parentCategory);
+    }
+
+    @AfterEach
+    void tearDown() {
+        categoryRepository.deleteAll();
     }
 
     @Test
