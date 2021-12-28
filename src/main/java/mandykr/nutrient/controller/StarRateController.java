@@ -30,9 +30,9 @@ public class StarRateController {
      */
     @PostMapping("/{supplementId}")
     public ApiResult<StarRateDto> createStarRate(
-            @PathVariable Long supplementId
-            , @RequestBody @Valid StarRateRequest starRateRequest){
-        return success(starRateService.createStarRate(supplementId, starRateRequest.getStarNumber(),getMember()));
+            @PathVariable Long supplementId,
+            @RequestBody @Valid StarRateRequest starRateRequest){
+        return success(starRateService.createStarRate(supplementId, starRateRequest.getStarNumber(), getMember()));
     }
 
     /**
@@ -44,10 +44,10 @@ public class StarRateController {
      */
     @PutMapping("/{supplementId}/{starRateId}")
     public ApiResult<StarRateDto> updateStarRate(
-            @PathVariable Long supplementId
-            , @PathVariable Long starRateId
-            , @RequestBody @Valid StarRateRequest starRateRequest){
-        return success(starRateService.updateStarRate(supplementId,starRateId,starRateRequest.getStarNumber(),getMember()));
+            @PathVariable Long supplementId,
+            @PathVariable Long starRateId,
+            @RequestBody @Valid StarRateRequest starRateRequest){
+        return success(starRateService.updateStarRate(supplementId, starRateId, starRateRequest.getStarNumber(), getMember()));
     }
 
     /**
@@ -61,7 +61,7 @@ public class StarRateController {
             //, Member member
             ){
 
-        return success(starRateService.getMemberStarRate(supplementId,getMember()));
+        return success(starRateService.getMemberStarRate(supplementId, getMember()));
     }
 
     //임의의 member 값
