@@ -18,23 +18,27 @@ public class StarRate {
 
     private int starNumber; //별점 갯수
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUPPLEMENT_ID") //외래키
     private Supplement supplement; //영양제 번호
 
-    // 회원 번호
-    //private Member member;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MEMBER_ID") //외래키
+    private Member member;// 회원 번호
 
     //등록을 위한 생성자
-    public StarRate(int starNumber, Supplement supplement) {
+    public StarRate(int starNumber, Supplement supplement, Member member) {
         this.starNumber = starNumber;
         this.supplement = supplement;
+        this.member = member;
     }
 
     //수정을 위한 생성자
-    public StarRate(Long id, int starNumber, Supplement supplement) {
+    public StarRate(Long id, int starNumber, Supplement supplement, Member member) {
         this.id = id;
         this.starNumber = starNumber;
         this.supplement = supplement;
+        this.member = member;
     }
+
 }

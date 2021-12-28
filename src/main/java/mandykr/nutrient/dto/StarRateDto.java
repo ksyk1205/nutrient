@@ -10,9 +10,9 @@ import org.springframework.beans.BeanUtils;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StarRateDto {
+public class StarRateDto { //화면에 출력되는 값들
     private Long id; //영양제 별점 번호
-    private Long starNumber; //별점 갯수
+    private int starNumber; //별점 갯수
     private Supplement supplement; //영양제 번호
     // 회원 번호
     //private Member member;
