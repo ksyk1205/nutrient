@@ -37,6 +37,10 @@ public class SupplementReply {
     @JoinColumn(name = "PARENT_ID")
     private SupplementReply parent;
 
+    @OneToMany(mappedBy = "parent")
+    @Builder.Default
+    private List<SupplementReply> child = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUPPLEMENT_ID")
     private Supplement supplement;

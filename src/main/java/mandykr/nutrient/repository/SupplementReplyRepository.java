@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,6 @@ public interface SupplementReplyRepository extends JpaRepository<SupplementReply
     @Query("select s from SupplementReply s where s.parent.id = :id")
     List<SupplementReply> findParent(@Param("id") Long id);
 
+    @Query("select s from SupplementReply s left outer join fetch s.child where s.id = :id")
+    Optional<SupplementReply> findByIdFetch(@Param("id") Long supplementReplyId);
 }

@@ -26,6 +26,8 @@ public class SupplementReplyService {
 
     private final SupplementRepository supplementRepository;
 
+    static boolean flag;
+
     @Transactional
     public Optional<SupplementReply> createSupplementReply(Long supplementId, SupplementReplyRequest request){
         //첫 댓글
@@ -55,7 +57,7 @@ public class SupplementReplyService {
             supplementReplyRepository.save(
                 new SupplementReply().builder()
                     .content(request.getContent())
-                    .orders(supplementReply.getOrders()+1)
+                    .orders(2)
                     .deleteFlag(false)
                     .parent(supplementReply)
                     .supplement(supplement)
@@ -76,29 +78,41 @@ public class SupplementReplyService {
     }
 
     public Optional<SupplementReply> updateSupplementReply(Long supplementReplyId,SupplementReplyRequest request){
-        //SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId).get();
+        SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId).get();
         return Optional.of(
             supplementReplyRepository.save(
-                new SupplementReply().builder()
+            findSupplementReply.builder()
                 .id(supplementReplyId)
                 .content(request.getContent())
                 .build()
             )
         );
     }
-
+    @Transactional
     public void deleteSupplementReply(Long supplementReplyId){
-        List<SupplementReply> findSupplementReply
-                = supplementReplyRepository.findParent(supplementReplyId);
-        if(findSupplementReply.size() > 0){
-            supplementReplyRepository.save(
-                new SupplementReply().builder()
-                .id(supplementReplyId)
-                .deleteFlag(true)
-                .build()
-            );
-        }else{
+        //DEPTH 2 그냥 삭제
+        //      대댓글을 지웠을때, 부모도 삭제상태이고,대댓글을 마지막이 나였다면 부모도 지워
+        //DEPTH 1 대댓글 여부 확인
+        SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId).get();
+        if(supplementReply.getOrders() == 2){
+            SupplementReply parent = supplementReply.getParent();
             supplementReplyRepository.deleteById(supplementReplyId);
+            if(parent.getDeleteFlag() && parent.getChild().size() == 1){
+                supplementReplyRepository.deleteById(parent.getId());
+            }
+        }else{
+            if(supplementReply.getChild().size() == 0){ //대댓글 없다면 지워
+                supplementReplyRepository.deleteById(supplementReplyId);
+            }else{
+                //대댓글 있다면 flag만 변경
+                supplementReplyRepository.save(
+                    supplementReply.builder()
+                            .id(supplementReplyId)
+                            .deleteFlag(true)
+                            .build()
+                );
+            }
         }
+
     }
 }
