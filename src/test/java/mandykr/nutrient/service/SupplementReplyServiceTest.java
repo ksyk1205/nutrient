@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -296,8 +297,7 @@ class SupplementReplyServiceTest {
         SupplementReply saveSupplementReply12 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest12).get();
         SupplementReply saveSupplementReply13 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply12.getId(),supplementReplyRequest13).get();
 
-        em.flush();
-        em.clear();
+
 
         supplementReplyService.deleteSupplementReply(saveSupplementReply6.getId());
         supplementReplyService.deleteSupplementReply(saveSupplementReply7.getId());
@@ -306,8 +306,8 @@ class SupplementReplyServiceTest {
 
 
         //then
-        Assertions.assertThrows(NoSuchElementException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply6.getId()));
-        Assertions.assertThrows(NoSuchElementException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply7.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply6.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply7.getId()));
         Assertions.assertEquals(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag(),true);
     }
     /**
@@ -387,27 +387,21 @@ class SupplementReplyServiceTest {
         SupplementReply saveSupplementReply12 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest12).get();
         SupplementReply saveSupplementReply13 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply12.getId(),supplementReplyRequest13).get();
 
-        em.flush();
-        em.clear();
+
 
         supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId());
-        //flag 만 변경
-        em.flush();
-        em.clear();
+
 
         Assertions.assertEquals(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag(),true);
         supplementReplyService.deleteSupplementReply(saveSupplementReply2.getId());
-        em.flush();
-        em.clear();
+
         supplementReplyService.deleteSupplementReply(saveSupplementReply3.getId());
-        em.flush();
-        em.clear();
 
         //then
         //2,3을 지웠을때 삭제되는지 확인
-        Assertions.assertThrows(NoSuchElementException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply1.getId()));
-        Assertions.assertThrows(NoSuchElementException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply2.getId()));
-        Assertions.assertThrows(NoSuchElementException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply3.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply1.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply2.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply3.getId()));
     }
 
 }

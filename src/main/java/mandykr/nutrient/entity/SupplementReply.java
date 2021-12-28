@@ -4,11 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Entity
 @Getter
@@ -45,4 +42,21 @@ public class SupplementReply {
     @JoinColumn(name = "SUPPLEMENT_ID")
     private Supplement supplement;
 
+
+    public void changeContent(String content){
+        this.content = content;
+    }
+
+    public void changeTrueDeleteFlag(){
+        this.deleteFlag = true;
+    }
+
+    public void addChild(SupplementReply parent){
+        this.parent = parent;
+        parent.getChild().add(this);
+    }
+
+    public void removeChild(SupplementReply supplementReply) {
+        child.remove(supplementReply);
+    }
 }

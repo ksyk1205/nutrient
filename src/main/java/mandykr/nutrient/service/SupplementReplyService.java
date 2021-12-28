@@ -53,51 +53,48 @@ public class SupplementReplyService {
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
         SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReplyId : " + supplementReplyId));
-        return Optional.of(
-            supplementReplyRepository.save(
-                new SupplementReply().builder()
-                    .content(request.getContent())
-                    .orders(2)
-                    .deleteFlag(false)
-                    .parent(supplementReply)
-                    .supplement(supplement)
-                    .build()
-            )
-        );
+        SupplementReply saveSupplementReply = new SupplementReply().builder()
+                                            .content(request.getContent())
+                                            .orders(2)
+                                            .deleteFlag(false)
+                                            .supplement(supplement)
+                                            .build();
+        saveSupplementReply.addChild(supplementReply);
+        return Optional.of(supplementReplyRepository.save(saveSupplementReply));
     }
 
     public List<SupplementReply> getSupplementReplyBySupplement(Long supplementId){
-        return supplementReplyRepository.findBySupplement(supplementRepository.findById(supplementId).get());
+        return supplementReplyRepository.findBySupplement(supplementRepository.findById(supplementId)
+                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId)));
     }
 
     public SupplementReply getSupplementReply(Long supplementReplyId){
-        return supplementReplyRepository.findById(supplementReplyId).get();
+        return supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
     }
     public List<SupplementReply> getSupplementReplyList(){
         return supplementReplyRepository.findAll();
     }
 
     public Optional<SupplementReply> updateSupplementReply(Long supplementReplyId,SupplementReplyRequest request){
-        SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId).get();
-        return Optional.of(
-            supplementReplyRepository.save(
-            findSupplementReply.builder()
-                .id(supplementReplyId)
-                .content(request.getContent())
-                .build()
-            )
-        );
+        //변경감지
+        SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
+        findSupplementReply.changeContent(request.getContent());
+        return Optional.of(findSupplementReply);
     }
     @Transactional
     public void deleteSupplementReply(Long supplementReplyId){
         //DEPTH 2 그냥 삭제
         //      대댓글을 지웠을때, 부모도 삭제상태이고,대댓글을 마지막이 나였다면 부모도 지워
         //DEPTH 1 대댓글 여부 확인
-        SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId).get();
+        SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReplyId : " + supplementReplyId));
         if(supplementReply.getOrders() == 2){
             SupplementReply parent = supplementReply.getParent();
             supplementReplyRepository.deleteById(supplementReplyId);
-            if(parent.getDeleteFlag() && parent.getChild().size() == 1){
+            parent.removeChild(supplementReply);
+            if(parent.getDeleteFlag() && parent.getChild().size() == 0){
                 supplementReplyRepository.deleteById(parent.getId());
             }
         }else{
@@ -105,12 +102,8 @@ public class SupplementReplyService {
                 supplementReplyRepository.deleteById(supplementReplyId);
             }else{
                 //대댓글 있다면 flag만 변경
-                supplementReplyRepository.save(
-                    supplementReply.builder()
-                            .id(supplementReplyId)
-                            .deleteFlag(true)
-                            .build()
-                );
+                //변경감지 활용
+                supplementReply.changeTrueDeleteFlag();
             }
         }
 
