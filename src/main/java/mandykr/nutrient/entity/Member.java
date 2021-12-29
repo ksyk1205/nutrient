@@ -13,6 +13,8 @@ import javax.persistence.Id;
 @NoArgsConstructor
 public class Member {
     @Id
+    private Long Id;
+
     private String memberId;
     private String name;
 }
