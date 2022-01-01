@@ -1,6 +1,7 @@
 package mandykr.nutrient.entity;
 
 import lombok.*;
+import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SupplementReply {
+public class SupplementReply extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
@@ -52,8 +53,9 @@ public class SupplementReply {
     }
 
     public void addChild(SupplementReply parent){
-        this.parent = parent;
-        parent.getChild().add(this);
+        if(!parent.getChild().contains(this)){
+            parent.getChild().add(this);
+        }
     }
 
     public void removeChild(SupplementReply supplementReply) {

@@ -26,8 +26,6 @@ public class SupplementReplyService {
 
     private final SupplementRepository supplementRepository;
 
-    static boolean flag;
-
     @Transactional
     public Optional<SupplementReply> createSupplementReply(Long supplementId, SupplementReplyRequest request){
         //첫 댓글
@@ -57,6 +55,7 @@ public class SupplementReplyService {
                                             .content(request.getContent())
                                             .orders(2)
                                             .deleteFlag(false)
+                                            .parent(supplementReply)
                                             .supplement(supplement)
                                             .build();
         saveSupplementReply.addChild(supplementReply);

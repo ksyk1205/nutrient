@@ -16,9 +16,4 @@ import java.util.Optional;
 public interface SupplementReplyRepository extends JpaRepository<SupplementReply,Long> {
     List<SupplementReply> findBySupplement(Supplement supplement);
 
-    @Query("select s from SupplementReply s where s.parent.id = :id")
-    List<SupplementReply> findParent(@Param("id") Long id);
-
-    @Query("select s from SupplementReply s left outer join fetch s.child where s.id = :id")
-    Optional<SupplementReply> findByIdFetch(@Param("id") Long supplementReplyId);
 }

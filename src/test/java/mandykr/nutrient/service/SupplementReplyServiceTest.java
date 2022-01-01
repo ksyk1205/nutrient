@@ -4,34 +4,36 @@ import mandykr.nutrient.dto.SupplementReplyDto;
 import mandykr.nutrient.dto.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.entity.SupplementReply;
+import mandykr.nutrient.repository.SupplementReplyRepository;
 import mandykr.nutrient.repository.SupplementRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.annotation.Persistent;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-@SpringBootTest
-@Transactional
+import static org.mockito.Mockito.mock;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("SupplementReplyServiceTest")
 class SupplementReplyServiceTest {
 
-    @Autowired
-    SupplementReplyService supplementReplyService;
+    SupplementReplyRepository supplementReplyRepository = mock(SupplementReplyRepository.class);
 
-    @Autowired
-    SupplementRepository supplementRepository;
+    SupplementRepository supplementRepository = mock(SupplementRepository.class);;
 
-    @PersistenceContext
-    EntityManager em;
+    SupplementReplyService supplementReplyService = new SupplementReplyService(supplementReplyRepository,supplementRepository);
+
+    Supplement saveSupplement;
+
+    @BeforeEach
+    public void setup(){
+        saveSupplement = new Supplement();
+        saveSupplement.setId(1L);
+        saveSupplement.setName("test1");
+        saveSupplement.setRanking(4.2);
+    }
 
     @Test
     public void 영양제_등록_테스트() throws Exception{
@@ -40,77 +42,25 @@ class SupplementReplyServiceTest {
          *          댓글1
          *              댓글2
          *              댓글3
-         *          댓글4
-         *              댓글5
-         *              댓글6
-         *          댓글7
-         *  영양제2
-         *          댓글8
-         *              댓글9
-         *              댓글10
-         *              댓글11
-         *          댓글12
-         *             댓글13
-         *
          */
         //given
-        Supplement supplement1 = new Supplement();
-        supplement1.setName("test1");
-        Supplement supplement2 = new Supplement();
-        supplement2.setName("test2");
-
-        Supplement saveSupplement1 = supplementRepository.save(supplement1);
-        Supplement saveSupplement2 = supplementRepository.save(supplement2);
-
         SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
         supplementReplyRequest1.setContent("testReply1");
         SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
         supplementReplyRequest2.setContent("testReply2");
         SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
         supplementReplyRequest3.setContent("testReply3");
-        SupplementReplyRequest supplementReplyRequest4 = new SupplementReplyRequest();
-        supplementReplyRequest4.setContent("testReply4");
-        SupplementReplyRequest supplementReplyRequest5 = new SupplementReplyRequest();
-        supplementReplyRequest5.setContent("testReply5");
-        SupplementReplyRequest supplementReplyRequest6 = new SupplementReplyRequest();
-        supplementReplyRequest6.setContent("testReply6");
-        SupplementReplyRequest supplementReplyRequest7 = new SupplementReplyRequest();
-        supplementReplyRequest7.setContent("testReply7");
-        SupplementReplyRequest supplementReplyRequest8 = new SupplementReplyRequest();
-        supplementReplyRequest8.setContent("testReply8");
-        SupplementReplyRequest supplementReplyRequest9 = new SupplementReplyRequest();
-        supplementReplyRequest9.setContent("testReply9");
-        SupplementReplyRequest supplementReplyRequest10 = new SupplementReplyRequest();
-        supplementReplyRequest10.setContent("testReply10");
-        SupplementReplyRequest supplementReplyRequest11 = new SupplementReplyRequest();
-        supplementReplyRequest11.setContent("testReply11");
-        SupplementReplyRequest supplementReplyRequest12 = new SupplementReplyRequest();
-        supplementReplyRequest12.setContent("testReply12");
-        SupplementReplyRequest supplementReplyRequest13 = new SupplementReplyRequest();
-        supplementReplyRequest13.setContent("testReply13");
+
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest1).get();
-        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
-        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
-
-        SupplementReply saveSupplementReply4 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest4).get();
-        SupplementReply saveSupplementReply5 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest5).get();
-        SupplementReply saveSupplementReply6 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest6).get();
-
-        SupplementReply saveSupplementReply7 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest7).get();
-
-        SupplementReply saveSupplementReply8 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest8).get();
-        SupplementReply saveSupplementReply9 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest9).get();
-        SupplementReply saveSupplementReply10 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest10).get();
-        SupplementReply saveSupplementReply11 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest11).get();
-        SupplementReply saveSupplementReply12 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest12).get();
-        SupplementReply saveSupplementReply13 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply12.getId(),supplementReplyRequest13).get();
-
+        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(),supplementReplyRequest1).get();
+        supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2);
+        supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest3);
 
         //then
-        Assertions.assertEquals(7,supplementReplyService.getSupplementReplyBySupplement(saveSupplement1.getId()).size());
-        Assertions.assertEquals(6,supplementReplyService.getSupplementReplyBySupplement(saveSupplement2.getId()).size());
+        Assertions.assertEquals(3,supplementReplyService.getSupplementReplyBySupplement(saveSupplement.getId()).size());
     }
+
+
     @Test
     public void 영양제_전체_조회() throws Exception{
         Supplement supplement = new Supplement();
@@ -126,12 +76,8 @@ class SupplementReplyServiceTest {
         Supplement saveSupplement = supplementRepository.save(supplement);
         supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyRequest1);
         supplementReplyService.createSupplementReply(supplement.getId(),supplementReplyRequest2);
-
-        List<SupplementReply> supplementReplies
-                = supplementReplyService.getSupplementReplyList();
-
         //then
-        Assertions.assertEquals(2,supplementReplies.size());
+        Assertions.assertEquals(2,supplementReplyService.getSupplementReplyList().size());
     }
 
     @Test
@@ -141,27 +87,8 @@ class SupplementReplyServiceTest {
          *          댓글1
          *              댓글2
          *              댓글3
-         *          댓글4
-         *              댓글5
-         *              댓글6
-         *          댓글7
-         *  영양제2
-         *          댓글8
-         *              댓글9
-         *              댓글10
-         *              댓글11
-         *          댓글12
-         *             댓글13
-         *
          */
         //given
-        Supplement supplement1 = new Supplement();
-        supplement1.setName("test1");
-        Supplement supplement2 = new Supplement();
-        supplement2.setName("test2");
-
-        Supplement saveSupplement1 = supplementRepository.save(supplement1);
-        Supplement saveSupplement2 = supplementRepository.save(supplement2);
 
         SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
         supplementReplyRequest1.setContent("testReply1");
@@ -169,54 +96,22 @@ class SupplementReplyServiceTest {
         supplementReplyRequest2.setContent("testReply2");
         SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
         supplementReplyRequest3.setContent("testReply3");
-        SupplementReplyRequest supplementReplyRequest4 = new SupplementReplyRequest();
-        supplementReplyRequest4.setContent("testReply4");
-        SupplementReplyRequest supplementReplyRequest5 = new SupplementReplyRequest();
-        supplementReplyRequest5.setContent("testReply5");
-        SupplementReplyRequest supplementReplyRequest6 = new SupplementReplyRequest();
-        supplementReplyRequest6.setContent("testReply6");
-        SupplementReplyRequest supplementReplyRequest7 = new SupplementReplyRequest();
-        supplementReplyRequest7.setContent("testReply7");
-        SupplementReplyRequest supplementReplyRequest8 = new SupplementReplyRequest();
-        supplementReplyRequest8.setContent("testReply8");
-        SupplementReplyRequest supplementReplyRequest9 = new SupplementReplyRequest();
-        supplementReplyRequest9.setContent("testReply9");
-        SupplementReplyRequest supplementReplyRequest10 = new SupplementReplyRequest();
-        supplementReplyRequest10.setContent("testReply10");
-        SupplementReplyRequest supplementReplyRequest11 = new SupplementReplyRequest();
-        supplementReplyRequest11.setContent("testReply11");
-        SupplementReplyRequest supplementReplyRequest12 = new SupplementReplyRequest();
-        supplementReplyRequest12.setContent("testReply12");
-        SupplementReplyRequest supplementReplyRequest13 = new SupplementReplyRequest();
-        supplementReplyRequest13.setContent("testReply13");
+
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest1).get();
-        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
-        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
+        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(),supplementReplyRequest1).get();
+        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
+        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
 
-        SupplementReply saveSupplementReply4 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest4).get();
-        SupplementReply saveSupplementReply5 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest5).get();
-        SupplementReply saveSupplementReply6 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest6).get();
-
-        SupplementReply saveSupplementReply7 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest7).get();
-
-        SupplementReply saveSupplementReply8 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest8).get();
-        SupplementReply saveSupplementReply9 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest9).get();
-        SupplementReply saveSupplementReply10 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest10).get();
-        SupplementReply saveSupplementReply11 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest11).get();
-        SupplementReply saveSupplementReply12 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest12).get();
-        SupplementReply saveSupplementReply13 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply12.getId(),supplementReplyRequest13).get();
-
+        supplementReplyRequest1.setContent("test1(수정)");
+        supplementReplyService.updateSupplementReply(saveSupplementReply1.getId(),supplementReplyRequest1);
 
         supplementReplyRequest2.setContent("test2(수정)");
         supplementReplyService.updateSupplementReply(saveSupplementReply2.getId(),supplementReplyRequest2);
 
-        supplementReplyRequest6.setContent("test6(수정)");
-        supplementReplyService.updateSupplementReply(saveSupplementReply6.getId(),supplementReplyRequest6);
 
         //then
+        Assertions.assertEquals("test1(수정)",supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getContent());
         Assertions.assertEquals("test2(수정)",supplementReplyService.getSupplementReply(saveSupplementReply2.getId()).getContent());
-        Assertions.assertEquals("test6(수정)",supplementReplyService.getSupplementReply(saveSupplementReply6.getId()).getContent());
     }
 
     /**
@@ -232,26 +127,9 @@ class SupplementReplyServiceTest {
          *              댓글2
          *              댓글3
          *          댓글4
-         *              댓글5
-         *              댓글6
-         *          댓글7
-         *  영양제2
-         *          댓글8
-         *              댓글9
-         *              댓글10
-         *              댓글11
-         *          댓글12
-         *             댓글13
          *
          */
         //given
-        Supplement supplement1 = new Supplement();
-        supplement1.setName("test1");
-        Supplement supplement2 = new Supplement();
-        supplement2.setName("test2");
-
-        Supplement saveSupplement1 = supplementRepository.save(supplement1);
-        Supplement saveSupplement2 = supplementRepository.save(supplement2);
 
         SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
         supplementReplyRequest1.setContent("testReply1");
@@ -261,54 +139,24 @@ class SupplementReplyServiceTest {
         supplementReplyRequest3.setContent("testReply3");
         SupplementReplyRequest supplementReplyRequest4 = new SupplementReplyRequest();
         supplementReplyRequest4.setContent("testReply4");
-        SupplementReplyRequest supplementReplyRequest5 = new SupplementReplyRequest();
-        supplementReplyRequest5.setContent("testReply5");
-        SupplementReplyRequest supplementReplyRequest6 = new SupplementReplyRequest();
-        supplementReplyRequest6.setContent("testReply6");
-        SupplementReplyRequest supplementReplyRequest7 = new SupplementReplyRequest();
-        supplementReplyRequest7.setContent("testReply7");
-        SupplementReplyRequest supplementReplyRequest8 = new SupplementReplyRequest();
-        supplementReplyRequest8.setContent("testReply8");
-        SupplementReplyRequest supplementReplyRequest9 = new SupplementReplyRequest();
-        supplementReplyRequest9.setContent("testReply9");
-        SupplementReplyRequest supplementReplyRequest10 = new SupplementReplyRequest();
-        supplementReplyRequest10.setContent("testReply10");
-        SupplementReplyRequest supplementReplyRequest11 = new SupplementReplyRequest();
-        supplementReplyRequest11.setContent("testReply11");
-        SupplementReplyRequest supplementReplyRequest12 = new SupplementReplyRequest();
-        supplementReplyRequest12.setContent("testReply12");
-        SupplementReplyRequest supplementReplyRequest13 = new SupplementReplyRequest();
-        supplementReplyRequest13.setContent("testReply13");
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest1).get();
-        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
-        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
+        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(),supplementReplyRequest1).get();
+        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
+        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
 
-        SupplementReply saveSupplementReply4 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest4).get();
-        SupplementReply saveSupplementReply5 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest5).get();
-        SupplementReply saveSupplementReply6 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest6).get();
-
-        SupplementReply saveSupplementReply7 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest7).get();
-
-        SupplementReply saveSupplementReply8 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest8).get();
-        SupplementReply saveSupplementReply9 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest9).get();
-        SupplementReply saveSupplementReply10 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest10).get();
-        SupplementReply saveSupplementReply11 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest11).get();
-        SupplementReply saveSupplementReply12 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest12).get();
-        SupplementReply saveSupplementReply13 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply12.getId(),supplementReplyRequest13).get();
+        SupplementReply saveSupplementReply4 = supplementReplyService.createSupplementReply(saveSupplement.getId(),supplementReplyRequest4).get();
 
 
+        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId()); //flag만
 
-        supplementReplyService.deleteSupplementReply(saveSupplementReply6.getId());
-        supplementReplyService.deleteSupplementReply(saveSupplementReply7.getId());
-        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId());
-
+        supplementReplyService.deleteSupplementReply(saveSupplementReply2.getId()); //대댓글 삭제
+        supplementReplyService.deleteSupplementReply(saveSupplementReply4.getId()); //댓글 삭제
 
 
         //then
-        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply6.getId()));
-        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply7.getId()));
-        Assertions.assertEquals(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag(),true);
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply2.getId()));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->supplementReplyService.getSupplementReply(saveSupplementReply4.getId()));
+        Assertions.assertTrue(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag());
     }
     /**
      *  DEPTH 2 대댓글을 지웠을때, 부모도 삭제상태이고,대댓글을 마지막이 나였다면 부모도 지울때
@@ -321,80 +169,25 @@ class SupplementReplyServiceTest {
          *          댓글1
          *              댓글2
          *              댓글3
-         *          댓글4
-         *              댓글5
-         *              댓글6
-         *          댓글7
-         *  영양제2
-         *          댓글8
-         *              댓글9
-         *              댓글10
-         *              댓글11
-         *          댓글12
-         *             댓글13
-         *
          */
         //given
-        Supplement supplement1 = new Supplement();
-        supplement1.setName("test1");
-        Supplement supplement2 = new Supplement();
-        supplement2.setName("test2");
-
-        Supplement saveSupplement1 = supplementRepository.save(supplement1);
-        Supplement saveSupplement2 = supplementRepository.save(supplement2);
-
         SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
         supplementReplyRequest1.setContent("testReply1");
         SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
         supplementReplyRequest2.setContent("testReply2");
         SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
         supplementReplyRequest3.setContent("testReply3");
-        SupplementReplyRequest supplementReplyRequest4 = new SupplementReplyRequest();
-        supplementReplyRequest4.setContent("testReply4");
-        SupplementReplyRequest supplementReplyRequest5 = new SupplementReplyRequest();
-        supplementReplyRequest5.setContent("testReply5");
-        SupplementReplyRequest supplementReplyRequest6 = new SupplementReplyRequest();
-        supplementReplyRequest6.setContent("testReply6");
-        SupplementReplyRequest supplementReplyRequest7 = new SupplementReplyRequest();
-        supplementReplyRequest7.setContent("testReply7");
-        SupplementReplyRequest supplementReplyRequest8 = new SupplementReplyRequest();
-        supplementReplyRequest8.setContent("testReply8");
-        SupplementReplyRequest supplementReplyRequest9 = new SupplementReplyRequest();
-        supplementReplyRequest9.setContent("testReply9");
-        SupplementReplyRequest supplementReplyRequest10 = new SupplementReplyRequest();
-        supplementReplyRequest10.setContent("testReply10");
-        SupplementReplyRequest supplementReplyRequest11 = new SupplementReplyRequest();
-        supplementReplyRequest11.setContent("testReply11");
-        SupplementReplyRequest supplementReplyRequest12 = new SupplementReplyRequest();
-        supplementReplyRequest12.setContent("testReply12");
-        SupplementReplyRequest supplementReplyRequest13 = new SupplementReplyRequest();
-        supplementReplyRequest13.setContent("testReply13");
+
+
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest1).get();
-        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
-        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
+        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(),supplementReplyRequest1).get();
+        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest2).get();
+        SupplementReply saveSupplementReply3 = supplementReplyService.createSupplementReply(saveSupplement.getId(),saveSupplementReply1.getId(),supplementReplyRequest3).get();
 
-        SupplementReply saveSupplementReply4 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest4).get();
-        SupplementReply saveSupplementReply5 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest5).get();
-        SupplementReply saveSupplementReply6 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),saveSupplementReply4.getId(),supplementReplyRequest6).get();
+        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId()); // flag true 변경
+        Assertions.assertTrue(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag());
 
-        SupplementReply saveSupplementReply7 = supplementReplyService.createSupplementReply(saveSupplement1.getId(),supplementReplyRequest7).get();
-
-        SupplementReply saveSupplementReply8 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest8).get();
-        SupplementReply saveSupplementReply9 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest9).get();
-        SupplementReply saveSupplementReply10 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest10).get();
-        SupplementReply saveSupplementReply11 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply8.getId(),supplementReplyRequest11).get();
-        SupplementReply saveSupplementReply12 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),supplementReplyRequest12).get();
-        SupplementReply saveSupplementReply13 = supplementReplyService.createSupplementReply(saveSupplement2.getId(),saveSupplementReply12.getId(),supplementReplyRequest13).get();
-
-
-
-        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId());
-
-
-        Assertions.assertEquals(supplementReplyService.getSupplementReply(saveSupplementReply1.getId()).getDeleteFlag(),true);
         supplementReplyService.deleteSupplementReply(saveSupplementReply2.getId());
-
         supplementReplyService.deleteSupplementReply(saveSupplementReply3.getId());
 
         //then
