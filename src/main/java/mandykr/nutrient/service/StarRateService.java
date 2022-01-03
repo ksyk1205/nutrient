@@ -2,7 +2,6 @@ package mandykr.nutrient.service;
 
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.StarRateDto;
-import mandykr.nutrient.dto.SupplementDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.StarRate;
 import mandykr.nutrient.entity.Supplement;
@@ -11,7 +10,6 @@ import mandykr.nutrient.repository.SupplementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,8 +74,23 @@ public class StarRateService {
     public StarRateDto getMemberStarRate(Long supplementId, Member member){
         //영양제 조회
         Supplement supplement = getSupplement(supplementId);
-        //별점 조회 후 별점이 등록되어있지 않을 경우 후 처리 고민..
-        return new StarRateDto(starRateRepository.findBySupplementAndMember(supplement, member).get());
+
+        Optional<StarRate> star = starRateRepository.findBySupplementAndMember(supplement,member);
+        //별점 정보가 없다면 빈객체를
+        if(!star.isPresent()){
+            return new StarRateDto();
+        }else{//별점 정보가 있다면 조회한 별점 정보를
+            return new StarRateDto(star.get());
+        }
+    }
+
+    /**
+     * 별점 삭제
+     * @param starRateId 별점 아이디
+     */
+    public void  deleteStarRate(Long starRateId){
+        //별점 삭제
+        starRateRepository.deleteById(starRateId);
     }
 
     /**
@@ -95,17 +108,13 @@ public class StarRateService {
      */
     private void updateSupplementRanking(Supplement supplement) {
         List<StarRate> starRateList = starRateRepository.findBySupplement(supplement);
-        long sum=0;
-        for(StarRate starRate : starRateList){
-            sum += starRate.getStarNumber();
-        }
-        double ranking = (double) sum / starRateList.size();
+
+        double ranking = starRateList.stream()
+                .mapToInt(StarRate::getStarNumber)
+                .average()
+                .getAsDouble();
+
         supplement.setRanking(ranking);
         supplementRepository.save(supplement);
     }
-    //별점 삭제
-    public void deleteStarRate(Long id){
-        starRateRepository.deleteById(id);
-    }
-
 }

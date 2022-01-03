@@ -70,4 +70,13 @@ public class StarRateController {
         return member;
     }
 
+    /**
+     * 별점 삭제
+     * @param starRateId 별점 아이디
+     */
+    @DeleteMapping("/{starRateId}")
+    public void deleteStarRate(@PathVariable Long starRateId){
+        starRateService.deleteStarRate(starRateId);
+    }
+
 }
