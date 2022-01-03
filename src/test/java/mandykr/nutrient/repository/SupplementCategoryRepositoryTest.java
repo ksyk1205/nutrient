@@ -21,8 +21,8 @@ class SupplementCategoryRepositoryTest {
 
     @BeforeEach
     void setup() {
-        parentCategory = new SupplementCategory("오메가369/피쉬오일", 0);
-        category = new SupplementCategory("오메가3", 1, parentCategory);
+        parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").level(0).build();
+        category = SupplementCategory.builder().name("오메가3").level(1).parentCategory(parentCategory).build();
     }
 
     @AfterEach
@@ -63,6 +63,7 @@ class SupplementCategoryRepositoryTest {
     @DisplayName("카테고리의 레벨을 변경한다.")
     void update_level_category() {
         // given
+        categoryRepository.save(parentCategory);
         SupplementCategory saveCategory = categoryRepository.save(category);
 
         // when
@@ -80,8 +81,10 @@ class SupplementCategoryRepositoryTest {
     @DisplayName("카테고리의 부모 카테고리를 변경한다.")
     void update_parent_category() {
         // given
+        categoryRepository.save(parentCategory);
         SupplementCategory saveCategory = categoryRepository.save(category);
-        SupplementCategory newParentCategory = new SupplementCategory("오메가369", 1);
+        SupplementCategory newParentCategory = SupplementCategory.builder().name("오메가369").level(1).build();
+        categoryRepository.save(newParentCategory);
 
         // when
         category.moveToAnotherParent(newParentCategory);

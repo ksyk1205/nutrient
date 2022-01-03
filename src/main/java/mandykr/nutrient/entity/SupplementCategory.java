@@ -1,7 +1,9 @@
 package mandykr.nutrient.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import mandykr.nutrient.dto.SupplementCategoryDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -24,24 +26,20 @@ public class SupplementCategory {
     @JoinColumn(name = "parent_category_id")
     private SupplementCategory parentCategory;
 
-    public SupplementCategory(String name, int level) {
-        this.name = name;
-        this.level = level;
-    }
-
-    public SupplementCategory(String name, int level, SupplementCategory parentCategory) {
+    @Builder
+    private SupplementCategory(Long id, String name, int level, SupplementCategory parentCategory) {
+        this.id = id;
         this.name = name;
         this.level = level;
         this.parentCategory = parentCategory;
     }
 
-    private SupplementCategory(Long id, String name, int level) {
-        this(name, level);
-        this.id = id;
+    public static SupplementCategory toEntity(Long id, String name, int level) {
+        return SupplementCategory.builder().id(id).name(name).level(level).build();
     }
 
-    public static SupplementCategory changeEntity(Long id, String name, int level) {
-        return new SupplementCategory(id, name, level);
+    public static SupplementCategory toEntity(Long id, String name, int level, SupplementCategory parentCategory) {
+        return new SupplementCategory(id, name, level, parentCategory);
     }
 
     public void rename(String name) {
