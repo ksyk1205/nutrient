@@ -72,11 +72,11 @@ public class SupplementReplyController {
      */
     @PostMapping("{supplementId}/{replyId}")
     public ApiResult<SupplementReplyDto> createSupplementReplyByReply(
-            @PathVariable("supplementId") Long supplementId
-            ,@PathVariable("replyId") Long replyId
-            ,@RequestBody @Valid SupplementReplyRequest supplementReplyRequest){
+            @PathVariable("supplementId") Long supplementId,
+            @PathVariable("replyId") Long replyId,
+            @RequestBody @Valid SupplementReplyRequest supplementReplyRequest){
         return success(supplementReplyService
-                .createSupplementReply(supplementId,replyId,supplementReplyRequest)
+                .createSupplementReply(supplementId,replyId, supplementReplyRequest)
                 .map(SupplementReplyDto::new)
                 .get()
         );

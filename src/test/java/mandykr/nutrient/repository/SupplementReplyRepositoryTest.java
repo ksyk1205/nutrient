@@ -9,8 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.Rollback;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,19 +48,17 @@ class SupplementReplyRepositoryTest {
                 .content("reply1-1")
                 .orders(2)
                 .deleteFlag(false)
-                .parent(parent1)
                 .supplement(supplement1)
                 .build();
-        child11.addChild(parent1);
+        child11.addParents(parent1);
         child12 = SupplementReply
                 .builder()
                 .content("reply1-2")
                 .orders(2)
                 .deleteFlag(false)
-                .parent(parent1)
                 .supplement(supplement1)
                 .build();
-        child12.addChild(parent1);
+        child12.addParents(parent1);
         parent2 = SupplementReply
                 .builder()
                 .content("reply2")
@@ -77,9 +73,8 @@ class SupplementReplyRepositoryTest {
                 .orders(2)
                 .deleteFlag(false)
                 .supplement(supplement2)
-                .parent(parent2)
                 .build();
-        child21.addChild(parent2);
+        child21.addParents(parent2);
     }
 
     @Test
@@ -100,6 +95,8 @@ class SupplementReplyRepositoryTest {
         assertThat(saveParent2).isEqualTo(supplementReplyRepository.findById(saveParent2.getId()).get());
         assertThat(saveChild21).isEqualTo(supplementReplyRepository.findById(saveChild21.getId()).get());
     }
+
+
     @Test
     public void 댓글_수정() throws Exception{
         //given

@@ -52,7 +52,8 @@ public class SupplementReply extends BaseTimeEntity {
         this.deleteFlag = true;
     }
 
-    public void addChild(SupplementReply parent){
+    public void addParents(SupplementReply parent){
+        this.parent = parent;
         if(!parent.getChild().contains(this)){
             parent.getChild().add(this);
         }
