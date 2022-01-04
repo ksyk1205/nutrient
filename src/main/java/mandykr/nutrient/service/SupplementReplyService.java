@@ -31,7 +31,8 @@ public class SupplementReplyService {
         //첫 댓글
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
-        return Optional.of(
+
+        return Optional.ofNullable(
             supplementReplyRepository.save(
                 new SupplementReply().builder()
                 .content(request.getContent())
@@ -51,54 +52,59 @@ public class SupplementReplyService {
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
         SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReplyId : " + supplementReplyId));
-        return Optional.of(
-            supplementReplyRepository.save(
-                new SupplementReply().builder()
-                    .content(request.getContent())
-                    .orders(supplementReply.getOrders()+1)
-                    .deleteFlag(false)
-                    .parent(supplementReply)
-                    .supplement(supplement)
-                    .build()
-            )
-        );
+        SupplementReply saveSupplementReply = new SupplementReply().builder()
+                                            .content(request.getContent())
+                                            .orders(2)
+                                            .deleteFlag(false)
+                                            .supplement(supplement)
+                                            .build();
+        saveSupplementReply.addParents(supplementReply);
+        return Optional.ofNullable(supplementReplyRepository.save(saveSupplementReply));
     }
 
     public List<SupplementReply> getSupplementReplyBySupplement(Long supplementId){
-        return supplementReplyRepository.findBySupplement(supplementRepository.findById(supplementId).get());
+        return supplementReplyRepository.findBySupplement(supplementRepository.findById(supplementId)
+                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId)));
     }
 
     public SupplementReply getSupplementReply(Long supplementReplyId){
-        return supplementReplyRepository.findById(supplementReplyId).get();
+        return supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
     }
     public List<SupplementReply> getSupplementReplyList(){
         return supplementReplyRepository.findAll();
     }
 
     public Optional<SupplementReply> updateSupplementReply(Long supplementReplyId,SupplementReplyRequest request){
-        //SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId).get();
-        return Optional.of(
-            supplementReplyRepository.save(
-                new SupplementReply().builder()
-                .id(supplementReplyId)
-                .content(request.getContent())
-                .build()
-            )
-        );
+        //변경감지
+        SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
+        findSupplementReply.changeContent(request.getContent());
+        return Optional.ofNullable(findSupplementReply);
     }
-
+    @Transactional
     public void deleteSupplementReply(Long supplementReplyId){
-        List<SupplementReply> findSupplementReply
-                = supplementReplyRepository.findParent(supplementReplyId);
-        if(findSupplementReply.size() > 0){
-            supplementReplyRepository.save(
-                new SupplementReply().builder()
-                .id(supplementReplyId)
-                .deleteFlag(true)
-                .build()
-            );
-        }else{
+        //DEPTH 2 그냥 삭제
+        //      대댓글을 지웠을때, 부모도 삭제상태이고,대댓글을 마지막이 나였다면 부모도 지워
+        //DEPTH 1 대댓글 여부 확인
+        SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReplyId : " + supplementReplyId));
+        if(supplementReply.getOrders() == 2){
+            SupplementReply parent = supplementReply.getParent();
             supplementReplyRepository.deleteById(supplementReplyId);
+            parent.removeChild(supplementReply);
+            if(parent.getDeleteFlag() && parent.getChild().size() == 0){
+                supplementReplyRepository.deleteById(parent.getId());
+            }
+        }else{
+            if(supplementReply.getChild().size() == 0){ //대댓글 없다면 지워
+                supplementReplyRepository.deleteById(supplementReplyId);
+            }else{
+                //대댓글 있다면 flag만 변경
+                //변경감지 활용
+                supplementReply.changeTrueDeleteFlag();
+            }
         }
+
     }
 }

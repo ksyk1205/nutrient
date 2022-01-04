@@ -9,13 +9,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public interface SupplementReplyRepository extends JpaRepository<SupplementReply,Long> {
     List<SupplementReply> findBySupplement(Supplement supplement);
-
-    @Query("select s from SupplementReply s where s.parent.id = :id")
-    List<SupplementReply> findParent(@Param("id") Long id);
 
 }
