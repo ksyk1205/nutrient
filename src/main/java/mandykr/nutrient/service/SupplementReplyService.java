@@ -31,7 +31,8 @@ public class SupplementReplyService {
         //첫 댓글
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
-        return Optional.of(
+
+        return Optional.ofNullable(
             supplementReplyRepository.save(
                 new SupplementReply().builder()
                 .content(request.getContent())
@@ -55,11 +56,10 @@ public class SupplementReplyService {
                                             .content(request.getContent())
                                             .orders(2)
                                             .deleteFlag(false)
-                                            .parent(supplementReply)
                                             .supplement(supplement)
                                             .build();
-        saveSupplementReply.addChild(supplementReply);
-        return Optional.of(supplementReplyRepository.save(saveSupplementReply));
+        saveSupplementReply.addParents(supplementReply);
+        return Optional.ofNullable(supplementReplyRepository.save(saveSupplementReply));
     }
 
     public List<SupplementReply> getSupplementReplyBySupplement(Long supplementId){
@@ -80,7 +80,7 @@ public class SupplementReplyService {
         SupplementReply findSupplementReply = supplementReplyRepository.findById(supplementReplyId)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
         findSupplementReply.changeContent(request.getContent());
-        return Optional.of(findSupplementReply);
+        return Optional.ofNullable(findSupplementReply);
     }
     @Transactional
     public void deleteSupplementReply(Long supplementReplyId){
