@@ -1,21 +1,19 @@
 package mandykr.nutrient.entity;
 
 import lombok.*;
+import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SupplementReply {
+public class SupplementReply extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
@@ -37,8 +35,31 @@ public class SupplementReply {
     @JoinColumn(name = "PARENT_ID")
     private SupplementReply parent;
 
+    @OneToMany(mappedBy = "parent")
+    @Builder.Default
+    private List<SupplementReply> child = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUPPLEMENT_ID")
     private Supplement supplement;
 
+
+    public void changeContent(String content){
+        this.content = content;
+    }
+
+    public void changeTrueDeleteFlag(){
+        this.deleteFlag = true;
+    }
+
+    public void addParents(SupplementReply parent){
+        this.parent = parent;
+        if(!parent.getChild().contains(this)){
+            parent.getChild().add(this);
+        }
+    }
+
+    public void removeChild(SupplementReply supplementReply) {
+        child.remove(supplementReply);
+    }
 }
