@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class SupplementCategoryService {
     private final SupplementCategoryRepository categoryRepository;
 
-    public void createAndUpdateCategories(List<SupplementCategoryDto> categoryDtoList) {
-        createCategories(categoryDtoList.stream().filter(c -> c.getId() > 0).collect(Collectors.toList()));
-        updateCategories(categoryDtoList.stream().filter(c -> c.getId() <= 0).collect(Collectors.toList()));
-    }
+//    public void createAndUpdateCategories(List<SupplementCategoryDto> categoryDtoList) {
+//        createCategories(categoryDtoList.stream().filter(c -> c.getId() == null).collect(Collectors.toList()));
+//        updateCategories(categoryDtoList.stream().filter(c -> c.getId() != null).collect(Collectors.toList()));
+//    }
 
     public List<SupplementCategory> createCategories(List<SupplementCategoryDto> categoryDtoList) {
         return categoryDtoList.stream().map(c -> createCategory(c)).collect(Collectors.toList());
@@ -41,14 +41,18 @@ public class SupplementCategoryService {
         SupplementCategory findCategory = getCategory(categoryDto.getId());
         SupplementCategory findParentCategory = getCategory(categoryDto.getParentCategory().getId());
 
-        findCategory.rename(categoryDto.getName());
-        findCategory.moveToAnotherParent(
+        findCategory.changeParent(
                 SupplementCategory.toEntity(
                         findParentCategory.getId(),
                         findParentCategory.getName(),
                         findParentCategory.getLevel()));
 
+        findCategory.rename(categoryDto.getName());
         return findCategory;
+    }
+
+    public void deleteCategories(List<SupplementCategoryDto> categoryDtoList) {
+        categoryDtoList.forEach(c -> categoryRepository.deleteById(c.getId()));
     }
 
     @Transactional(readOnly = true)
@@ -60,6 +64,5 @@ public class SupplementCategoryService {
     public List<SupplementCategory> getCategoryList() {
         return categoryRepository.findAll();
     }
-
 
 }

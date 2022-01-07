@@ -18,10 +18,14 @@ import static mandykr.nutrient.util.ApiUtils.*;
 public class SupplementCategoryController {
     private final SupplementCategoryService categoryService;
 
-    @PostMapping("/categories")
-    public ApiResult<List<SupplementCategoryDto>> createAndUpdateCategories(@RequestBody List<SupplementCategoryRequest> categoryRequestList) {
-        categoryService.createAndUpdateCategories(toCategoryDtoList(categoryRequestList));
+    /*
+    create, update, delete
+    axios multiple request 사용
+     */
 
+    @PostMapping("/categories")
+    public ApiResult<List<SupplementCategoryDto>> createCategories(@RequestBody List<SupplementCategoryRequest> categoryRequestList) {
+        categoryService.createCategories(toCategoryDtoList(categoryRequestList));
         return getCategoryDtoList();
     }
 
@@ -40,6 +44,12 @@ public class SupplementCategoryController {
     @PutMapping("/categories")
     public ApiResult<List<SupplementCategoryDto>> updateCategories(@RequestBody List<SupplementCategoryRequest> categoryRequestList) {
         categoryService.updateCategories(toCategoryDtoList(categoryRequestList));
+        return getCategoryDtoList();
+    }
+
+    @DeleteMapping("/categories")
+    public ApiResult<List<SupplementCategoryDto>> deleteCategories(@RequestBody List<SupplementCategoryRequest> categoryRequestList) {
+        categoryService.deleteCategories(toCategoryDtoList(categoryRequestList));
         return getCategoryDtoList();
     }
 

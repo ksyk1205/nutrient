@@ -16,24 +16,13 @@ class SupplementCategoryRepositoryTest {
     @Autowired
     SupplementCategoryRepository categoryRepository;
 
-    SupplementCategory parentCategory;
-    SupplementCategory category;
-
-    @BeforeEach
-    void setup() {
-        parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").level(0).build();
-        category = SupplementCategory.builder().name("오메가3").level(1).parentCategory(parentCategory).build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        categoryRepository.deleteAll();
-    }
-
     @Test
     @DisplayName("카테고리를 저장한다.")
     void save_category() {
         // given
+        SupplementCategory parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").level(0).build();
+        SupplementCategory category = SupplementCategory.builder().name("오메가3").level(1).parentCategory(parentCategory).build();
+
         // when
         SupplementCategory saveParentCategory = categoryRepository.save(parentCategory);
         SupplementCategory saveCategory = categoryRepository.save(category);
@@ -49,6 +38,8 @@ class SupplementCategoryRepositoryTest {
     @DisplayName("카테고리 목록을 조회한다.")
     void find_categoryList() {
         // given
+        SupplementCategory parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").level(0).build();
+        SupplementCategory category = SupplementCategory.builder().name("오메가3").level(1).parentCategory(parentCategory).build();
         SupplementCategory saveParentCategory = categoryRepository.save(parentCategory);
         SupplementCategory saveCategory = categoryRepository.save(category);
 
@@ -60,44 +51,41 @@ class SupplementCategoryRepositoryTest {
     }
 
     @Test
-    @DisplayName("카테고리의 레벨을 변경한다.")
-    void update_level_category() {
-        // given
-        categoryRepository.save(parentCategory);
-        SupplementCategory saveCategory = categoryRepository.save(category);
-
-        // when
-        category.changeLevel(1);
-
-        // then
-        assertThatThrownBy(() -> {
-            category.changeLevel(-1);
-        }).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("변경할 레벨은 0 이상의 정수이어야 합니다.");
-        assertEquals(category.getLevel(), saveCategory.getLevel());
-    }
-
-    @Test
-    @DisplayName("카테고리의 부모 카테고리를 변경한다.")
+    @DisplayName("카테고리의 부모를 변경하면 하위 카테고리의 레벨이 변경된다.")
     void update_parent_category() {
         // given
-        categoryRepository.save(parentCategory);
-        SupplementCategory saveCategory = categoryRepository.save(category);
-        SupplementCategory newParentCategory = SupplementCategory.builder().name("오메가369").level(1).build();
-        categoryRepository.save(newParentCategory);
+        SupplementCategory category1 = SupplementCategory.builder().name("category1").level(1).build();
+        SupplementCategory category1_1 = SupplementCategory.builder().name("category1_1").level(2).parentCategory(category1).build();
+        SupplementCategory category1_2 = SupplementCategory.builder().name("category1_2").level(2).parentCategory(category1).build();
+        SupplementCategory category1_1_1 = SupplementCategory.builder().name("category1_1_1").level(3).parentCategory(category1_1).build();
+        SupplementCategory category1_1_2 = SupplementCategory.builder().name("category1_1_2").level(3).parentCategory(category1_1).build();
+        SupplementCategory category1_1_1_1 = SupplementCategory.builder().name("category1_1_1_1").level(4).parentCategory(category1_1_1).build();
+        SupplementCategory category1_1_1_2 = SupplementCategory.builder().name("category1_1_1_2").level(4).parentCategory(category1_1_1).build();
+        SupplementCategory category2 = SupplementCategory.builder().name("category2").level(0).build();
+
+        categoryRepository.save(category1);
+        categoryRepository.save(category1_1);
+        categoryRepository.save(category1_2);
+        categoryRepository.save(category1_1_1);
+        categoryRepository.save(category1_1_2);
+        categoryRepository.save(category1_1_1_1);
+        categoryRepository.save(category1_1_1_2);
+        categoryRepository.save(category2);
 
         // when
-        category.moveToAnotherParent(newParentCategory);
+        SupplementCategory findCategory = categoryRepository.findById(category1_1.getId()).get();
+        findCategory.changeParent(category2);
 
         // then
-        assertEquals(newParentCategory, saveCategory.getParentCategory());
-        assertEquals(saveCategory.getLevel(), newParentCategory.getLevel() + 1);
+        findCategory.getChildCategories().forEach(c -> assertEquals(c.getLevel(), c.getParentCategory().getLevel() -1));
     }
 
     @Test
     @DisplayName("카테고리를 삭제한다.")
     void delete_category() {
         // given
+        SupplementCategory parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").level(0).build();
+        SupplementCategory category = SupplementCategory.builder().name("오메가3").level(1).parentCategory(parentCategory).build();
         SupplementCategory saveCategory = categoryRepository.save(category);
 
         // when

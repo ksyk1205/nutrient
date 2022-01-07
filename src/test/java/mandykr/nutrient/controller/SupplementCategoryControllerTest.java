@@ -105,13 +105,13 @@ class SupplementCategoryControllerTest {
     }
 
     @Test
-    void 카테고리_리스트를_저장하거나_수정한다() throws Exception {
+    void 카테고리_리스트를_저장한다() throws Exception {
         // given
         List<SupplementCategoryDto> categoryDtoList = new ArrayList<>();
         categoryDtoList.add(
                 SupplementCategoryDto.toCategoryDto(1L, "카테고리1", 1, 2L));
         categoryDtoList.add(
-                SupplementCategoryDto.toCategoryDto(0L, "카테고리2", 1, 1L));
+                SupplementCategoryDto.toCategoryDto(3L, "카테고리2", 1, 4L));
 
         List<SupplementCategory> categoryList = new ArrayList<>();
         categoryList.add(
@@ -130,7 +130,7 @@ class SupplementCategoryControllerTest {
                         .content(new ObjectMapper().writeValueAsString(categoryDtoList)));
 
         // then
-        then(categoryService).should(times(1)).createAndUpdateCategories(any(List.class));
+        then(categoryService).should(times(1)).createCategories(any(List.class));
         perform
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.[0].id", is(1)))

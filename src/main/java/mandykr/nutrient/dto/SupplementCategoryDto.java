@@ -34,6 +34,10 @@ public class SupplementCategoryDto {
         return categoryDto;
     }
 
+    public void setParentCategoryById(Long parentId) {
+        setParentCategory(new SupplementParentCategoryDto(parentId));
+    }
+
     @Data
     @AllArgsConstructor
     public static class SupplementParentCategoryDto {
