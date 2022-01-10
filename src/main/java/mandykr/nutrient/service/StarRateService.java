@@ -71,7 +71,7 @@ public class StarRateService {
      * @return
      */
     @Transactional(readOnly = true)
-    public StarRateDto getMemberStarRate(Long supplementId, Member member){
+    public StarRateDto getStarRateWithMember(Long supplementId, Member member){
         //영양제 조회
         Supplement supplement = getSupplement(supplementId);
 
