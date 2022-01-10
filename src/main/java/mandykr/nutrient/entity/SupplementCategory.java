@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SupplementCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "CATEGORY_ID")
     private Long id;
 
     @NotEmpty
@@ -26,7 +26,7 @@ public class SupplementCategory {
     private int level;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_category_id")
+    @JoinColumn(name = "PARENT_CATEGORY_ID")
     private SupplementCategory parentCategory;
 
     @OneToMany(mappedBy = "parentCategory")
