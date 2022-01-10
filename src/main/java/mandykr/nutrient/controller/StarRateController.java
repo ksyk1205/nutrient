@@ -6,9 +6,7 @@ import mandykr.nutrient.dto.request.StarRateRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.StarRateService;
-import mandykr.nutrient.util.ApiUtils;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -56,12 +54,12 @@ public class StarRateController {
      * @return
      */
     @GetMapping("/{supplementId}")
-    public ApiResult<StarRateDto> getMemberStarRate(
+    public ApiResult<StarRateDto> getStarRateWithMember(
             @PathVariable Long supplementId
             //, Member member
             ){
 
-        return success(starRateService.getMemberStarRate(supplementId, getMember()));
+        return success(starRateService.getStarRateWithMember(supplementId, getMember()));
     }
 
     //임의의 member 값

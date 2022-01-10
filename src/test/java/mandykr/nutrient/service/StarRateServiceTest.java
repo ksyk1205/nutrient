@@ -82,6 +82,7 @@ class StarRateServiceTest {
     }
 
     @Test
+    @DisplayName("별점 수정을 위하여 별점 조회 했을때 빈 객체가 반환되는지 확인한다.")
     public void 별점_조회(){
         Supplement supplement = new Supplement();
         supplement.setRanking(0.0);
@@ -93,7 +94,7 @@ class StarRateServiceTest {
         member.setName("name1");
         Member member1 = memberRepository.save(member);
 
-        assertThat(starRateService.getMemberStarRate(supplement1.getId(),member1).getId()).isNull();
+        assertThat(starRateService.getStarRateWithMember(supplement1.getId(),member1).getId()).isNull();
     }
 
     @Test
