@@ -41,4 +41,12 @@ public class StarRate {
         this.member = member;
     }
 
+    //별점 수정을 위한 메서드
+    public void updateStarRate(Long id,int starNumber){
+        if(id!=null) {
+            this.id = id;
+        }
+        this.starNumber = starNumber;
+    }
+
 }
