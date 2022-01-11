@@ -38,6 +38,7 @@ public class CombinationReply extends BaseTimeEntity {
     private CombinationReply parent;
 
     @OneToMany(mappedBy = "parent")
+    @Builder.Default
     private List<CombinationReply> childList = new ArrayList<>();
 
     public CombinationReply(Long id) {
@@ -66,20 +67,19 @@ public class CombinationReply extends BaseTimeEntity {
     }
 
     public boolean isPossiobleToDeletePhysical() {
-        return parent.deleteFlag
-                && !existChildren()
-                && wereChildrenDeleted()
-                && wereBrothersDeleted();
-    }
-
-    private boolean wereBrothersDeleted() {
-        return parent.childList.stream()
-                .filter(r -> r.id != this.id)
-                .allMatch(r -> r.deleteFlag);
+        return !existChildren()
+                || wereChildrenDeleted();
     }
 
     public boolean wereChildrenDeleted() {
         return childList.stream()
                 .allMatch(r -> r.deleteFlag);
+    }
+
+    public void addChild(CombinationReply child1_1) {
+        if (!childList.contains(child1_1)) {
+            childList.add(child1_1);
+        }
+        child1_1.parent = this;
     }
 }
