@@ -12,8 +12,6 @@ import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Objects;
 
 import static mandykr.nutrient.util.ApiUtils.success;
 
@@ -21,7 +19,9 @@ import static mandykr.nutrient.util.ApiUtils.success;
 @RequestMapping("/combine-star-rate")
 @RequiredArgsConstructor
 public class CombineStarRateController {
+
     private final CombinationStarRateService combinationStarRateService;
+
     private final MemberRepository memberRepository;
 
 

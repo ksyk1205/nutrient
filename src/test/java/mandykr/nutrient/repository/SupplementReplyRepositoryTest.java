@@ -146,15 +146,31 @@ class SupplementReplyRepositoryTest {
         child21.addParents(saveParent2);
         SupplementReply saveChild21 = supplementReplyRepository.save(child21);
 
-        List<SupplementReply> supplementReplies1 = supplementReplyRepository.findBySupplement(saveSupplement1, by(ASC, "groups", "groupOrder"));
-
+        List<SupplementReply> supplementReplies1 = supplementReplyRepository.findBySupplementAndParentIsNull(saveSupplement1, by(ASC, "groups", "groupOrder"));
         //then
-        assertThat(supplementReplies1.size()).isEqualTo(5);
+        assertThat(supplementReplies1.size()).isEqualTo(2);
         assertThat(supplementReplies1.get(0).getContent()).isEqualTo("reply1");
-        assertThat(supplementReplies1.get(1).getContent()).isEqualTo("reply1-1");
-        assertThat(supplementReplies1.get(2).getContent()).isEqualTo("reply1-2");
-        assertThat(supplementReplies1.get(3).getContent()).isEqualTo("reply2");
-        assertThat(supplementReplies1.get(4).getContent()).isEqualTo("reply2-1");
+        assertThat(supplementReplies1.get(1).getContent()).isEqualTo("reply2");
+    }
+
+    @Test
+    public void 대댓글조회() throws Exception{
+        //given
+        //when
+        SupplementReply saveParent1 = supplementReplyRepository.save(parent1);
+        child11.addParents(saveParent1);
+        SupplementReply saveChild11 = supplementReplyRepository.save(child11);
+        child12.addParents(saveParent1);
+        SupplementReply saveChild12 = supplementReplyRepository.save(child12);
+        SupplementReply saveParent2 = supplementReplyRepository.save(parent2);
+        child21.addParents(saveParent2);
+        SupplementReply saveChild21 = supplementReplyRepository.save(child21);
+
+        List<SupplementReply> supplementReplies1 = supplementReplyRepository.findBySupplementAndParent(saveSupplement1, saveParent1, by(ASC, "groups", "groupOrder"));
+        //then
+        assertThat(supplementReplies1.size()).isEqualTo(2);
+        assertThat(supplementReplies1.get(0).getContent()).isEqualTo("reply1-1");
+        assertThat(supplementReplies1.get(1).getContent()).isEqualTo("reply1-2");
 
     }
 

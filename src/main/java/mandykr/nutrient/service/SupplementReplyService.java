@@ -2,6 +2,7 @@ package mandykr.nutrient.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mandykr.nutrient.dto.SupplementReplyDto;
 import mandykr.nutrient.dto.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.by;
@@ -32,7 +35,7 @@ public class SupplementReplyService {
     private final SupplementRepository supplementRepository;
 
     @Transactional
-    public Optional<SupplementReply> createSupplementReply(Long supplementId, Member member, SupplementReplyRequest request){
+    public SupplementReplyDto createSupplementReply(Long supplementId, Member member, SupplementReplyDto supplementReplyDto){
         //첫 댓글
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
@@ -42,7 +45,7 @@ public class SupplementReplyService {
         return Optional.ofNullable(
                 supplementReplyRepository.save(
                     SupplementReply.builder()
-                    .content(request.getContent())
+                    .content(supplementReplyDto.getContent())
                     .groups(groups)
                     .groupOrder(1L)
                     .member(member)
@@ -51,11 +54,12 @@ public class SupplementReplyService {
                     .supplement(supplement)
                     .build()
                 )
-        );
+            ).map(SupplementReplyDto::new)
+            .get();
     }
 
     @Transactional
-    public Optional<SupplementReply> createSupplementReply(Long supplementId, Long supplementReplyId, Member member, SupplementReplyRequest request) {
+    public SupplementReplyDto createSupplementReply(Long supplementId, Long supplementReplyId, Member member, SupplementReplyDto supplementReplyDto) {
         //대댓글
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
@@ -66,35 +70,44 @@ public class SupplementReplyService {
         if(groupOrder == null)
             groupOrder = 1L;
         SupplementReply saveSupplementReply = supplementReplyRepository.save(SupplementReply.builder()
-                                                .content(request.getContent())
+                                                .content(supplementReplyDto.getContent())
                                                 .groups(supplementReply.getGroups())
                                                 .groupOrder(groupOrder+1)
                                                 .deleteFlag(false)
                                                 .supplement(supplement)
                                                 .build());
         saveSupplementReply.addParents(supplementReply);
-        return Optional.ofNullable(saveSupplementReply);
+        return Optional.ofNullable(saveSupplementReply).map(SupplementReplyDto::new).get();
     }
 
-    public List<SupplementReply> getSupplementReplyBySupplement(Long supplementId){
-        return supplementReplyRepository.findBySupplement(supplementRepository.findById(supplementId)
-                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId)), by(ASC, "groups", "groupOrder"));
+    public List<SupplementReplyDto> getSupplementReplyBySupplement(Long supplementId){
+        return supplementReplyRepository.findBySupplementAndParentIsNull(supplementRepository.findById(supplementId)
+                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId)), by(ASC, "groups", "groupOrder"))
+                .stream()
+                .map(SupplementReplyDto::new)
+                .collect(Collectors.toList());
     }
 
     public SupplementReply getSupplementReply(Long supplementReplyId){
         return supplementReplyRepository.findById(supplementReplyId)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
     }
-    public List<SupplementReply> getSupplementReplyList(){
-        return supplementReplyRepository.findAll(by(ASC, "groups", "groupOrder"));
+    public List<SupplementReplyDto> getSupplementReplyBySupplementWithParent(Long supplementId, Long supplementReplyId){
+        return supplementReplyRepository.findBySupplementAndParent(supplementRepository.findById(supplementId)
+                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId))
+                        , getSupplementReply(supplementReplyId)
+                        , by(ASC, "groups", "groupOrder"))
+                .stream()
+                .map(SupplementReplyDto::new)
+                .collect(Collectors.toList());
     }
 
-    public Optional<SupplementReply> updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyRequest request){
+    public SupplementReplyDto updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyDto supplementReplyDto){
         //변경감지
         SupplementReply findSupplementReply = supplementReplyRepository.findByIdAndMember(supplementReplyId, member)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
-        findSupplementReply.changeContent(request.getContent());
-        return Optional.ofNullable(findSupplementReply);
+        findSupplementReply.changeContent(supplementReplyDto.getContent());
+        return Optional.ofNullable(findSupplementReply).map(SupplementReplyDto::new).get();
     }
     @Transactional
     public void deleteSupplementReply(Long supplementReplyId, Member member){
@@ -121,4 +134,5 @@ public class SupplementReplyService {
         }
 
     }
+
 }

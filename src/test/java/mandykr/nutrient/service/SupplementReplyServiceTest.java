@@ -1,7 +1,6 @@
 package mandykr.nutrient.service;
 
 import mandykr.nutrient.dto.SupplementReplyDto;
-import mandykr.nutrient.dto.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.entity.SupplementReply;
@@ -9,14 +8,10 @@ import mandykr.nutrient.repository.SupplementReplyRepository;
 import mandykr.nutrient.repository.SupplementRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
@@ -27,7 +22,7 @@ class SupplementReplyServiceTest {
 
     SupplementReplyRepository supplementReplyRepository = mock(SupplementReplyRepository.class);
 
-    SupplementRepository supplementRepository = mock(SupplementRepository.class);;
+    SupplementRepository supplementRepository =  mock(SupplementRepository.class);
 
     SupplementReplyService supplementReplyService = new SupplementReplyService(supplementReplyRepository,supplementRepository);
 
@@ -61,13 +56,9 @@ class SupplementReplyServiceTest {
          */
         //given
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
-
-        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
-        supplementReplyRequest1.setContent("testReply1");
-        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
-        supplementReplyRequest2.setContent("testReply2");
-        SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
-        supplementReplyRequest3.setContent("testReply3");
+        SupplementReplyDto supplementReplyDto1 = SupplementReplyDto.toSupplementReplyDto("testReply1");
+        SupplementReplyDto supplementReplyDto2 = SupplementReplyDto.toSupplementReplyDto("testReply2");
+        SupplementReplyDto supplementReplyDto3 = SupplementReplyDto.toSupplementReplyDto("testReply3");
 
         when(supplementReplyRepository.findByLastOrderWithParent(saveSupplement.getId()))
                 .thenReturn(1L) //처음 호출
@@ -75,14 +66,14 @@ class SupplementReplyServiceTest {
                 .thenReturn(3L);
 
         when(supplementReplyRepository.save(isA(SupplementReply.class)))
-                .thenReturn(SupplementReply.builder().groups(1L).content(supplementReplyRequest1.getContent()).build())
-                .thenReturn(SupplementReply.builder().groups(2L).content(supplementReplyRequest2.getContent()).build())
-                .thenReturn(SupplementReply.builder().groups(3L).content(supplementReplyRequest3.getContent()).build());
+                .thenReturn(SupplementReply.builder().groups(1L).content(supplementReplyDto1.getContent()).build())
+                .thenReturn(SupplementReply.builder().groups(2L).content(supplementReplyDto2.getContent()).build())
+                .thenReturn(SupplementReply.builder().groups(3L).content(supplementReplyDto3.getContent()).build());
 
         //when
-        SupplementReply supplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest1).get();
-        SupplementReply supplementReply2 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest2).get();
-        SupplementReply supplementReply3 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest3).get();
+        SupplementReplyDto saveSupplementReplyDto1 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto1);
+        SupplementReplyDto saveSupplementReplyDto2 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto2);
+        SupplementReplyDto saveSupplementReplyDto3 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto3);
 
         //then
         then(supplementRepository).should(times(3)).findById(saveSupplement.getId());
@@ -99,19 +90,17 @@ class SupplementReplyServiceTest {
          *              댓글3
          */
         //given
-        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
-        supplementReplyRequest1.setContent("testReply1");
-        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
-        supplementReplyRequest2.setContent("testReply1-1");
-        SupplementReplyRequest supplementReplyRequest3 = new SupplementReplyRequest();
-        supplementReplyRequest3.setContent("testReply1-2");
+        SupplementReplyDto supplementReplyDto1 = SupplementReplyDto.toSupplementReplyDto("testReply1");
+        SupplementReplyDto supplementReplyDto2 = SupplementReplyDto.toSupplementReplyDto("testReply1-1");
+        SupplementReplyDto supplementReplyDto3 = SupplementReplyDto.toSupplementReplyDto("testReply1-2");
+
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
 
 
         //when
         SupplementReply insertSupplement = SupplementReply.builder()
                 .id(1L)
-                .content(supplementReplyRequest1.getContent())
+                .content(supplementReplyDto1.getContent())
                 .groups(1L)
                 .groupOrder(1L)
                 .deleteFlag(false)
@@ -125,17 +114,15 @@ class SupplementReplyServiceTest {
         when(supplementReplyRepository.findByLastOrderWithChild(saveSupplement.getId(),insertSupplement.getId())).thenReturn(2L).thenReturn(3L);
 
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest1).get();
-        supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReply1.getId(), member, supplementReplyRequest2);
-        supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReply1.getId(), member, supplementReplyRequest3);
+        SupplementReplyDto saveSupplementReplyDto = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto1);
+        supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReplyDto.getId(), member, supplementReplyDto2);
+        supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReplyDto.getId(), member, supplementReplyDto3);
 
         //then
         then(supplementRepository).should(times(3)).findById(saveSupplement.getId());
         then(supplementReplyRepository).should(times(3)).save(isA(SupplementReply.class));
         then(supplementReplyRepository).should(times(1)).findByLastOrderWithParent(saveSupplement.getId());
-        then(supplementReplyRepository).should(times(2)).findByLastOrderWithChild(saveSupplement.getId(),saveSupplementReply1.getId());
-
-
+        then(supplementReplyRepository).should(times(2)).findByLastOrderWithChild(saveSupplement.getId(),saveSupplementReplyDto.getId());
     }
 
 
@@ -147,12 +134,12 @@ class SupplementReplyServiceTest {
          */
         //given
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
-        SupplementReplyRequest supplementReplyRequest = new SupplementReplyRequest();
-        supplementReplyRequest.setContent("testReply1");
+        SupplementReplyDto supplementReplyDto = SupplementReplyDto.toSupplementReplyDto("testReply1");
+
 
         SupplementReply insertSupplement = SupplementReply.builder()
                 .id(1L)
-                .content(supplementReplyRequest.getContent())
+                .content(supplementReplyDto.getContent())
                 .groups(1L)
                 .groupOrder(1L)
                 .member(member)
@@ -164,12 +151,12 @@ class SupplementReplyServiceTest {
         when(supplementReplyRepository.findByLastOrderWithParent(saveSupplement.getId())).thenReturn(1L);
         when(supplementReplyRepository.findByIdAndMember(anyLong(), isA(Member.class))).thenReturn(Optional.ofNullable(insertSupplement));
         //when
-        SupplementReply saveSupplementReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest).get();
+        SupplementReplyDto saveSupplementReplyDto = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto);
         //when
-        supplementReplyRequest.setContent("test1(수정)");
-        SupplementReply supplementReply = supplementReplyService.updateSupplementReply(saveSupplementReply.getId(), member, supplementReplyRequest).get();
+        supplementReplyDto.setContent("test1(수정)");
+        SupplementReplyDto updateSupplementReplyDto = supplementReplyService.updateSupplementReply(saveSupplementReplyDto.getId(), member, supplementReplyDto);
         //then
-        Assertions.assertEquals(supplementReplyRequest.getContent(),supplementReply.getContent());
+        Assertions.assertEquals(supplementReplyDto.getContent(),updateSupplementReplyDto.getContent());
         then(supplementRepository).should(times(1)).findById(saveSupplement.getId());
         then(supplementReplyRepository).should(times(1)).save(isA(SupplementReply.class));
         then(supplementReplyRepository).should(times(1)).findByLastOrderWithParent(saveSupplement.getId());
@@ -190,8 +177,6 @@ class SupplementReplyServiceTest {
         //given
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
 
-        SupplementReplyRequest supplementReplyRequest = new SupplementReplyRequest();
-        supplementReplyRequest.setContent("testReply1");
         SupplementReply insertData = SupplementReply.builder()
                                     .id(1L)
                                     .deleteFlag(false)
@@ -223,10 +208,8 @@ class SupplementReplyServiceTest {
          *              댓글2
          */
         //given
-        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
-        supplementReplyRequest1.setContent("testReply1");
-        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
-        supplementReplyRequest2.setContent("testReply1-1");
+        SupplementReplyDto supplementReplyDto1 = SupplementReplyDto.toSupplementReplyDto("testReply1");
+        SupplementReplyDto supplementReplyDto2 = SupplementReplyDto.toSupplementReplyDto("testReply1-1");
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
 
         //when
@@ -252,14 +235,14 @@ class SupplementReplyServiceTest {
         given(supplementReplyRepository.findByIdAndMember(insertSupplement2.getId(),member)).willReturn(Optional.ofNullable(insertSupplement2));
 
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest1).get();
-        SupplementReply supplementReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReply1.getId(), member,supplementReplyRequest2).get();
+        SupplementReplyDto parentReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto1);
+        SupplementReplyDto childReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), parentReply.getId(), member,supplementReplyDto2);
 
         //when
-        supplementReplyService.deleteSupplementReply(supplementReply.getId(), member);
+        supplementReplyService.deleteSupplementReply(childReply.getId(), member);
 
         //then
-        then(supplementReplyRepository).should( times(1)).deleteById(supplementReply.getId());
+        then(supplementReplyRepository).should( times(1)).deleteById(childReply.getId());
     }
 
     /**
@@ -276,10 +259,8 @@ class SupplementReplyServiceTest {
          *              댓글2
          */
         //given
-        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
-        supplementReplyRequest1.setContent("testReply1");
-        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
-        supplementReplyRequest2.setContent("testReply1-1");
+        SupplementReplyDto supplementReplyDto1 = SupplementReplyDto.toSupplementReplyDto("testReply1");
+        SupplementReplyDto supplementReplyDto2 = SupplementReplyDto.toSupplementReplyDto("testReply1-1");
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
 
         //when
@@ -305,15 +286,15 @@ class SupplementReplyServiceTest {
         when(supplementReplyRepository.findByLastOrderWithChild(saveSupplement.getId(),insertSupplement1.getId())).thenReturn(2L);
 
         //when
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member,supplementReplyRequest1).get();
-        supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReply1.getId(), member, supplementReplyRequest2).get();
+        SupplementReplyDto parentReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), member,supplementReplyDto1);
+        supplementReplyService.createSupplementReply(saveSupplement.getId(), parentReply.getId(), member, supplementReplyDto2);
 
         //when
-        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId(), member);
+        supplementReplyService.deleteSupplementReply(parentReply.getId(), member);
 
         //then
-        then(supplementReplyRepository).should( times(0)).deleteById(saveSupplementReply1.getId());
-        Assertions.assertTrue(saveSupplementReply1.getDeleteFlag());
+        then(supplementReplyRepository).should( times(0)).deleteById(parentReply.getId());
+        Assertions.assertTrue(insertSupplement1.getDeleteFlag());
     }
 
     /**
@@ -332,10 +313,8 @@ class SupplementReplyServiceTest {
          */
         //given
         given(supplementRepository.findById(saveSupplement.getId())).willReturn(Optional.ofNullable(saveSupplement));
-        SupplementReplyRequest supplementReplyRequest1 = new SupplementReplyRequest();
-        supplementReplyRequest1.setContent("testReply1");
-        SupplementReplyRequest supplementReplyRequest2 = new SupplementReplyRequest();
-        supplementReplyRequest2.setContent("testReply1-1");
+        SupplementReplyDto supplementReplyDto1 = SupplementReplyDto.toSupplementReplyDto("testReply1");
+        SupplementReplyDto supplementReplyDto2 = SupplementReplyDto.toSupplementReplyDto("testReply1-1");
 
         //when
         SupplementReply insertSupplement1 = SupplementReply.builder()
@@ -359,13 +338,13 @@ class SupplementReplyServiceTest {
         given(supplementReplyRepository.findByIdAndMember(insertSupplement2.getId(),member)).willReturn(Optional.ofNullable(insertSupplement2));
         when(supplementReplyRepository.findByLastOrderWithChild(saveSupplement.getId(),insertSupplement1.getId())).thenReturn(2L);
 
-        SupplementReply saveSupplementReply1 = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyRequest1).get();
-        SupplementReply saveSupplementReply2 = supplementReplyService.createSupplementReply(saveSupplement.getId(), saveSupplementReply1.getId(), member, supplementReplyRequest2).get();
+        SupplementReplyDto parentReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), member, supplementReplyDto1);
+        SupplementReplyDto childReply = supplementReplyService.createSupplementReply(saveSupplement.getId(), parentReply.getId(), member, supplementReplyDto2);
 
         //when
-        supplementReplyService.deleteSupplementReply(saveSupplementReply1.getId(), member);
-        Assertions.assertTrue(saveSupplementReply1.getDeleteFlag());
-        supplementReplyService.deleteSupplementReply(saveSupplementReply2.getId(), member);
+        supplementReplyService.deleteSupplementReply(parentReply.getId(), member);
+        Assertions.assertTrue(insertSupplement1.getDeleteFlag());
+        supplementReplyService.deleteSupplementReply(childReply.getId(), member);
 
         //then
         then(supplementReplyRepository).should(times(2)).deleteById(anyLong());

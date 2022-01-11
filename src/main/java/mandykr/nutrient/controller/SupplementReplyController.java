@@ -6,12 +6,10 @@ import mandykr.nutrient.dto.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.SupplementReplyService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static mandykr.nutrient.util.ApiUtils.ApiResult;
 import static mandykr.nutrient.util.ApiUtils.success;
@@ -22,91 +20,84 @@ import static mandykr.nutrient.util.ApiUtils.success;
 public class SupplementReplyController {
     private final SupplementReplyService supplementReplyService;
     private final MemberRepository memberRepository;
+
     /**
      * 해당 영양제ID 의 모든 댓글 보기
+     * Depth가 1인거만 보기
+     * @param supplementId
+     * @return
      */
     @GetMapping("{supplementId}")
     public ApiResult<List<SupplementReplyDto>> getSupplementReplyBySupplement(@PathVariable Long supplementId){
-        return success(
-                supplementReplyService
-                        .getSupplementReplyBySupplement(supplementId)
-                        .stream()
-                        .map(SupplementReplyDto::new)
-                        .collect(Collectors.toList())
-        );
+        return success(supplementReplyService.getSupplementReplyBySupplement(supplementId));
     }
-    
+
     /**
-     * 모든 댓글 보기
+     * 해당 영양제 ID 댓글의 대댓글 보기
+     * Depth가 2인거만 보기
+     * @return
      */
-    @GetMapping("")
-    public ApiResult<List<SupplementReplyDto>> getSupplementReplyList(){
-        return success(supplementReplyService
-                .getSupplementReplyList()
-                .stream()
-                .map(SupplementReplyDto::new)
-                .collect(Collectors.toList())
-        );
+    @GetMapping("{supplementId}/{parentId}")
+    public ApiResult<List<SupplementReplyDto>> getSupplementReplyList(
+            @PathVariable Long supplementId,
+            @PathVariable Long parentId ){
+        return success(supplementReplyService.getSupplementReplyBySupplementWithParent(supplementId, parentId));
     }
-    
+
     /**
-     * 처음 댓글 달기
+     * 댓글 달기
+     * @param supplementId
+     * @param request
+     * @return
      */
     @PostMapping("{supplementId}")
     public ApiResult<SupplementReplyDto> createSupplementReply(
             @PathVariable("supplementId") Long supplementId
             ,@RequestBody @Valid SupplementReplyRequest request){
-        return success(supplementReplyService
-                .createSupplementReply(supplementId, getMember(), request)
-                .map(SupplementReplyDto::new)
-                .get()
-        );
+        return success(supplementReplyService.createSupplementReply(supplementId, getMember(), SupplementReplyDto.toSupplementReplyDto(request.getContent())));
     }
+
+
     /**
      * 대댓글 달기
-     */
-    /**
-     *
      * @param supplementId
      * @param replyId
-     * @param supplementReplyRequest
+     * @param request
      * @return
      */
     @PostMapping("{supplementId}/{replyId}")
     public ApiResult<SupplementReplyDto> createSupplementReplyByReply(
             @PathVariable("supplementId") Long supplementId,
             @PathVariable("replyId") Long replyId,
-            @RequestBody @Valid SupplementReplyRequest supplementReplyRequest){
-        return success(supplementReplyService
-                .createSupplementReply(supplementId, replyId, getMember(), supplementReplyRequest)
-                .map(SupplementReplyDto::new)
-                .get()
-        );
+            @RequestBody @Valid SupplementReplyRequest request){
+        return success(supplementReplyService.createSupplementReply(supplementId, replyId, getMember(), SupplementReplyDto.toSupplementReplyDto(request.getContent())));
     }
+
+
     /**
-     *
+     * 댓글 수정
      * @param replyId
-     * @param supplementReplyRequest
+     * @param request
      * @return
-     *         댓글 수정
      */
     @PutMapping("{replyId}")
-    public ApiResult<SupplementReplyDto> updSupplementReply(
+    public ApiResult<SupplementReplyDto> updateSupplementReply(
             @PathVariable Long replyId,
-            @Valid SupplementReplyRequest supplementReplyRequest){
-        return success(supplementReplyService
-                .updateSupplementReply(replyId, getMember(), supplementReplyRequest)
-                .map(SupplementReplyDto::new)
-                .get()
-        );
+            @RequestBody @Valid SupplementReplyRequest request){
+        return success(supplementReplyService.updateSupplementReply(replyId, getMember(), SupplementReplyDto.toSupplementReplyDto(request.getContent())));
     }
+
     /**
-     * 대댓글 삭제
+     * 댓글, 대댓글 삭제
+     * @param replyId
      */
-    @DeleteMapping("{id}")
-    public void deleteSupplementReply(@PathVariable Long supplementId){
-        supplementReplyService.deleteSupplementReply(supplementId, getMember());
+    @DeleteMapping("{replyId}")
+    public ApiResult<Boolean> deleteSupplementReply(@PathVariable Long replyId){
+        supplementReplyService.deleteSupplementReply(replyId, getMember());
+        return success(true);
     }
+
+    
     //임의의 member 값
     private Member getMember() {
         Member member = memberRepository.findById("testMemberId1").get();

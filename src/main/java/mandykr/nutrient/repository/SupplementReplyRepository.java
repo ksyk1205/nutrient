@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface SupplementReplyRepository extends JpaRepository<SupplementReply,Long> {
-    List<SupplementReply> findBySupplement(Supplement supplement, Sort sort);
+    List<SupplementReply> findBySupplementAndParentIsNull(Supplement supplement, Sort sort);
 
     @Query("select MAX(s.groups) from SupplementReply s left join s.parent where s.parent is null and s.supplement.id = :supplementId")
     Long findByLastOrderWithParent(@Param("supplementId") Long supplementId);
@@ -23,4 +23,6 @@ public interface SupplementReplyRepository extends JpaRepository<SupplementReply
     Long findByLastOrderWithChild(@Param("supplementId") Long supplementId , @Param("supplementReplyId") Long supplementReplyId);
 
     Optional<SupplementReply> findByIdAndMember(@Param("supplementId") Long supplementReplyId, @Param("memberId") Member member);
+
+    List<SupplementReply> findBySupplementAndParent(Supplement supplement, SupplementReply supplementReply, Sort sort);
 }
