@@ -25,9 +25,10 @@ public class CombinationReplyService {
         return replyPageResult.map(CombinationReplyDto::of);
     }
 
-    public Page<CombinationReplyDto> getCombinationReplyByParent(long parentId, Pageable pageable) {
+    public Page<CombinationReplyDto> getCombinationReplyByParent(long combinationId, long parentId, Pageable pageable) {
         Page<CombinationReply> replyPageResult =
-                replyRepository.findByParent(
+                replyRepository.findByCombinationAndParent(
+                        new Combination(combinationId),
                         new CombinationReply(parentId),
                         pageable);
         return replyPageResult.map(CombinationReplyDto::of);

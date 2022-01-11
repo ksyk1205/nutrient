@@ -3,8 +3,6 @@ package mandykr.nutrient.repository.combination.reply;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationReply;
 import mandykr.nutrient.repository.combination.CombinationRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.standard.expression.Each;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +84,8 @@ class CombinationReplyRepositoryTest {
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         Page<CombinationReply> replyPage =
-                replyRepository.findByParent(
+                replyRepository.findByCombinationAndParent(
+                        combination,
                         combinationReply,
                         pageRequest);
 

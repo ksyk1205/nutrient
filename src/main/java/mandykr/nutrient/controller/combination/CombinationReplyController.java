@@ -19,16 +19,17 @@ public class CombinationReplyController {
     @GetMapping("/{combinationId}")
     public ApiResult<Page<CombinationReplyDto>> getCombinationReplyByCombination(
             @PathVariable("combinationId") long combinationId,
-            @RequestBody Pageable pageable) {
+            final Pageable pageable) {
         return success(replyService
                 .getCombinationReplyByCombination(combinationId, pageable));
     }
 
-    @GetMapping("/{parentId}/")
+    @GetMapping("/{combinationId}/{parentId}")
     public ApiResult<Page<CombinationReplyDto>> getCombinationReplyByParent(
+            @PathVariable("combinationId") long combinationId,
             @PathVariable("parentId") long parentId,
-            @RequestBody Pageable pageable) {
+            final Pageable pageable) {
         return success(replyService
-                .getCombinationReplyByParent(parentId, pageable));
+                .getCombinationReplyByParent(combinationId, parentId, pageable));
     }
 }
