@@ -89,8 +89,7 @@ class CombinationReplyRepositoryTest {
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, 2, sort);
         Page<CombinationReply> replyPage =
-                replyRepository.findByCombinationAndParent(
-                        combination,
+                replyRepository.findByParent(
                         combinationReply,
                         pageRequest);
 

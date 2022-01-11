@@ -24,4 +24,12 @@ public class CombinationReplyService {
                         pageable);
         return replyPageResult.map(CombinationReplyDto::of);
     }
+
+    public Page<CombinationReplyDto> getCombinationReplyByParent(long parentId, Pageable pageable) {
+        Page<CombinationReply> replyPageResult =
+                replyRepository.findByParent(
+                        new CombinationReply(parentId),
+                        pageable);
+        return replyPageResult.map(CombinationReplyDto::of);
+    }
 }

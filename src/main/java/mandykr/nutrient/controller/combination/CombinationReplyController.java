@@ -23,4 +23,12 @@ public class CombinationReplyController {
         return success(replyService
                 .getCombinationReplyByCombination(combinationId, pageable));
     }
+
+    @GetMapping("/{parentId}/")
+    public ApiResult<Page<CombinationReplyDto>> getCombinationReplyByParent(
+            @PathVariable("parentId") long parentId,
+            @RequestBody Pageable pageable) {
+        return success(replyService
+                .getCombinationReplyByParent(parentId, pageable));
+    }
 }
