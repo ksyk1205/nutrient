@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Supplement {
     @Id @GeneratedValue
-    @Column(name = "SUPPLEMENT")
+    @Column(name = "SUPPLEMENT_ID")
     private Long id;
 
     private String name;
@@ -31,10 +31,12 @@ public class Supplement {
 
     //수정을 위한 메서드
     public void updateNameAndPrdlst(String name, String prdlstReportNo) {
-        if(name != null)
+        if(name != null) {
             this.name = name;
-        if(prdlstReportNo != null)
+        }
+        if(prdlstReportNo != null) {
             this.prdlstReportNo = prdlstReportNo;
+        }
     }
 
     //평점 수정을 위한 메서드
