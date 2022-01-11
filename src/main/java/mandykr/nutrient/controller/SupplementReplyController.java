@@ -3,6 +3,8 @@ package mandykr.nutrient.controller;
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.SupplementReplyDto;
 import mandykr.nutrient.dto.request.SupplementReplyRequest;
+import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.SupplementReplyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,7 @@ import static mandykr.nutrient.util.ApiUtils.success;
 @RequestMapping("/supplement-reply")
 public class SupplementReplyController {
     private final SupplementReplyService supplementReplyService;
-
+    private final MemberRepository memberRepository;
     /**
      * 해당 영양제ID 의 모든 댓글 보기
      */
@@ -55,7 +57,7 @@ public class SupplementReplyController {
             @PathVariable("supplementId") Long supplementId
             ,@RequestBody @Valid SupplementReplyRequest request){
         return success(supplementReplyService
-                .createSupplementReply(supplementId,request)
+                .createSupplementReply(supplementId, getMember(), request)
                 .map(SupplementReplyDto::new)
                 .get()
         );
@@ -76,7 +78,7 @@ public class SupplementReplyController {
             @PathVariable("replyId") Long replyId,
             @RequestBody @Valid SupplementReplyRequest supplementReplyRequest){
         return success(supplementReplyService
-                .createSupplementReply(supplementId,replyId, supplementReplyRequest)
+                .createSupplementReply(supplementId, replyId, getMember(), supplementReplyRequest)
                 .map(SupplementReplyDto::new)
                 .get()
         );
@@ -90,23 +92,25 @@ public class SupplementReplyController {
      */
     @PutMapping("{replyId}")
     public ApiResult<SupplementReplyDto> updSupplementReply(
-            @PathVariable Long replyId
-            ,  @Valid SupplementReplyRequest supplementReplyRequest){
+            @PathVariable Long replyId,
+            @Valid SupplementReplyRequest supplementReplyRequest){
         return success(supplementReplyService
-                .updateSupplementReply(replyId,supplementReplyRequest)
+                .updateSupplementReply(replyId, getMember(), supplementReplyRequest)
                 .map(SupplementReplyDto::new)
                 .get()
         );
     }
     /**
      * 대댓글 삭제
-     * 만약 중간에 있는것을 삭제한다면? 고민좀...
      */
     @DeleteMapping("{id}")
-    public void deleteSupplementReply(
-            @PathVariable Long supplementId){
-        supplementReplyService.deleteSupplementReply(supplementId);
+    public void deleteSupplementReply(@PathVariable Long supplementId){
+        supplementReplyService.deleteSupplementReply(supplementId, getMember());
     }
-
+    //임의의 member 값
+    private Member getMember() {
+        Member member = memberRepository.findById("testMemberId1").get();
+        return member;
+    }
 
 }
