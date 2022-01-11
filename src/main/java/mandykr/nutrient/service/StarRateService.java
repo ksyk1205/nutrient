@@ -36,8 +36,9 @@ public class StarRateService {
         //영양제 별점 등록
         StarRateDto starRateDto = new StarRateDto(starRateRepository.save(new StarRate(starNumber,supplement,member)));
 
+        supplement.insertList(starRateDto.getId(),starNumber);
         //Supplement 테이블 평점 수정
-        updateSupplementRanking(supplement);
+        supplement.updateRanking();
 
         return starRateDto;
     }
@@ -58,8 +59,9 @@ public class StarRateService {
         //영양제 별점 수정
         StarRateDto starRateDto = new StarRateDto(starRateRepository.save(new StarRate(starRateId,starNumber,supplement,member)));
 
+        supplement.updateList(starRateDto.getId(),starNumber);
         //Supplement 테이블 평점 수정
-        updateSupplementRanking(supplement);
+        supplement.updateRanking();
 
         return starRateDto;
     }
@@ -101,20 +103,5 @@ public class StarRateService {
     private Supplement getSupplement(Long supplementId) {
         //영양제 아이디가 없다면 error
         return supplementRepository.findById(supplementId).orElseThrow(()-> new IllegalArgumentException("not found SupplementId"));
-    }
-    /**
-     * 영양제 테이블 평점 수정
-     * @param supplement 영양제
-     */
-    private void updateSupplementRanking(Supplement supplement) {
-        List<StarRate> starRateList = starRateRepository.findBySupplement(supplement);
-
-        double ranking = starRateList.stream()
-                .mapToInt(StarRate::getStarNumber)
-                .average()
-                .getAsDouble();
-
-        supplement.setRanking(ranking);
-        supplementRepository.save(supplement);
     }
 }

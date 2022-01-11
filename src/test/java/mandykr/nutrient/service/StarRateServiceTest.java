@@ -7,15 +7,18 @@ import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.repository.StarRateRepository;
 import mandykr.nutrient.repository.SupplementRepository;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
@@ -30,6 +33,7 @@ class StarRateServiceTest {
     SupplementRepository supplementRepository;
     @Autowired
     MemberRepository memberRepository;
+
 
     @Test
     public void 별점_등록_성공(){
@@ -60,7 +64,12 @@ class StarRateServiceTest {
         member.setName("name1");
         Member member1 = memberRepository.save(member);
         //영양제 없는거로 조회하니까 에러 발생
-        assertThat(starRateService.createStarRate(supplement.getId(),2,member1)).isEqualTo(EntityNotFoundException.class);
+        assertThrows(InvalidDataAccessApiUsageException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                starRateService.createStarRate(supplement.getId(),2,member1);
+            }
+        });
     }
 
     @Test
@@ -76,6 +85,8 @@ class StarRateServiceTest {
         Member member1 = memberRepository.save(member);
 
         StarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
+
+
         starRateService.updateStarRate(supplement1.getId(),starRateDto.getId(),5,member1);
 
         assertThat(supplementRepository.findById(supplement1.getId()).get().getRanking()).isEqualTo(5.0);
