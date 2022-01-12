@@ -8,11 +8,15 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.FetchType.LAZY;
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PRIVATE)
 public class SupplementReply extends BaseTimeEntity {
 
     @Id
@@ -22,8 +26,9 @@ public class SupplementReply extends BaseTimeEntity {
 
     private String content;
 
-    private int orders;
+    private Long groups;
 
+    private Long groupOrder;
 
     //DB 테이블이 필요~~
     //좋아요 / 싫어요 기능 추가 여부
@@ -31,7 +36,7 @@ public class SupplementReply extends BaseTimeEntity {
     //삭제된 내역
     private Boolean deleteFlag;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "PARENT_ID")
     private SupplementReply parent;
 
@@ -39,10 +44,13 @@ public class SupplementReply extends BaseTimeEntity {
     @Builder.Default
     private List<SupplementReply> child = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "SUPPLEMENT_ID")
     private Supplement supplement;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     public void changeContent(String content){
         this.content = content;
