@@ -2,8 +2,7 @@ package mandykr.nutrient.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mandykr.nutrient.entity.Combination;
-import mandykr.nutrient.entity.CombinationStarRate;
+import mandykr.nutrient.entity.combination.CombinationStarRate;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
