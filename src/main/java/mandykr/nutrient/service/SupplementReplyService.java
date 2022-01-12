@@ -64,7 +64,7 @@ public class SupplementReplyService {
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
         SupplementReply supplementReply = supplementReplyRepository.findById(supplementReplyId)
-                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReplyId : " + supplementReplyId));
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
 
         Long groupOrder = supplementReplyRepository.findByLastOrderWithChild(supplementId, supplementReplyId);
         if(groupOrder == null)
@@ -115,7 +115,7 @@ public class SupplementReplyService {
         //      대댓글을 지웠을때, 부모도 삭제상태이고,대댓글을 마지막이 나였다면 부모도 지워
         //DEPTH 1 대댓글 여부 확인
         SupplementReply supplementReply = supplementReplyRepository.findByIdAndMember(supplementReplyId, member)
-                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReplyId : " + supplementReplyId));
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
         if(supplementReply.getParent() != null){
             SupplementReply parent = supplementReply.getParent();
             supplementReplyRepository.deleteById(supplementReplyId);
