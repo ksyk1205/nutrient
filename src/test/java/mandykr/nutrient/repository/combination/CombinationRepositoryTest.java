@@ -1,13 +1,12 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.combination;
 
-import mandykr.nutrient.entity.Combination;
-import mandykr.nutrient.entity.CombinationStarRate;
+import mandykr.nutrient.entity.combination.Combination;
+import mandykr.nutrient.entity.combination.CombinationStarRate;
+import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.List;
 
 @DataJpaTest
 public class CombinationRepositoryTest {

@@ -1,13 +1,11 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.combination.starrate;
 
-import mandykr.nutrient.entity.Combination;
-import mandykr.nutrient.entity.CombinationStarRate;
+import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface CombinationStarRateRepository extends JpaRepository<CombinationStarRate, Long> {

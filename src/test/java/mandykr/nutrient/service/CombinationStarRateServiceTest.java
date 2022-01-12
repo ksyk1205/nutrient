@@ -1,13 +1,13 @@
 package mandykr.nutrient.service;
 
 import mandykr.nutrient.dto.request.CombineStarRateRequest;
-import mandykr.nutrient.entity.Combination;
-import mandykr.nutrient.entity.CombinationStarRate;
+import mandykr.nutrient.entity.combination.Combination;
+import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
 
-import mandykr.nutrient.repository.CombinationRepository;
-import mandykr.nutrient.repository.CombinationStarRateRepository;
+import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 
+import mandykr.nutrient.repository.combination.CombinationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CombineStarRateServiceTest")
-class CombineStarRateServiceTest {
+class CombinationStarRateServiceTest {
     CombinationRepository combinationRepository = mock(CombinationRepository.class);
 
     CombinationStarRateRepository combinationStarRateRepository = mock(CombinationStarRateRepository.class);

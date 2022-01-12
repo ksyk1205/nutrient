@@ -1,6 +1,8 @@
-package mandykr.nutrient.entity;
+package mandykr.nutrient.entity.combination;
 
 import lombok.*;
+import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;

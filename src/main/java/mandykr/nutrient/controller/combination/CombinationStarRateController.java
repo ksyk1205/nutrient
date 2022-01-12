@@ -1,4 +1,4 @@
-package mandykr.nutrient.controller;
+package mandykr.nutrient.controller.combination;
 
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.CombinationStarRateDto;
@@ -18,7 +18,7 @@ import static mandykr.nutrient.util.ApiUtils.success;
 @RestController
 @RequestMapping("/combine-star-rate")
 @RequiredArgsConstructor
-public class CombineStarRateController {
+public class CombinationStarRateController {
 
     private final CombinationStarRateService combinationStarRateService;
 

@@ -1,19 +1,16 @@
 package mandykr.nutrient.repository;
 
-import mandykr.nutrient.entity.Combination;
-import mandykr.nutrient.entity.CombinationStarRate;
+import mandykr.nutrient.entity.combination.Combination;
+import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.repository.combination.CombinationRepository;
+import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 
-import java.util.NoSuchElementException;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
