@@ -21,13 +21,14 @@ public class CombinationReplyDto {
     private Long parentId;
 
     public static CombinationReplyDto of(CombinationReply entity) {
+        Long parentId = entity.getParent() != null ? entity.getParent().getId() : null;
         return CombinationReplyDto.builder()
                 .id(entity.getId())
                 .content(entity.getContent())
                 .orders(entity.getOrders())
                 .deleteFlag(entity.isDeleteFlag())
                 .combinationId(entity.getCombination().getId())
-                .parentId(entity.getParent().getId())
+                .parentId(parentId)
                 .build();
     }
 
