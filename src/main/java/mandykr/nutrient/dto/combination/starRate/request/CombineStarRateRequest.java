@@ -1,4 +1,4 @@
-package mandykr.nutrient.dto.request;
+package mandykr.nutrient.dto.combination.starRate.request;
 
 import lombok.Data;
 

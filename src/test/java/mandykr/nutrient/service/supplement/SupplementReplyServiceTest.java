@@ -1,11 +1,12 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.supplement;
 
-import mandykr.nutrient.dto.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.entity.SupplementReply;
-import mandykr.nutrient.repository.SupplementReplyRepository;
+import mandykr.nutrient.entity.supplement.SupplementReply;
+import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 import mandykr.nutrient.repository.SupplementRepository;
+import mandykr.nutrient.service.supplement.SupplementReplyService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

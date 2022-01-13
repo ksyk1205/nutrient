@@ -1,11 +1,11 @@
-package mandykr.nutrient.controller;
+package mandykr.nutrient.controller.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.SupplementReplyDto;
-import mandykr.nutrient.dto.request.SupplementReplyRequest;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
-import mandykr.nutrient.service.SupplementReplyService;
+import mandykr.nutrient.service.supplement.SupplementReplyService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

@@ -1,7 +1,8 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.combination;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.request.CombineStarRateRequest;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateDto;
+import mandykr.nutrient.dto.combination.starRate.request.CombineStarRateRequest;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
@@ -19,7 +20,7 @@ public class CombinationStarRateService {
     private final CombinationRepository combinationRepository;
 
 
-    public Optional<CombinationStarRate> saveCombinationStarRate(Long combinationId, Member member, CombineStarRateRequest request) {
+    public Optional<CombinationStarRate> createCombinationStarRate(Long combinationId, Member member, CombineStarRateRequest request) {
         Combination combination = combinationRepository.findByIdFetch(combinationId)
                 .orElseThrow(()->new IllegalArgumentException(combinationId+"의 영양제 조합이 존재하지 않습니다."));
         combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
@@ -48,7 +49,7 @@ public class CombinationStarRateService {
     }
 
 
-    public Optional<CombinationStarRate> getCombineStarRateByCombine(Long combinationId, Member member) {
+    public Optional<CombinationStarRate> getCombineStarRateByCombination(Long combinationId, Member member) {
         return combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member);
     }
 

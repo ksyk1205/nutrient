@@ -1,4 +1,4 @@
-package mandykr.nutrient.dto;
+package mandykr.nutrient.dto.combination.starRate;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,4 +15,5 @@ public class CombinationStarRateDto {
     public CombinationStarRateDto(CombinationStarRate source) {
         copyProperties(source, this);
     }
+
 }

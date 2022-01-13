@@ -1,8 +1,9 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.combination.starRate;
 
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.repository.combination.CombinationRepository;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 import org.assertj.core.api.Assertions;

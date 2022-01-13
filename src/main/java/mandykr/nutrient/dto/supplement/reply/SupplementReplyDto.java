@@ -1,10 +1,9 @@
-package mandykr.nutrient.dto;
+package mandykr.nutrient.dto.supplement.reply;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.entity.SupplementReply;
+import mandykr.nutrient.entity.supplement.SupplementReply;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Getter

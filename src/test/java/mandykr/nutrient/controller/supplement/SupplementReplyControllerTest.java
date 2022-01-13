@@ -1,17 +1,14 @@
-package mandykr.nutrient.controller;
+package mandykr.nutrient.controller.supplement;
 
-import mandykr.nutrient.dto.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.entity.SupplementReply;
+import mandykr.nutrient.entity.supplement.SupplementReply;
 import mandykr.nutrient.repository.MemberRepository;
-import mandykr.nutrient.service.SupplementReplyService;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
+import mandykr.nutrient.service.supplement.SupplementReplyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,7 +24,6 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;

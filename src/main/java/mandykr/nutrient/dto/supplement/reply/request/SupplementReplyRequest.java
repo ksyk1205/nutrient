@@ -1,4 +1,4 @@
-package mandykr.nutrient.dto.request;
+package mandykr.nutrient.dto.supplement.reply.request;
 
 import lombok.Getter;
 import lombok.Setter;

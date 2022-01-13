@@ -1,17 +1,18 @@
 package mandykr.nutrient.controller.combination;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.CombinationStarRateDto;
-import mandykr.nutrient.dto.request.CombineStarRateRequest;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateDto;
+import mandykr.nutrient.dto.combination.starRate.request.CombineStarRateRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
-import mandykr.nutrient.service.CombinationStarRateService;
-import mandykr.nutrient.util.ApiUtils;
+import mandykr.nutrient.service.combination.CombinationStarRateService;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.util.Optional;
+import java.util.OptionalInt;
 
 import static mandykr.nutrient.util.ApiUtils.success;
 
@@ -26,21 +27,21 @@ public class CombinationStarRateController {
 
 
     @GetMapping("{combinationId}")
-    public ApiResult<CombinationStarRateDto> getCombinationStarRate(@PathVariable Long combinationId){
+    public ApiResult<CombinationStarRateDto> getCombineStarRateByCombination(@PathVariable Long combinationId){
         return success(
                 combinationStarRateService
-                .getCombineStarRateByCombine(combinationId,getMember())
+                .getCombineStarRateByCombination(combinationId,getMember())
                 .map(CombinationStarRateDto::new)
                 .get()
         );
     }
 
     @PostMapping("{combinationId}")
-    public ApiResult<CombinationStarRateDto> saveCombinationStarRate(@PathVariable Long combinationId,
+    public ApiResult<CombinationStarRateDto> createCombinationStarRate(@PathVariable Long combinationId,
                                                                      @Valid @RequestBody CombineStarRateRequest request){
         return success(
                 combinationStarRateService
-                        .saveCombinationStarRate(combinationId,getMember(), request)
+                        .createCombinationStarRate(combinationId,getMember(), request)
                         .map(CombinationStarRateDto::new)
                         .get()
         );

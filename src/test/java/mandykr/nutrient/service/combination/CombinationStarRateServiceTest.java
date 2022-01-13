@@ -1,6 +1,6 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.combination;
 
-import mandykr.nutrient.dto.request.CombineStarRateRequest;
+import mandykr.nutrient.dto.combination.starRate.request.CombineStarRateRequest;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
@@ -8,6 +8,7 @@ import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 
 import mandykr.nutrient.repository.combination.CombinationRepository;
+import mandykr.nutrient.service.combination.CombinationStarRateService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +54,7 @@ class CombinationStarRateServiceTest {
         CombineStarRateRequest request = new CombineStarRateRequest();
         request.setStarNumber(2);
 
-        combinationStarRateService.saveCombinationStarRate(combination.getId(), member, request);
+        combinationStarRateService.createCombinationStarRate(combination.getId(), member, request);
 
         Assertions.assertEquals(combination.getRating(),2);
     }
@@ -63,7 +64,7 @@ class CombinationStarRateServiceTest {
         CombineStarRateRequest request = new CombineStarRateRequest();
         request.setStarNumber(2);
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.saveCombinationStarRate(2L, member, request),
+                ()->combinationStarRateService.createCombinationStarRate(2L, member, request),
                 "2의 영양제 조합이 존재하지 않습니다.");
     }
 
@@ -71,7 +72,7 @@ class CombinationStarRateServiceTest {
     public void 등록_영양제_별점_존재_테스트(){
         CombineStarRateRequest request1 = new CombineStarRateRequest();
         request1.setStarNumber(2);
-        combinationStarRateService.saveCombinationStarRate(combination.getId(), member, request1);
+        combinationStarRateService.createCombinationStarRate(combination.getId(), member, request1);
         CombineStarRateRequest request2 = new CombineStarRateRequest();
         request2.setStarNumber(4);
         CombinationStarRate insert = CombinationStarRate.builder()
@@ -81,7 +82,7 @@ class CombinationStarRateServiceTest {
                 .build();
         given(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(), member)).willReturn(Optional.ofNullable(insert));
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.saveCombinationStarRate(combination.getId(), member, request2));
+                ()->combinationStarRateService.createCombinationStarRate(combination.getId(), member, request2));
     }
 
     @Test
@@ -94,7 +95,7 @@ class CombinationStarRateServiceTest {
                 .starNumber(request1.getStarNumber())
                 .build();
         given(combinationStarRateRepository.save(any())).willReturn(insert);
-        combinationStarRateService.saveCombinationStarRate(combination.getId(), member, request1);
+        combinationStarRateService.createCombinationStarRate(combination.getId(), member, request1);
         Assertions.assertEquals(combination.getRating(), 2);
         combination.getCombinationStarRates().set(0, insert);
         doReturn(Optional.ofNullable(insert))
@@ -137,7 +138,7 @@ class CombinationStarRateServiceTest {
         given(combinationStarRateRepository.save(any())).willReturn(insert);
 
         given(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(), member)).willReturn(Optional.ofNullable(insert));
-        assertTrue(combinationStarRateService.getCombineStarRateByCombine(combination.getId(), member).isPresent());
+        assertTrue(combinationStarRateService.getCombineStarRateByCombination(combination.getId(), member).isPresent());
     }
 
     @Test
@@ -151,10 +152,10 @@ class CombinationStarRateServiceTest {
                 .build();
         given(combinationStarRateRepository.save(any())).willReturn(insert);
         given(combinationStarRateRepository.findById(any())).willReturn(Optional.ofNullable(insert));
-        combinationStarRateService.saveCombinationStarRate(combination.getId(),member,request);
+        combinationStarRateService.createCombinationStarRate(combination.getId(),member,request);
 
         combinationStarRateService.deleteCombinationStarRate(insert.getId(), member);
 
-        assertFalse(combinationStarRateService.getCombineStarRateByCombine(combination.getId(), member).isPresent());
+        assertFalse(combinationStarRateService.getCombineStarRateByCombination(combination.getId(), member).isPresent());
     }
 }

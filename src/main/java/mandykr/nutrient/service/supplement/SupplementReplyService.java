@@ -1,21 +1,18 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mandykr.nutrient.dto.SupplementReplyDto;
-import mandykr.nutrient.dto.request.SupplementReplyRequest;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.entity.SupplementReply;
-import mandykr.nutrient.repository.SupplementReplyRepository;
+import mandykr.nutrient.entity.supplement.SupplementReply;
+import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 
 import mandykr.nutrient.repository.SupplementRepository;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
