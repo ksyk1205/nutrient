@@ -1,6 +1,7 @@
 package mandykr.nutrient.service.combination;
 
 import mandykr.nutrient.dto.combination.reply.CombinationReplyDto;
+import mandykr.nutrient.dto.combination.reply.CombinationReplyUpdateFormDto;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationReply;
 import mandykr.nutrient.repository.combination.reply.CombinationReplyRepository;
@@ -12,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 class CombinationReplyServiceTest {
@@ -27,9 +30,9 @@ class CombinationReplyServiceTest {
         // given
         Combination combination = new Combination(1L);
         ArrayList<CombinationReply> replyList = new ArrayList<>();
-        replyList.add(CombinationReply.builder().content("parent1").orders(1L).combination(combination).build());
-        replyList.add(CombinationReply.builder().content("parent2").orders(1L).combination(combination).build());
-        replyList.add(CombinationReply.builder().content("parent3").orders(1L).combination(combination).build());
+        replyList.add(CombinationReply.builder().content("parent1").orders(1).combination(combination).build());
+        replyList.add(CombinationReply.builder().content("parent2").orders(1).combination(combination).build());
+        replyList.add(CombinationReply.builder().content("parent3").orders(1).combination(combination).build());
 
         Pageable pageRequest = PageRequest.of(0, 3);
         Page<CombinationReply> replyPageResult = new PageImpl<>(replyList);
@@ -39,7 +42,7 @@ class CombinationReplyServiceTest {
                 .willReturn(replyPageResult);
 
         // when
-        Page<CombinationReplyDto> findReplyPage = replyService.getCombinationReplyByCombination(combination.getId(), pageRequest);
+        Page<CombinationReplyDto> findReplyPage = replyService.getParentReplyByCombination(combination.getId(), pageRequest);
 
         // then
         assertThat(
@@ -54,11 +57,11 @@ class CombinationReplyServiceTest {
         // given
         Combination combination = new Combination(1L);
         ArrayList<CombinationReply> replyList = new ArrayList<>();
-        CombinationReply parent1 = CombinationReply.builder().content("parent1").orders(1L).combination(combination).build();
-        replyList.add(parent1);
-        replyList.add(CombinationReply.builder().content("child1_1").orders(2L).parent(parent1).combination(combination).build());
-        replyList.add(CombinationReply.builder().content("child1_2").orders(2L).parent(parent1).combination(combination).build());
-        replyList.add(CombinationReply.builder().content("child1_3").orders(2L).parent(parent1).combination(combination).build());
+        CombinationReply parent = CombinationReply.builder().content("parent").orders(1).combination(combination).build();
+        replyList.add(parent);
+        replyList.add(CombinationReply.builder().content("child1_1").orders(2).parent(parent).combination(combination).build());
+        replyList.add(CombinationReply.builder().content("child1_2").orders(2).parent(parent).combination(combination).build());
+        replyList.add(CombinationReply.builder().content("child1_3").orders(2).parent(parent).combination(combination).build());
 
         Pageable pageRequest = PageRequest.of(0, 3);
         Page<CombinationReply> replyPageResult = new PageImpl<>(replyList);
@@ -68,7 +71,7 @@ class CombinationReplyServiceTest {
                 .willReturn(replyPageResult);
 
         // when
-        Page<CombinationReplyDto> findReplyPage = replyService.getCombinationReplyByCombination(combination.getId(), pageRequest);
+        Page<CombinationReplyDto> findReplyPage = replyService.getParentReplyByCombination(combination.getId(), pageRequest);
 
         // then
         assertThat(
@@ -76,4 +79,21 @@ class CombinationReplyServiceTest {
                 .containsAll(replyList.stream().map(CombinationReply::getContent)
                         .collect(Collectors.toList()));
     }
+
+    @Test
+    @DisplayName("변경된 댓글 내용을 전달하면 수정된 댓글 Entity를 반환한다.")
+    void updateReply() {
+        // given
+        CombinationReplyUpdateFormDto updateReplyDto = CombinationReplyUpdateFormDto.builder().id(1L).content("update content").build();
+        CombinationReply findReply = CombinationReply.builder().content("parent").orders(1).build();
+
+        given(replyRepository.findById(updateReplyDto.getId())).willReturn(Optional.of(findReply));
+
+        // when
+        CombinationReply updateReply = replyService.updateReply(updateReplyDto);
+
+        // then
+        assertEquals(updateReplyDto.getContent(), updateReply.getContent());
+    }
+
 }

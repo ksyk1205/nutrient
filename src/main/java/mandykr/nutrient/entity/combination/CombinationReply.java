@@ -16,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CombinationReply extends BaseTimeEntity {
-    @Transient public static final int MIN_ORDERS = 1;
-    @Transient public static final int MAX_ORDERS = 2;
+    @Transient public static final int PARENT_ORDERS = 1;
+    @Transient public static final int CHILD_ORDERS = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,8 +45,16 @@ public class CombinationReply extends BaseTimeEntity {
         this.id = id;
     }
 
+    public boolean isParent() {
+        return orders == PARENT_ORDERS;
+    }
+
+    public boolean isChild() {
+        return orders == CHILD_ORDERS;
+    }
+
     public void changeContent(String content) {
-        if (isValid(content)) {
+        if (!isValid(content)) {
             throw new IllegalArgumentException("유효하지 않은 댓글 내용입니다.");
         }
         this.content = content;
