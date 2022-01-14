@@ -31,11 +31,11 @@ public class CombinationReplyCreateFormDto extends CombinationReplyFormDto {
     private Long combinationId;
     private Long parentId;
 
-    public CombinationReply createReply() {
+    public CombinationReply createReplyEntity() {
         return CombinationReply.builder()
                 .content(content)
                 .orders(orders)
-                .deleteFlag(true)
+                .deleted(true)
                 .combination(new Combination(combinationId))
                 .parent(new CombinationReply(parentId))
                 .build();

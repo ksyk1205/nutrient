@@ -8,6 +8,7 @@ import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationReply;
 import mandykr.nutrient.service.combination.CombinationReplyService;
 import mandykr.nutrient.util.PageRequestUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,24 +42,44 @@ class CombinationReplyControllerTest {
     @MockBean
     CombinationReplyService replyService;
 
+    Combination combination;
+    ArrayList<CombinationReplyDto> parentReplyList;
+    CombinationReplyDto parent;
+    ArrayList<CombinationReplyDto> childReplyList;
+
+    Pageable pageRequest;
+    int page = 1;
+    int size = 2;
+
+    Page<CombinationReplyDto> parentReplyPageResult;
+    Page<CombinationReplyDto> childReplyPageResult;
+
+    @BeforeEach
+    void setup() {
+        combination = new Combination(1L);
+
+        parentReplyList = new ArrayList<>();
+        parent = CombinationReplyDto.builder().id(1L).content("parent1").orders(1L).combinationId(combination.getId()).build();
+        parentReplyList.add(parent);
+        parentReplyList.add(CombinationReplyDto.builder().id(2L).content("parent2").orders(1L).combinationId(combination.getId()).build());
+        parentReplyList.add(CombinationReplyDto.builder().id(3L).content("parent3").orders(1L).combinationId(combination.getId()).build());
+
+        childReplyList = new ArrayList<>();
+        childReplyList.add(CombinationReplyDto.builder().id(11L).content("child1_1").orders(2L).parentId(parent.getId()).combinationId(combination.getId()).build());
+        childReplyList.add(CombinationReplyDto.builder().id(12L).content("child1_2").orders(2L).parentId(parent.getId()).combinationId(combination.getId()).build());
+        childReplyList.add(CombinationReplyDto.builder().id(13L).content("child1_3").orders(2L).parentId(parent.getId()).combinationId(combination.getId()).build());
+
+        pageRequest = new PageRequestUtil(page, size).getPageable();
+        parentReplyPageResult = new PageImpl<>(parentReplyList, pageRequest, parentReplyList.size());
+        childReplyPageResult = new PageImpl<>(childReplyList, pageRequest, childReplyList.size());
+    }
+
     @Test
     @DisplayName("부모 댓글을 페이징으로 조회하면 댓글 DTO 목록을 반환한다.")
     void getCombinationReplyByCombination() throws Exception {
         // given
-        final int page = 0;
-        final int size = 3;
-
-        Combination combination = new Combination(1L);
-        ArrayList<CombinationReplyDto> replyList = new ArrayList<>();
-        replyList.add(CombinationReplyDto.builder().id(1L).content("parent1").orders(1L).combinationId(combination.getId()).build());
-        replyList.add(CombinationReplyDto.builder().id(2L).content("parent2").orders(1L).combinationId(combination.getId()).build());
-        replyList.add(CombinationReplyDto.builder().id(3L).content("parent3").orders(1L).combinationId(combination.getId()).build());
-
-        Pageable pageRequest = PageRequest.of(page, size);
-        Page<CombinationReplyDto> replyPageResult = new PageImpl<>(replyList, pageRequest, replyList.size());
-
         given(replyService.getParentReplyByCombination(anyLong(), any(PageRequest.class)))
-                .willReturn(replyPageResult);
+                .willReturn(parentReplyPageResult);
 
         // when
         ResultActions perform = mockMvc.perform(get("/api/combination-reply/{combinationId}", "1")
@@ -69,8 +90,8 @@ class CombinationReplyControllerTest {
         then(replyService).should(times(1))
                 .getParentReplyByCombination(anyLong(), any(PageRequest.class));
         perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.content.*", hasSize(size)))
-                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page)))
+                .andExpect(jsonPath("$.response.content.*", hasSize(parentReplyList.size())))
+                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page - 1)))
                 .andExpect(jsonPath("$.response.pageable.pageSize", is(size)))
                 .andExpect(jsonPath("$.response.content.[0].id", is(1)))
                 .andExpect(jsonPath("$.response.content.[1].id", is(2)))
@@ -81,21 +102,8 @@ class CombinationReplyControllerTest {
     @DisplayName("자식 댓글을 페이징으로 조회하면 댓글 DTO 목록을 반환한다.")
     void getCombinationReplyByParent() throws Exception {
         // given
-        final int page = 0;
-        final int size = 3;
-
-        Combination combination = new Combination(1L);
-        ArrayList<CombinationReplyDto> replyList = new ArrayList<>();
-        CombinationReplyDto parent = CombinationReplyDto.builder().id(1L).content("parent").orders(1L).combinationId(combination.getId()).build();
-        replyList.add(CombinationReplyDto.builder().id(2L).content("child1_1").orders(2L).parentId(parent.getId()).combinationId(combination.getId()).build());
-        replyList.add(CombinationReplyDto.builder().id(3L).content("child1_2").orders(2L).parentId(parent.getId()).combinationId(combination.getId()).build());
-        replyList.add(CombinationReplyDto.builder().id(4L).content("child1_3").orders(2L).parentId(parent.getId()).combinationId(combination.getId()).build());
-
-        Pageable pageRequest = PageRequest.of(page, size);
-        Page<CombinationReplyDto> replyPageResult = new PageImpl<>(replyList, pageRequest, replyList.size());
-
         given(replyService.getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class)))
-                .willReturn(replyPageResult);
+                .willReturn(childReplyPageResult);
 
         // when
         ResultActions perform = mockMvc.perform(get("/api/combination-reply/{combinationId}/{parentId}", "1", "1")
@@ -106,219 +114,126 @@ class CombinationReplyControllerTest {
         then(replyService).should(times(1))
                 .getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class));
         perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.content.*", hasSize(size)))
-                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page)))
+                .andExpect(jsonPath("$.response.content.*", hasSize(childReplyList.size())))
+                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page - 1)))
                 .andExpect(jsonPath("$.response.pageable.pageSize", is(size)))
-                .andExpect(jsonPath("$.response.content.[0].id", is(2)))
-                .andExpect(jsonPath("$.response.content.[1].id", is(3)))
-                .andExpect(jsonPath("$.response.content.[2].id", is(4)));
-    }
-
-    @Test
-    @DisplayName("부모 댓글을 저장하면 부모 리스트를 반환한다.")
-    void createParentReply() throws Exception {
-        // given
-        // 1. dto, saveReply
-        Combination combination = new Combination(1L);
-        CombinationReplyCreateFormDto parentDto = CombinationReplyCreateFormDto.builder()
-                .content("parentReply")
-                .orders(CombinationReply.PARENT_ORDERS)
-                .combinationId(combination.getId())
-                .build();
-        CombinationReply saveParentReply = parentDto.createReply();
-
-        // 2. replyList
-        ArrayList<CombinationReplyDto> parentReplyList = new ArrayList<>();
-        parentReplyList.add(CombinationReplyDto.builder().id(1L).content("parent1").orders(1L).combinationId(combination.getId()).build());
-        parentReplyList.add(CombinationReplyDto.builder().id(2L).content("parent2").orders(1L).combinationId(combination.getId()).build());
-        parentReplyList.add(CombinationReplyDto.builder().id(3L).content("parent3").orders(1L).combinationId(combination.getId()).build());
-
-        // 3. page
-        PageRequestUtil pageRequestUtil = new PageRequestUtil();
-        Pageable pageRequest = pageRequestUtil.getPageable();
-        Page<CombinationReplyDto> replyPageResult = new PageImpl<>(parentReplyList, pageRequest, parentReplyList.size());
-
-        given(replyService.createReply(any(CombinationReplyCreateFormDto.class)))
-                .willReturn(saveParentReply);
-        given(replyService.getParentReplyByCombination(anyLong(), any(PageRequest.class)))
-                .willReturn(replyPageResult);
-
-        // when
-        ResultActions perform = mockMvc.perform(post("/api/combination-reply")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(parentDto))
-                .param("page", String.valueOf(pageRequest.getPageNumber()))
-                .param("size", String.valueOf(pageRequest.getPageSize())));
-
-        // then
-        then(replyService).should(times(1))
-                .getParentReplyByCombination(anyLong(), any(PageRequest.class));
-        perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.pageable.pageNumber", is(pageRequest.getPageNumber())))
-                .andExpect(jsonPath("$.response.pageable.pageSize", is(pageRequest.getPageSize())))
-                .andExpect(jsonPath("$.response.content.[0].id", is(1)))
-                .andExpect(jsonPath("$.response.content.[1].id", is(2)))
-                .andExpect(jsonPath("$.response.content.[2].id", is(3)));
+                .andExpect(jsonPath("$.response.content.[0].id", is(11)))
+                .andExpect(jsonPath("$.response.content.[1].id", is(12)))
+                .andExpect(jsonPath("$.response.content.[2].id", is(13)));
     }
 
     @Test
     @DisplayName("자식 댓글을 저장하면 자식 리스트를 반환한다.")
     void createChildReply() throws Exception {
         // given
-        // 1. dto, saveReply
-        Combination combination = new Combination(1L);
-        CombinationReplyCreateFormDto childDto = CombinationReplyCreateFormDto.builder()
+        CombinationReplyCreateFormDto childReplyDto = CombinationReplyCreateFormDto.builder()
                 .content("childReply")
                 .orders(CombinationReply.CHILD_ORDERS)
                 .combinationId(combination.getId())
                 .parentId(1L)
                 .build();
-        CombinationReply saveParentReply = childDto.createReply();
-
-        // 2. replyList
-        ArrayList<CombinationReplyDto> childReplyList = new ArrayList<>();
-        CombinationReplyDto parent1 = CombinationReplyDto.builder().id(1L).content("parent1").orders(1L).combinationId(combination.getId()).build();
-        childReplyList.add(CombinationReplyDto.builder().id(2L).content("child1_1").orders(2L).parentId(parent1.getId()).combinationId(combination.getId()).build());
-        childReplyList.add(CombinationReplyDto.builder().id(3L).content("child1_2").orders(2L).parentId(parent1.getId()).combinationId(combination.getId()).build());
-        childReplyList.add(CombinationReplyDto.builder().id(4L).content("child1_3").orders(2L).parentId(parent1.getId()).combinationId(combination.getId()).build());
-
-        // 3. page
-        PageRequestUtil pageRequestUtil = new PageRequestUtil();
-        Pageable pageRequest = pageRequestUtil.getPageable();
-        Page<CombinationReplyDto> replyPageResult = new PageImpl<>(childReplyList, pageRequest, childReplyList.size());
+        CombinationReplyDto saveChildReplyDto = CombinationReplyDto.builder()
+                .content("reply")
+                .orders(CombinationReply.CHILD_ORDERS)
+                .combinationId(combination.getId())
+                .parentId(1L)
+                .build();
 
         given(replyService.createReply(any(CombinationReplyCreateFormDto.class)))
-                .willReturn(saveParentReply);
-        given(replyService.getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class)))
-                .willReturn(replyPageResult);
+                .willReturn(saveChildReplyDto);
+        given(replyService.getParentOrChildReplyList(any(CombinationReplyDto.class), any(PageRequest.class)))
+                .willReturn(childReplyPageResult);
 
         // when
         ResultActions perform = mockMvc.perform(post("/api/combination-reply")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(childDto))
-                .param("page", String.valueOf(pageRequest.getPageNumber()))
-                .param("size", String.valueOf(pageRequest.getPageSize())));
+                .content(new ObjectMapper().writeValueAsString(childReplyDto))
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size)));
 
 //        String message = perform.andReturn().getResolvedException().getMessage();
 //        System.out.println("message = " + message);
 
         // then
         then(replyService).should(times(1))
-                .getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class));
+                .createReply(any(CombinationReplyCreateFormDto.class));
+        then(replyService).should(times(1))
+                .getParentOrChildReplyList(any(CombinationReplyDto.class), any(PageRequest.class));
         perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.pageable.pageNumber", is(pageRequest.getPageNumber())))
-                .andExpect(jsonPath("$.response.pageable.pageSize", is(pageRequest.getPageSize())))
-                .andExpect(jsonPath("$.response.content.[0].id", is(2)))
-                .andExpect(jsonPath("$.response.content.[1].id", is(3)))
-                .andExpect(jsonPath("$.response.content.[2].id", is(4)));
+                .andExpect(jsonPath("$.response.content.*", hasSize(childReplyList.size())))
+                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page - 1)))
+                .andExpect(jsonPath("$.response.pageable.pageSize", is(size)))
+                .andExpect(jsonPath("$.response.content.[0].id", is(11)))
+                .andExpect(jsonPath("$.response.content.[1].id", is(12)))
+                .andExpect(jsonPath("$.response.content.[2].id", is(13)));
     }
 
     @Test
     @DisplayName("부모 댓글을 수정하면 부모 리스트를 반환한다.")
     void updateParentReply() throws Exception {
         // given
-        // 1. dto, updateReply
-        Combination combination = new Combination(1L);
-        CombinationReplyUpdateFormDto parentDto = CombinationReplyUpdateFormDto.builder()
-                .id(4L)
-                .content("parentReply")
+        CombinationReplyUpdateFormDto parentReplyDto = CombinationReplyUpdateFormDto.builder()
+                .id(1L)
+                .content("reply")
                 .build();
-        CombinationReply updateParentReply = CombinationReply.builder()
-                .id(parentDto.getId())
-                .content(parentDto.getContent())
+        CombinationReplyDto updateParentReplyDto = CombinationReplyDto.builder()
+                .id(parentReplyDto.getId())
+                .content(parentReplyDto.getContent())
                 .orders(CombinationReply.PARENT_ORDERS)
-                .combination(new Combination(1L))
                 .build();
-
-        // 2. replyList
-        ArrayList<CombinationReplyDto> parentReplyList = new ArrayList<>();
-        parentReplyList.add(CombinationReplyDto.builder().id(1L).content("parent1").orders(1L).combinationId(combination.getId()).build());
-        parentReplyList.add(CombinationReplyDto.builder().id(2L).content("parent2").orders(1L).combinationId(combination.getId()).build());
-        parentReplyList.add(CombinationReplyDto.builder().id(3L).content("parent3").orders(1L).combinationId(combination.getId()).build());
-        parentReplyList.add(CombinationReplyDto.of(updateParentReply));
-
-        // 3. page
-        PageRequestUtil pageRequestUtil = new PageRequestUtil();
-        Pageable pageRequest = pageRequestUtil.getPageable();
-        Page<CombinationReplyDto> replyPageResult = new PageImpl<>(parentReplyList, pageRequest, parentReplyList.size());
 
         given(replyService.updateReply(any(CombinationReplyUpdateFormDto.class)))
-                .willReturn(updateParentReply);
-        given(replyService.getParentReplyByCombination(anyLong(), any(PageRequest.class)))
-                .willReturn(replyPageResult);
+                .willReturn(updateParentReplyDto);
+        given(replyService.getParentOrChildReplyList(any(CombinationReplyDto.class), any(PageRequest.class)))
+                .willReturn(parentReplyPageResult);
 
         // when
-        ResultActions perform = mockMvc.perform(put("/api/combination-reply/{replyId}", String.valueOf(parentDto.getId()))
+        ResultActions perform = mockMvc.perform(put("/api/combination-reply/{replyId}", String.valueOf(parentReplyDto.getId()))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(parentDto))
-                .param("page", String.valueOf(pageRequest.getPageNumber()))
-                .param("size", String.valueOf(pageRequest.getPageSize())));
+                .content(new ObjectMapper().writeValueAsString(parentReplyDto))
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size)));
 
         // then
         then(replyService).should(times(1))
-                .getParentReplyByCombination(anyLong(), any(PageRequest.class));
+                .updateReply(any(CombinationReplyUpdateFormDto.class));
+        then(replyService).should(times(1))
+                .getParentOrChildReplyList(any(CombinationReplyDto.class), any(PageRequest.class));
         perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.pageable.pageNumber", is(pageRequest.getPageNumber())))
-                .andExpect(jsonPath("$.response.pageable.pageSize", is(pageRequest.getPageSize())))
+                .andExpect(jsonPath("$.response.content.*", hasSize(parentReplyList.size())))
+                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page - 1)))
+                .andExpect(jsonPath("$.response.pageable.pageSize", is(size)))
                 .andExpect(jsonPath("$.response.content.[0].id", is(1)))
                 .andExpect(jsonPath("$.response.content.[1].id", is(2)))
-                .andExpect(jsonPath("$.response.content.[2].id", is(3)))
-                .andExpect(jsonPath("$.response.content.[3].id", is(4)));
+                .andExpect(jsonPath("$.response.content.[2].id", is(3)));
     }
 
     @Test
-    @DisplayName("자식 댓글을 수정하면 자식 리스트를 반환한다.")
-    void updateChildReply() throws Exception {
+    @DisplayName("부모 댓글을 삭제하면 부모 리스트를 반환한다.")
+    void deleteReply() throws Exception {
         // given
-        // 1. dto, updateReply
-        Combination combination = new Combination(1L);
-        CombinationReplyUpdateFormDto childDto = CombinationReplyUpdateFormDto.builder()
-                .id(5L)
-                .content("childReply")
-                .build();
-        CombinationReply updateChildReply = CombinationReply.builder()
-                .id(childDto.getId())
-                .content(childDto.getContent())
-                .orders(CombinationReply.CHILD_ORDERS)
-                .combination(new Combination(1L))
-                .parent(new CombinationReply(1L))
-                .build();
-
-        // 2. replyList
-        ArrayList<CombinationReplyDto> childReplyList = new ArrayList<>();
-        CombinationReplyDto parent1 = CombinationReplyDto.builder().id(1L).content("parent1").orders(1L).combinationId(combination.getId()).build();
-        childReplyList.add(CombinationReplyDto.builder().id(2L).content("child1_1").orders(2L).parentId(parent1.getId()).combinationId(combination.getId()).build());
-        childReplyList.add(CombinationReplyDto.builder().id(3L).content("child1_2").orders(2L).parentId(parent1.getId()).combinationId(combination.getId()).build());
-        childReplyList.add(CombinationReplyDto.builder().id(4L).content("child1_3").orders(2L).parentId(parent1.getId()).combinationId(combination.getId()).build());
-        childReplyList.add(CombinationReplyDto.of(updateChildReply));
-
-        // 3. page
-        PageRequestUtil pageRequestUtil = new PageRequestUtil();
-        Pageable pageRequest = pageRequestUtil.getPageable();
-        Page<CombinationReplyDto> replyPageResult = new PageImpl<>(childReplyList, pageRequest, childReplyList.size());
-
-        given(replyService.updateReply(any(CombinationReplyUpdateFormDto.class)))
-                .willReturn(updateChildReply);
-        given(replyService.getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class)))
-                .willReturn(replyPageResult);
+        given(replyService.getReplyDto(parent.getId()))
+                .willReturn(parent);
+        given(replyService.getParentOrChildReplyList(any(CombinationReplyDto.class), any(PageRequest.class)))
+                .willReturn(parentReplyPageResult);
 
         // when
-        ResultActions perform = mockMvc.perform(put("/api/combination-reply/{replyId}", String.valueOf(childDto.getId()))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(childDto))
-                .param("page", String.valueOf(pageRequest.getPageNumber()))
-                .param("size", String.valueOf(pageRequest.getPageSize())));
+        ResultActions perform = mockMvc.perform(delete("/api/combination-reply/{replyId}", String.valueOf(parent.getId()))
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size)));
 
         // then
         then(replyService).should(times(1))
-                .getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class));
+                .getReplyDto(parent.getId());
+        then(replyService).should(times(1))
+                .getParentOrChildReplyList(any(CombinationReplyDto.class), any(PageRequest.class));
         perform.andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.pageable.pageNumber", is(pageRequest.getPageNumber())))
-                .andExpect(jsonPath("$.response.pageable.pageSize", is(pageRequest.getPageSize())))
-                .andExpect(jsonPath("$.response.content.[0].id", is(2)))
-                .andExpect(jsonPath("$.response.content.[1].id", is(3)))
-                .andExpect(jsonPath("$.response.content.[2].id", is(4)))
-                .andExpect(jsonPath("$.response.content.[3].id", is(5)));
+                .andExpect(jsonPath("$.response.content.*", hasSize(parentReplyList.size())))
+                .andExpect(jsonPath("$.response.pageable.pageNumber", is(page - 1)))
+                .andExpect(jsonPath("$.response.pageable.pageSize", is(size)))
+                .andExpect(jsonPath("$.response.content.[0].id", is(1)))
+                .andExpect(jsonPath("$.response.content.[1].id", is(2)))
+                .andExpect(jsonPath("$.response.content.[2].id", is(3)));
     }
 
 }

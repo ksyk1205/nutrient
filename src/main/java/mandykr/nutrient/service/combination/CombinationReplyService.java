@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,15 +41,49 @@ public class CombinationReplyService {
         return replyPageResult.map(CombinationReplyDto::of);
     }
 
-    public CombinationReply createReply(CombinationReplyCreateFormDto dto) {
-        return replyRepository.save(dto.createReply());
+    public CombinationReplyDto createReply(CombinationReplyCreateFormDto dto) {
+        return CombinationReplyDto.of(replyRepository.save(dto.createReplyEntity()));
     }
 
-    public CombinationReply updateReply(CombinationReplyUpdateFormDto dto) {
-        CombinationReply findReply = replyRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("not found category: " + dto.getId()));
+    public CombinationReplyDto updateReply(CombinationReplyUpdateFormDto dto) {
+        CombinationReply findReply = getReply(dto.getId());
         findReply.changeContent(dto.getContent());
 
-        return findReply;
+        return CombinationReplyDto.of(findReply);
+    }
+
+    public Page<CombinationReplyDto> getParentOrChildReplyList(CombinationReplyDto replyDto, Pageable pageable) {
+        Page<CombinationReplyDto> resultReplyPage = null;
+        CombinationReply reply = CombinationReplyDto.createReplyEntity(replyDto);
+        if (reply.isParent()) {
+            resultReplyPage = getParentReplyByCombination(reply.getCombination().getId(), pageable);
+        }
+        else {
+            resultReplyPage = getChildrenReplyByParent(
+                    reply.getCombination().getId(), reply.getParent().getId(), pageable);
+        }
+        return resultReplyPage;
+    }
+
+    public void deleteReply(Long replyId) {
+        CombinationReply findReply = getReply(replyId);
+        if (findReply.isPossiobleToDeletePhysical()) {
+            replyRepository.deleteById(replyId);
+            replyRepository.deleteAllByIdInBatch(
+                    findReply.getChildList().stream()
+                            .map(CombinationReply::getId)
+                            .collect(Collectors.toList()));
+        } else {
+            findReply.deleteLogical();
+        }
+    }
+
+    public CombinationReply getReply(Long replyId) {
+        return replyRepository.findById(replyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found category: " + replyId));
+    }
+
+    public CombinationReplyDto getReplyDto(Long replyId) {
+        return CombinationReplyDto.of(getReply(replyId));
     }
 }

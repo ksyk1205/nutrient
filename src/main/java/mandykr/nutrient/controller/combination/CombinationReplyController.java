@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.combination.reply.CombinationReplyCreateFormDto;
 import mandykr.nutrient.dto.combination.reply.CombinationReplyDto;
 import mandykr.nutrient.dto.combination.reply.CombinationReplyUpdateFormDto;
-import mandykr.nutrient.entity.combination.CombinationReply;
 import mandykr.nutrient.service.combination.CombinationReplyService;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
 import org.springframework.data.domain.Page;
@@ -17,11 +16,11 @@ import static mandykr.nutrient.util.ApiUtils.success;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/combination-reply")
+@RequestMapping("/api")
 public class CombinationReplyController {
     private final CombinationReplyService replyService;
 
-    @GetMapping("/{combinationId}")
+    @GetMapping("/combination-reply/{combinationId}")
     public ApiResult<Page<CombinationReplyDto>> getParentReplyByCombination(
             @PathVariable("combinationId") long combinationId,
             final Pageable pageable) {
@@ -29,7 +28,7 @@ public class CombinationReplyController {
                 .getParentReplyByCombination(combinationId, pageable));
     }
 
-    @GetMapping("/{combinationId}/{parentId}")
+    @GetMapping("/combination-reply/{combinationId}/{parentId}")
     public ApiResult<Page<CombinationReplyDto>> getChildrenReplyByParent(
             @PathVariable("combinationId") long combinationId,
             @PathVariable("parentId") long parentId,
@@ -38,30 +37,26 @@ public class CombinationReplyController {
                 .getChildrenReplyByParent(combinationId, parentId, pageable));
     }
 
-    @PostMapping("")
+    @PostMapping("/combination-reply")
     public ApiResult<Page<CombinationReplyDto>> createReply(@RequestBody @Valid CombinationReplyCreateFormDto dto, final Pageable pageable) {
-        CombinationReply resultReply = replyService.createReply(dto);
-        return success(getParentOrChildReplyList(resultReply, pageable));
+        CombinationReplyDto resultReplyDto = replyService.createReply(dto);
+        return success(replyService.getParentOrChildReplyList(resultReplyDto, pageable));
     }
 
-    @PutMapping("/{replyId}")
+    @PutMapping("/combination-reply/{replyId}")
     public ApiResult<Page<CombinationReplyDto>> updateReply(
             @RequestBody @Valid CombinationReplyUpdateFormDto dto,
             final Pageable pageable) {
-        CombinationReply resultReply = replyService.updateReply(dto);
-        return success(getParentOrChildReplyList(resultReply, pageable));
+        CombinationReplyDto resultReplyDto = replyService.updateReply(dto);
+        return success(replyService.getParentOrChildReplyList(resultReplyDto, pageable));
     }
 
-    private Page<CombinationReplyDto> getParentOrChildReplyList(CombinationReply reply, Pageable pageable) {
-        Page<CombinationReplyDto> resultReplyPage = null;
-        if (reply.isParent()) {
-            resultReplyPage = replyService.getParentReplyByCombination(reply.getCombination().getId(), pageable);
-        }
-        else {
-            resultReplyPage = replyService.getChildrenReplyByParent(
-                    reply.getCombination().getId(), reply.getParent().getId(), pageable);
-        }
-        return resultReplyPage;
+    @DeleteMapping("/combination-reply/{replyId}")
+    public ApiResult<Page<CombinationReplyDto>> deleteReply(
+            @PathVariable("replyId") Long replyId,
+            final Pageable pageable) {
+        CombinationReplyDto replyDto = replyService.getReplyDto(replyId);
+        replyService.deleteReply(replyId);
+        return success(replyService.getParentOrChildReplyList(replyDto, pageable));
     }
-
 }

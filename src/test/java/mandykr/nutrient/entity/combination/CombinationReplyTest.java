@@ -36,8 +36,8 @@ class CombinationReplyTest {
         parentHaveChildren.addChild(CombinationReply.builder().content("child1_2").orders(2L).parent(parentHaveChildren).build());
 
         CombinationReply parentAllDeletedChildren = CombinationReply.builder().content("parentAllDeletedChildren").orders(1L).build();
-        parentAllDeletedChildren.addChild(CombinationReply.builder().content("child2_1").orders(2L).parent(parentAllDeletedChildren).deleteFlag(true).build());
-        parentAllDeletedChildren.addChild(CombinationReply.builder().content("child2_2").orders(2L).parent(parentAllDeletedChildren).deleteFlag(true).build());
+        parentAllDeletedChildren.addChild(CombinationReply.builder().content("child2_1").orders(2L).parent(parentAllDeletedChildren).deleted(true).build());
+        parentAllDeletedChildren.addChild(CombinationReply.builder().content("child2_2").orders(2L).parent(parentAllDeletedChildren).deleted(true).build());
 
         CombinationReply parentNoChildren = CombinationReply.builder().content("parentNoChildren").orders(1L).build();
 

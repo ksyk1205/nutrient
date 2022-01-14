@@ -27,7 +27,7 @@ public class CombinationReply extends BaseTimeEntity {
     @Lob
     private String content;
     private long orders;
-    private boolean deleteFlag = false;
+    private boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMBINATION_ID")
@@ -67,7 +67,7 @@ public class CombinationReply extends BaseTimeEntity {
     }
 
     public void deleteLogical() {
-        this.deleteFlag = true;
+        this.deleted = true;
     }
 
     public boolean existChildren() {
@@ -81,13 +81,13 @@ public class CombinationReply extends BaseTimeEntity {
 
     public boolean wereChildrenDeleted() {
         return childList.stream()
-                .allMatch(r -> r.deleteFlag);
+                .allMatch(r -> r.deleted);
     }
 
-    public void addChild(CombinationReply child1_1) {
-        if (!childList.contains(child1_1)) {
-            childList.add(child1_1);
+    public void addChild(CombinationReply child) {
+        if (!childList.contains(child)) {
+            childList.add(child);
         }
-        child1_1.parent = this;
+        child.parent = this;
     }
 }
