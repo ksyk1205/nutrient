@@ -21,15 +21,15 @@ public class CombinationReplyController {
     private final CombinationReplyService replyService;
 
     @GetMapping("/combination-reply/{combinationId}")
-    public ApiResult<Page<CombinationReplyDto>> getParentReplyByCombination(
+    public ApiResult<Page<CombinationReplyDto>> getParentRepliesByCombination(
             @PathVariable("combinationId") long combinationId,
             final Pageable pageable) {
         return success(replyService
-                .getParentReplyByCombination(combinationId, pageable));
+                .getParentsReplyByCombination(combinationId, pageable));
     }
 
     @GetMapping("/combination-reply/{combinationId}/{parentId}")
-    public ApiResult<Page<CombinationReplyDto>> getChildrenReplyByParent(
+    public ApiResult<Page<CombinationReplyDto>> getChildRepliesByParent(
             @PathVariable("combinationId") long combinationId,
             @PathVariable("parentId") long parentId,
             final Pageable pageable) {

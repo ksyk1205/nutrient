@@ -76,9 +76,9 @@ class CombinationReplyControllerTest {
 
     @Test
     @DisplayName("부모 댓글을 페이징으로 조회하면 댓글 DTO 목록을 반환한다.")
-    void getCombinationReplyByCombination() throws Exception {
+    void getParentsReplyByCombination() throws Exception {
         // given
-        given(replyService.getParentReplyByCombination(anyLong(), any(PageRequest.class)))
+        given(replyService.getParentsReplyByCombination(anyLong(), any(PageRequest.class)))
                 .willReturn(parentReplyPageResult);
 
         // when
@@ -88,7 +88,7 @@ class CombinationReplyControllerTest {
 
         // then
         then(replyService).should(times(1))
-                .getParentReplyByCombination(anyLong(), any(PageRequest.class));
+                .getParentsReplyByCombination(anyLong(), any(PageRequest.class));
         perform.andExpect(status().isOk())
                 .andExpect(jsonPath("$.response.content.*", hasSize(parentReplyList.size())))
                 .andExpect(jsonPath("$.response.pageable.pageNumber", is(page - 1)))
@@ -100,7 +100,7 @@ class CombinationReplyControllerTest {
 
     @Test
     @DisplayName("자식 댓글을 페이징으로 조회하면 댓글 DTO 목록을 반환한다.")
-    void getCombinationReplyByParent() throws Exception {
+    void getChildrenReplyByParent() throws Exception {
         // given
         given(replyService.getChildrenReplyByParent(anyLong(), anyLong(), any(PageRequest.class)))
                 .willReturn(childReplyPageResult);

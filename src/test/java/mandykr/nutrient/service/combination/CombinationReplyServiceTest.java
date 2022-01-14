@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,14 +62,14 @@ class CombinationReplyServiceTest {
 
     @Test
     @DisplayName("부모 댓글 리스트를 페이징으로 조회하면 댓글 Entity를 DTO로 변환해 리턴한다.")
-    void getCombinationReplyByCombination() {
+    void getParentsReplyByCombination() {
         // given
         given(replyRepository.findByCombinationAndOrders(
                 any(Combination.class), anyInt(), any(PageRequest.class)))
                 .willReturn(parentReplyPageResult);
 
         // when
-        Page<CombinationReplyDto> findReplyPage = replyService.getParentReplyByCombination(combination.getId(), pageRequest);
+        Page<CombinationReplyDto> findReplyPage = replyService.getParentsReplyByCombination(combination.getId(), pageRequest);
 
         // then
         assertThat(
@@ -81,7 +80,7 @@ class CombinationReplyServiceTest {
 
     @Test
     @DisplayName("자식 댓글 리스트를 페이징으로 조회하면 댓글 Entity를 DTO로 변환해 리턴한다.")
-    void getCombinationReplyByParent() {
+    void getChildrenReplyByParent() {
         // given
         given(replyRepository.findByCombinationAndParent(
                 any(Combination.class), any(CombinationReply.class), any(PageRequest.class)))

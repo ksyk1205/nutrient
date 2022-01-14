@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Collections;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +21,7 @@ import java.util.stream.Collectors;
 public class CombinationReplyService {
     private final CombinationReplyRepository replyRepository;
 
-    public Page<CombinationReplyDto> getParentReplyByCombination(long combinationId, Pageable pageable) {
+    public Page<CombinationReplyDto> getParentsReplyByCombination(long combinationId, Pageable pageable) {
         Page<CombinationReply> replyPageResult =
                 replyRepository.findByCombinationAndOrders(
                         new Combination(combinationId),
@@ -56,7 +54,7 @@ public class CombinationReplyService {
         Page<CombinationReplyDto> resultReplyPage = null;
         CombinationReply reply = CombinationReplyDto.createReplyEntity(replyDto);
         if (reply.isParent()) {
-            resultReplyPage = getParentReplyByCombination(reply.getCombination().getId(), pageable);
+            resultReplyPage = getParentsReplyByCombination(reply.getCombination().getId(), pageable);
         }
         else {
             resultReplyPage = getChildrenReplyByParent(
