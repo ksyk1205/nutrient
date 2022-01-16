@@ -1,19 +1,19 @@
-package mandykr.nutrient.entity;
+package mandykr.nutrient.entity.supplement;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import mandykr.nutrient.dto.StarRateDto;
+import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.supplement.Supplement;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class StarRate {
+public class SupplementStarRate {
     @Id
     @GeneratedValue
-    @Column(name = "STAR_RATE_ID")
+    @Column(name = "STARRATE_ID")
     private Long id; //영양제 별점 번호
 
     private int starNumber; //별점 갯수
@@ -27,14 +27,14 @@ public class StarRate {
     private Member member;// 회원 번호
 
     //등록을 위한 생성자
-    public StarRate(int starNumber, Supplement supplement, Member member) {
+    public SupplementStarRate(int starNumber, Supplement supplement, Member member) {
         this.starNumber = starNumber;
         this.supplement = supplement;
         this.member = member;
     }
 
     //수정을 위한 생성자
-    public StarRate(Long id, int starNumber, Supplement supplement, Member member) {
+    public SupplementStarRate(Long id, int starNumber, Supplement supplement, Member member) {
         this.id = id;
         this.starNumber = starNumber;
         this.supplement = supplement;

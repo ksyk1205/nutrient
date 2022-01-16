@@ -1,8 +1,8 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.supplement;
 
-import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.SupplementCategory;
-import org.junit.jupiter.api.Assertions;
+import mandykr.nutrient.repository.SupplementCategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

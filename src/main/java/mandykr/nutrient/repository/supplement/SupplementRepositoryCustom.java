@@ -1,6 +1,6 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.supplement;
 
-import mandykr.nutrient.dto.SupplementDto;
+import mandykr.nutrient.dto.supplement.SupplementDto;
 import mandykr.nutrient.dto.SupplementSearchCondition;
 
 import java.util.List;

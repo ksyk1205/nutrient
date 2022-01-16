@@ -1,23 +1,22 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.StarRateDto;
+import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.StarRate;
-import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.repository.StarRateRepository;
-import mandykr.nutrient.repository.SupplementRepository;
+import mandykr.nutrient.entity.supplement.SupplementStarRate;
+import mandykr.nutrient.entity.supplement.Supplement;
+import mandykr.nutrient.repository.supplement.SupplementStarRateRepository;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class StarRateService {
+public class SupplementStarRateService {
 
-    private final StarRateRepository starRateRepository;
+    private final SupplementStarRateRepository starRateRepository;
     private final SupplementRepository supplementRepository;
 
 
@@ -29,12 +28,12 @@ public class StarRateService {
      * @return
      */
     @Transactional
-    public StarRateDto createStarRate(Long supplementId,int starNumber, Member member){
+    public SupplementStarRateDto createStarRate(Long supplementId, int starNumber, Member member){
         //영양제 조회
         Supplement supplement = getSupplement(supplementId);
 
         //영양제 별점 등록
-        StarRateDto starRateDto = new StarRateDto(starRateRepository.save(new StarRate(starNumber,supplement,member)));
+        SupplementStarRateDto starRateDto = new SupplementStarRateDto(starRateRepository.save(new SupplementStarRate(starNumber,supplement,member)));
 
         supplement.insertList(starRateDto.getId(),starNumber);
         //Supplement 테이블 평점 수정
@@ -52,12 +51,12 @@ public class StarRateService {
      * @return
      */
     @Transactional
-    public StarRateDto updateStarRate(Long supplementId,Long starRateId,int starNumber, Member member){
+    public SupplementStarRateDto updateStarRate(Long supplementId, Long starRateId, int starNumber, Member member){
         //영양제 조회
         Supplement supplement = getSupplement(supplementId);
 
         //영양제 별점 수정
-        StarRateDto starRateDto = new StarRateDto(starRateRepository.save(new StarRate(starRateId,starNumber,supplement,member)));
+        SupplementStarRateDto starRateDto = new SupplementStarRateDto(starRateRepository.save(new SupplementStarRate(starRateId,starNumber,supplement,member)));
 
         supplement.updateList(starRateDto.getId(),starNumber);
         //Supplement 테이블 평점 수정
@@ -73,16 +72,16 @@ public class StarRateService {
      * @return
      */
     @Transactional(readOnly = true)
-    public StarRateDto getStarRateWithMember(Long supplementId, Member member){
+    public SupplementStarRateDto getStarRateWithMember(Long supplementId, Member member){
         //영양제 조회
         Supplement supplement = getSupplement(supplementId);
 
-        Optional<StarRate> star = starRateRepository.findBySupplementAndMember(supplement,member);
+        Optional<SupplementStarRate> star = starRateRepository.findBySupplementAndMember(supplement,member);
         //별점 정보가 없다면 빈객체를
         if(!star.isPresent()){
-            return new StarRateDto();
+            return new SupplementStarRateDto();
         }else{//별점 정보가 있다면 조회한 별점 정보를
-            return new StarRateDto(star.get());
+            return new SupplementStarRateDto(star.get());
         }
     }
 

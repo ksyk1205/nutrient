@@ -1,8 +1,7 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.repository.SupplementRepository;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.springframework.stereotype.Service;
 
 @Service

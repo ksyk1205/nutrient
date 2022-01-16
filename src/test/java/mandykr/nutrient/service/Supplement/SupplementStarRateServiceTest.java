@@ -1,13 +1,14 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.Supplement;
 
-import mandykr.nutrient.dto.StarRateDto;
+import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.StarRate;
-import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.entity.supplement.SupplementStarRate;
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.MemberRepository;
-import mandykr.nutrient.repository.StarRateRepository;
-import mandykr.nutrient.repository.SupplementRepository;
+import mandykr.nutrient.repository.supplement.SupplementStarRateRepository;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 
+import mandykr.nutrient.service.supplement.SupplementStarRateService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -23,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
-class StarRateServiceTest {
+class SupplementStarRateServiceTest {
 
     @Autowired
-    StarRateService starRateService;
+    SupplementStarRateService starRateService;
     @Autowired
-    StarRateRepository starRateRepository;
+    SupplementStarRateRepository starRateRepository;
     @Autowired
     SupplementRepository supplementRepository;
     @Autowired
@@ -37,9 +38,7 @@ class StarRateServiceTest {
 
     @Test
     public void 별점_등록_성공(){
-        Supplement supplement = new Supplement();
-        supplement.setRanking(0.0);
-        supplement.setName("testname");
+        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
         Supplement supplement1 = supplementRepository.save(supplement);
 
         Member member = new Member();
@@ -47,7 +46,7 @@ class StarRateServiceTest {
         member.setName("name1");
         Member member1 = memberRepository.save(member);
 
-        StarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
+        SupplementStarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
 
         assertThat(supplementRepository.findById(supplement1.getId()).get().getRanking()).isEqualTo(2.0);
     }
@@ -55,9 +54,7 @@ class StarRateServiceTest {
     @Test
     @DisplayName("등록되지 않은 영양제로 별점을 조회하면 예외가 발생한다.")
     public void 영양제_조회_실패(){
-        Supplement supplement = new Supplement();
-        supplement.setRanking(0.0);
-        supplement.setName("testname");
+        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
 
         Member member = new Member();
         member.setMemberId("test");
@@ -74,9 +71,7 @@ class StarRateServiceTest {
 
     @Test
     public void 별점_수정_성공(){
-        Supplement supplement = new Supplement();
-        supplement.setRanking(0.0);
-        supplement.setName("testname");
+        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
         Supplement supplement1 = supplementRepository.save(supplement);
 
         Member member = new Member();
@@ -84,7 +79,7 @@ class StarRateServiceTest {
         member.setName("name1");
         Member member1 = memberRepository.save(member);
 
-        StarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
+        SupplementStarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
 
 
         starRateService.updateStarRate(supplement1.getId(),starRateDto.getId(),5,member1);
@@ -95,9 +90,7 @@ class StarRateServiceTest {
     @Test
     @DisplayName("별점 수정을 위하여 별점 조회 했을때 빈 객체가 반환되는지 확인한다.")
     public void 별점_조회(){
-        Supplement supplement = new Supplement();
-        supplement.setRanking(0.0);
-        supplement.setName("testname");
+        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
         Supplement supplement1 = supplementRepository.save(supplement);
 
         Member member = new Member();
@@ -110,9 +103,7 @@ class StarRateServiceTest {
 
     @Test
     public void 별점_삭제(){
-        Supplement supplement = new Supplement();
-        supplement.setRanking(0.0);
-        supplement.setName("testname");
+        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
         Supplement supplement1 = supplementRepository.save(supplement);
 
         Member member = new Member();
@@ -120,8 +111,8 @@ class StarRateServiceTest {
         member.setName("name1");
         Member member1 = memberRepository.save(member);
 
-        StarRate starRate = new StarRate(2,supplement1,member1);
-        StarRate starRate1 = starRateRepository.save(starRate);
+        SupplementStarRate starRate = new SupplementStarRate(2,supplement1,member1);
+        SupplementStarRate starRate1 = starRateRepository.save(starRate);
 
         assertThat(starRateRepository.findById(starRate1.getId()).isPresent()).isEqualTo(true);
 

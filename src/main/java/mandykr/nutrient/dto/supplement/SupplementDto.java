@@ -1,4 +1,4 @@
-package mandykr.nutrient.dto;
+package mandykr.nutrient.dto.supplement;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
