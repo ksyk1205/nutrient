@@ -27,8 +27,8 @@ class SupplementRepositoryTest {
 
     @BeforeEach
     void setup() {
-        parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").level(0).build();
-        category = SupplementCategory.builder().name("오메가3").level(1).parentCategory(parentCategory).build();
+        parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").depth(0).build();
+        category = SupplementCategory.builder().name("오메가3").depth(1).parentCategory(parentCategory).build();
         SupplementCategory saveParentCategory = categoryRepository.save(parentCategory);
         SupplementCategory saveCategory = categoryRepository.save(category);
 

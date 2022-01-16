@@ -29,11 +29,11 @@ public class SupplementCategoryService {
 
     public SupplementCategory createCategory(SupplementCategoryDto categoryDto) {
         return categoryRepository.save(
-                SupplementCategory.toEntity(categoryDto.getId(), categoryDto.getName(), categoryDto.getLevel()));
+                SupplementCategory.toEntity(categoryDto.getId(), categoryDto.getName(), categoryDto.getDepth()));
     }
 
     public void updateCategories(List<SupplementCategoryDto> categoryDtoList) {
-        categoryDtoList.sort(Comparator.comparing(c -> c.getLevel()));
+        categoryDtoList.sort(Comparator.comparing(c -> c.getDepth()));
         categoryDtoList.forEach(c -> updateCategory(c));
     }
 

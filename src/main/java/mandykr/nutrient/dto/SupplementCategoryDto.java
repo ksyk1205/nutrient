@@ -11,13 +11,13 @@ import mandykr.nutrient.entity.SupplementCategory;
 public class SupplementCategoryDto {
     private Long id;
     private String name;
-    private int level;
+    private int depth;
     private SupplementParentCategoryDto parentCategory;
 
-    public SupplementCategoryDto(Long id, String name, int level) {
+    public SupplementCategoryDto(Long id, String name, int depth) {
         this.id = id;
         this.name = name;
-        this.level = level;
+        this.depth = depth;
     }
 
     public static SupplementCategoryDto toCategoryDto(SupplementCategory category) {
@@ -27,8 +27,8 @@ public class SupplementCategoryDto {
         return categoryDto;
     }
 
-    public static SupplementCategoryDto toCategoryDto(Long id, String name, int level, Long parentId) {
-        SupplementCategoryDto categoryDto = new SupplementCategoryDto(id, name, level);
+    public static SupplementCategoryDto toCategoryDto(Long id, String name, int depth, Long parentId) {
+        SupplementCategoryDto categoryDto = new SupplementCategoryDto(id, name, depth);
         categoryDto.setParentCategory(new SupplementParentCategoryDto(parentId));
         return categoryDto;
     }
