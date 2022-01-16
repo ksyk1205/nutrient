@@ -1,7 +1,6 @@
 package mandykr.nutrient.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.SupplementCategory;
@@ -22,7 +21,7 @@ public class SupplementCategoryDto {
     }
 
     public static SupplementCategoryDto toCategoryDto(SupplementCategory category) {
-        SupplementCategoryDto categoryDto = new SupplementCategoryDto(category.getId(), category.getName(), category.getLevel());
+        SupplementCategoryDto categoryDto = new SupplementCategoryDto(category.getId(), category.getName(), category.getDepth());
         categoryDto.setParentCategory(category.getParentCategory() == null ?
                 null : new SupplementParentCategoryDto(category.getParentCategory().getId()));
         return categoryDto;

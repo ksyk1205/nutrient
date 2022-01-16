@@ -45,7 +45,7 @@ public class SupplementCategoryService {
                 SupplementCategory.toEntity(
                         findParentCategory.getId(),
                         findParentCategory.getName(),
-                        findParentCategory.getLevel()));
+                        findParentCategory.getDepth()));
 
         findCategory.rename(categoryDto.getName());
         return findCategory;
