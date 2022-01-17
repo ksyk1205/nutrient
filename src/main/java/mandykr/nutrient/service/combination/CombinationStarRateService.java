@@ -7,6 +7,7 @@ import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequ
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.combination.CombinationStarRateImpl;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 import mandykr.nutrient.repository.combination.CombinationRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class CombinationStarRateService {
                 .orElseThrow(()->new IllegalArgumentException(combinationId+"의 영양제 조합이 존재하지 않습니다."));
         combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
         .ifPresent(m ->{
-            throw new IllegalArgumentException(m.getId() + "의 영양제 조합 별점이 존재합니다");
+            throw new IllegalArgumentException(m + "의 영양제 조합 별점이 존재합니다");
         });
         //영양제 조합 평점 업데이트
         CombinationStarRate saveCombineStarRate = CombinationStarRate.builder()
@@ -54,8 +55,8 @@ public class CombinationStarRateService {
 
 
     public CombinationStarRateResponseDto getCombinationStarRateByCombination(Long combinationId, Member member) {
-        CombinationStarRate combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
-                .orElse(CombinationStarRate.NULL); //NULL OBJECT 패턴
+        CombinationStarRateImpl combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
+                .orElse(CombinationStarRateImpl.NULL); //NULL OBJECT 패턴
         return new CombinationStarRateResponseDto(combinationStarRate);
     }
 

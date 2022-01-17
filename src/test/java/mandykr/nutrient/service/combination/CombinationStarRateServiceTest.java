@@ -44,6 +44,7 @@ class CombinationStarRateServiceTest {
                 .rating(0.0)
                 .build();
         Member member = new Member();
+        member.setId(1L);
         member.setMemberId("testMember");
         member.setName("KIM");
         this.member = member;

@@ -11,7 +11,18 @@ public interface CombinationStarRateImpl {
 
     void addStarRate(Combination combination);
 
-    CombinationStarRate NULL = new CombinationStarRate(){
+    public static final CombinationStarRateImpl NULL = new CombinationStarRateImpl() {
+        private Long id;
+        private Integer starNumber;
 
+
+        @Override
+        public void updateStarNumber(int starNumber) {
+
+        }
+        @Override
+        public void addStarRate(Combination combination) {
+
+        }
     };
 }
