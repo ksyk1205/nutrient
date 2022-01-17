@@ -20,6 +20,10 @@ import static mandykr.nutrient.util.ApiUtils.success;
 public class CombinationReplyController {
     private final CombinationReplyService replyService;
 
+    /**
+     * 영양제 조합 정보를 입력받아 부모 댓글 목록을 페이징으로 반환한다.
+     *
+     */
     @GetMapping("/combination-reply/{combinationId}")
     public ApiResult<Page<CombinationReplyDto>> getParentRepliesByCombination(
             @PathVariable("combinationId") long combinationId,
@@ -28,6 +32,10 @@ public class CombinationReplyController {
                 .getParentsReplyByCombination(combinationId, pageable));
     }
 
+    /**
+     * 영양제 조합과 부모 댓글 정보를를 입력받아 자식 댓글 목록을 페이징으로 반환한다.
+     *
+     */
     @GetMapping("/combination-reply/{combinationId}/{parentId}")
     public ApiResult<Page<CombinationReplyDto>> getChildRepliesByParent(
             @PathVariable("combinationId") long combinationId,

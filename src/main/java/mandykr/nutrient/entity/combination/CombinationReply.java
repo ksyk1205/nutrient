@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -40,6 +43,10 @@ public class CombinationReply extends BaseTimeEntity {
     @OneToMany(mappedBy = "parent")
     @Builder.Default
     private List<CombinationReply> childList = new ArrayList<>();
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     public CombinationReply(Long id) {
         this.id = id;
