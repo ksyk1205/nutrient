@@ -323,6 +323,85 @@ class SupplementReplyControllerTest {
                 .andExpect(jsonPath("$.response.deleteFlag", is(false)));
     }
 
+    @Test
+    @DisplayName("댓글 달기 오류(비어있을때)")
+    public void 댓글_달기_댓글_비어있을때() throws Exception {
+        //given
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
+                        SupplementReply.builder()
+                                .id(1L)
+                                .supplement(saveSupplement)
+                                .member(saveMember)
+                                .parent(null)
+                                .content("")
+                                .groups(1L)
+                                .groupOrder(1L)
+                                .deleteFlag(false)
+                                .build()
+                );
+        given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
+        given(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willReturn(supplementReplyResponseDto);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/supplement-reply/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"\"}")
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(handler().handlerType(SupplementReplyController.class))
+                .andExpect(handler().methodName("createSupplementReply"))
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error.status", is(400)))
+                .andExpect(jsonPath("$.error.message", is("must not be empty")));
+    }
+    
+    @Test
+    @DisplayName("댓글 달기 오류(50자 초과일때)")
+    public void 댓글_달기_댓글_50자_초과일때() throws Exception {
+        //given
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
+                        SupplementReply.builder()
+                                .id(1L)
+                                .supplement(saveSupplement)
+                                .member(saveMember)
+                                .parent(null)
+                                .content("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                                .groups(1L)
+                                .groupOrder(1L)
+                                .deleteFlag(false)
+                                .build()
+                );
+        given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
+        given(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willReturn(supplementReplyResponseDto);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/supplement-reply/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}")
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(handler().handlerType(SupplementReplyController.class))
+                .andExpect(handler().methodName("createSupplementReply"))
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error.status", is(400)))
+                .andExpect(jsonPath("$.error.message", is("size must be between 1 and 50")));
+    }
+
+
 
     @Test
     @DisplayName("댓글 달기 테스트(영양제 없음)")

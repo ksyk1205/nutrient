@@ -1,14 +1,10 @@
 package mandykr.nutrient.controller.combination;
 
-import mandykr.nutrient.controller.supplement.SupplementReplyController;
 import mandykr.nutrient.dto.combination.starRate.CombinationStarRateRequestDto;
 import mandykr.nutrient.dto.combination.starRate.CombinationStarRateResponseDto;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
-import mandykr.nutrient.entity.supplement.SupplementReply;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.combination.CombinationStarRateService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,18 +18,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -161,7 +152,6 @@ class CombinationStarRateControllerTest {
                 .andExpect(jsonPath("$.response.starNumber", is(2)));
     }
 
-    /*
     @Test
     @DisplayName("영양제 조합 별점 등록(별점이 5초과인 경우)")
     public void 영양제_조합_별점_등록_별점이_5초과() throws Exception {
@@ -196,9 +186,45 @@ class CombinationStarRateControllerTest {
                 .andExpect(jsonPath("$.success", is(false)))
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.error.status", is(400)))
-                .andExpect(jsonPath("$.error.message", is(saveCombination.getId()+"의 영양제 조합이 존재하지 않습니다.")));
+                .andExpect(jsonPath("$.error.message", is("must be less than or equal to 5")));
     }
-     */
+
+    @Test
+    @DisplayName("영양제 조합 별점 등록(별점이 0미만인 경우)")
+    public void 영양제_조합_별점_등록_별점이_0미만() throws Exception {
+        //given
+        CombinationStarRateResponseDto combinationStarRateResponseDto =
+                new CombinationStarRateResponseDto(
+                        CombinationStarRate.builder()
+                                .id(1L)
+                                .starNumber(-1)
+                                .member(saveMember)
+                                .combination(saveCombination)
+                                .build()
+                );
+        given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
+        given(combinationStarRateService.createCombinationStarRate(anyLong(), any(Member.class), any(CombinationStarRateRequestDto.class)))
+                .willReturn(combinationStarRateResponseDto);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/combination-star-rate/1")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"starNumber\": -1}")
+        );
+
+        //then
+        //validation 에러 어떻게 잡을지??
+        result.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(handler().handlerType(CombinationStarRateController.class))
+                .andExpect(handler().methodName("createCombinationStarRate"))
+                .andExpect(jsonPath("$.success", is(false)))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error.status", is(400)))
+                .andExpect(jsonPath("$.error.message", is("must be greater than or equal to 0")));
+    }
 
     @Test
     @DisplayName("영양제 조합 별점 등록(영양제 조합X 에러)")

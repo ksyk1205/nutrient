@@ -31,8 +31,25 @@ public class GeneralExceptionHandler {
     }
 
     // 필요한 경우 적절한 예외타입을 선언하고 newResponse 메소드를 통해 응답을 생성하도록 합니다.
-    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
+    @ExceptionHandler({EntityNotFoundException.class})
     public ResponseEntity<?> entityNotFoundExceptionException(Exception e) {
+        return newResponse(e, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({
+            IllegalArgumentException.class,
+            IllegalStateException.class,
+            ConstraintViolationException.class,
+            MethodArgumentNotValidException.class
+    })
+    public ResponseEntity<?> handleBadRequestException(Exception e) {
+        log.debug("Bad request exception occurred: {}", e.getMessage(), e);
+        if (e instanceof MethodArgumentNotValidException) {
+            return newResponse(
+                    ((MethodArgumentNotValidException) e).getBindingResult().getAllErrors().get(0).getDefaultMessage(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
         return newResponse(e, HttpStatus.BAD_REQUEST);
     }
 
