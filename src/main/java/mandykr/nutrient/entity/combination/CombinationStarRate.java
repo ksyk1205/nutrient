@@ -2,7 +2,6 @@ package mandykr.nutrient.entity.combination;
 
 import lombok.*;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -16,14 +15,14 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class CombinationStarRate extends BaseTimeEntity {
+public class CombinationStarRate extends BaseTimeEntity implements CombinationStarRateImpl {
 
     @Id
     @GeneratedValue
     @Column(name = "COMBINATION_STAR_RATE_ID")
     private Long id;
 
-    private int starNumber;
+    private Integer starNumber;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "COMBINATION_ID")
@@ -33,10 +32,12 @@ public class CombinationStarRate extends BaseTimeEntity {
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
+    @Override
     public void updateStarNumber(int starNumber) {
         this.starNumber = starNumber;
     }
 
+    @Override
     public void addStarRate(Combination combination) {
         this.combination = combination;
         if(!combination.getCombinationStarRates().contains(this)){

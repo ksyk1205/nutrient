@@ -31,8 +31,7 @@ public class GeneralExceptionHandler {
     }
 
     // 필요한 경우 적절한 예외타입을 선언하고 newResponse 메소드를 통해 응답을 생성하도록 합니다.
-
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
     public ResponseEntity<?> entityNotFoundExceptionException(Exception e) {
         return newResponse(e, HttpStatus.BAD_REQUEST);
     }

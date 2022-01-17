@@ -1,8 +1,9 @@
 package mandykr.nutrient.controller.combination;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.combination.starRate.CombinationStarRateDto;
-import mandykr.nutrient.dto.combination.starRate.request.CombineStarRateRequest;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateRequestDto;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateResponseDto;
+import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.combination.CombinationStarRateService;
@@ -11,13 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import java.util.Optional;
-import java.util.OptionalInt;
-
 import static mandykr.nutrient.util.ApiUtils.success;
 
 @RestController
-@RequestMapping("/combine-star-rate")
+@RequestMapping("/combination-star-rate")
 @RequiredArgsConstructor
 public class CombinationStarRateController {
 
@@ -27,46 +25,38 @@ public class CombinationStarRateController {
 
 
     @GetMapping("{combinationId}")
-    public ApiResult<CombinationStarRateDto> getCombineStarRateByCombination(@PathVariable Long combinationId){
+    public ApiResult<CombinationStarRateResponseDto> getCombinationStarRateByCombination(@PathVariable Long combinationId){
         return success(
                 combinationStarRateService
-                .getCombineStarRateByCombination(combinationId,getMember())
-                .map(CombinationStarRateDto::new)
-                .get()
+                .getCombinationStarRateByCombination(combinationId,getMember())
         );
     }
 
     @PostMapping("{combinationId}")
-    public ApiResult<CombinationStarRateDto> createCombinationStarRate(@PathVariable Long combinationId,
-                                                                     @Valid @RequestBody CombineStarRateRequest request){
+    public ApiResult<CombinationStarRateResponseDto> createCombinationStarRate(@PathVariable Long combinationId,
+                                                                               @Valid @RequestBody CombinationStarRateRequest request){
         return success(
                 combinationStarRateService
-                        .createCombinationStarRate(combinationId,getMember(), request)
-                        .map(CombinationStarRateDto::new)
-                        .get()
-        );
+                        .createCombinationStarRate(combinationId,getMember(), new CombinationStarRateRequestDto(request)));
     }
     @PutMapping("{combinationId}/{combinationStarRateId}")
-    public ApiResult<CombinationStarRateDto> updateCombinationStarRate(@PathVariable Long combinationId,
-                                                                       @PathVariable Long combinationStarRateId,
-                                                                       @Valid @RequestBody CombineStarRateRequest request){
+    public ApiResult<CombinationStarRateResponseDto> updateCombinationStarRate(@PathVariable Long combinationId,
+                                                                               @PathVariable Long combinationStarRateId,
+                                                                               @Valid @RequestBody CombinationStarRateRequest request){
         return success(
                 combinationStarRateService
-                        .updateCombinationStarRate(combinationId, combinationStarRateId, getMember(), request)
-                        .map(CombinationStarRateDto::new)
-                        .get()
+                        .updateCombinationStarRate(combinationId, combinationStarRateId, getMember(), new CombinationStarRateRequestDto(request))
         );
     }
 
     @DeleteMapping("{combinationStarRateId}")
-    public void deleteCombinationStarRate(@PathVariable Long combinationStarRateId){
-        combinationStarRateService.deleteCombinationStarRate(combinationStarRateId, getMember());
+    public ApiResult<Boolean> deleteCombinationStarRate(@PathVariable Long combinationStarRateId){
+        return success(combinationStarRateService.deleteCombinationStarRate(combinationStarRateId, getMember()));
     }
 
 
     //임의의 member 값
     private Member getMember() {
-        Member member = memberRepository.findById("testMemberId1").get();
-        return member;
+        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다,"));
     }
 }

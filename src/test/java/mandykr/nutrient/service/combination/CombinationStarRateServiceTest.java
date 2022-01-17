@@ -1,6 +1,8 @@
 package mandykr.nutrient.service.combination;
 
-import mandykr.nutrient.dto.combination.starRate.request.CombineStarRateRequest;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateRequestDto;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateResponseDto;
+import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequest;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
@@ -8,7 +10,6 @@ import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 
 import mandykr.nutrient.repository.combination.CombinationRepository;
-import mandykr.nutrient.service.combination.CombinationStarRateService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,112 +52,166 @@ class CombinationStarRateServiceTest {
     }
 
     @Test
-    public void 조합_별점_등록_테스트(){
-        CombineStarRateRequest request = new CombineStarRateRequest();
-        request.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 등록")
+    public void 영양제_조합_별점_등록(){
+        //given
+        CombinationStarRateRequestDto combinationStarRateRequestDto = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
 
-        combinationStarRateService.createCombinationStarRate(combination.getId(), member, request);
+        //when
+        when(combinationStarRateRepository.findByCombinationIdAndMember(anyLong(),any(Member.class))).thenReturn(Optional.empty());
+        when(combinationStarRateRepository.save(any(CombinationStarRate.class))).thenReturn(
+            CombinationStarRate
+                    .builder()
+                    .id(1L)
+                    .member(member)
+                    .combination(combination)
+                    .starNumber(combinationStarRateRequestDto.getStarNumber())
+                    .build()
+        );
+        CombinationStarRateResponseDto combinationStarRateResponseDto = combinationStarRateService.createCombinationStarRate(combination.getId(), member, combinationStarRateRequestDto);
 
-        Assertions.assertEquals(combination.getRating(),2);
+        //then
+        assertEquals(combinationStarRateResponseDto.getStarNumber(),combinationStarRateRequestDto.getStarNumber());
     }
 
     @Test
-    public void 등록_영양제_존재X_테스트(){
-        CombineStarRateRequest request = new CombineStarRateRequest();
-        request.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 등록 오류(영양제 존재X)")
+    public void 영양제_조합_별점_등록_영양제_존재X(){
+        CombinationStarRateRequestDto combinationStarRateRequestDto = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
+
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.createCombinationStarRate(2L, member, request),
+                ()->combinationStarRateService.createCombinationStarRate(2L, member, combinationStarRateRequestDto),
                 "2의 영양제 조합이 존재하지 않습니다.");
     }
 
     @Test
-    public void 등록_영양제_별점_존재_테스트(){
-        CombineStarRateRequest request1 = new CombineStarRateRequest();
-        request1.setStarNumber(2);
-        combinationStarRateService.createCombinationStarRate(combination.getId(), member, request1);
-        CombineStarRateRequest request2 = new CombineStarRateRequest();
-        request2.setStarNumber(4);
+    @DisplayName("영양제 조합 별점 등록 오류(영양제 조합 별점 존재)")
+    public void 영양제_조합_별점_등록_영양제_조합_별점_존재(){
+        //given
+        CombinationStarRateRequestDto combinationStarRateRequestDto1 = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
+        CombinationStarRateRequestDto combinationStarRateRequestDto2 = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(4).build());
         CombinationStarRate insert = CombinationStarRate.builder()
                 .id(1L)
                 .member(member)
-                .starNumber(request1.getStarNumber())
+                .starNumber(combinationStarRateRequestDto1.getStarNumber())
                 .build();
-        given(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(), member)).willReturn(Optional.ofNullable(insert));
+
+        //when
+        when(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(), member))
+                .thenReturn(Optional.empty())
+                .thenReturn(Optional.ofNullable(insert));
+        when(combinationStarRateRepository.save(any(CombinationStarRate.class)))
+            .thenReturn(
+                CombinationStarRate
+                        .builder()
+                        .id(1L)
+                        .member(member)
+                        .combination(combination)
+                        .starNumber(combinationStarRateRequestDto1.getStarNumber())
+                        .build()
+        ).thenReturn(
+                CombinationStarRate
+                        .builder()
+                        .id(1L)
+                        .member(member)
+                        .combination(combination)
+                        .starNumber(combinationStarRateRequestDto2.getStarNumber())
+                        .build()
+        );
+
+        combinationStarRateService.createCombinationStarRate(combination.getId(), member, combinationStarRateRequestDto1);
+
+        //then
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.createCombinationStarRate(combination.getId(), member, request2));
+                ()->combinationStarRateService.createCombinationStarRate(combination.getId(), member, combinationStarRateRequestDto2));
     }
 
     @Test
-    public void 조합_별점_업데이트_테스트(){
-        CombineStarRateRequest request1 = new CombineStarRateRequest();
-        request1.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 수정")
+    public void 영양제_조합_별점_수정(){
+        //given
+        CombinationStarRateRequestDto combinationStarRateRequestDto1 = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
         CombinationStarRate insert = CombinationStarRate.builder()
                 .id(1L)
                 .member(member)
-                .starNumber(request1.getStarNumber())
+                .starNumber(combinationStarRateRequestDto1.getStarNumber())
                 .build();
         given(combinationStarRateRepository.save(any())).willReturn(insert);
-        combinationStarRateService.createCombinationStarRate(combination.getId(), member, request1);
-        Assertions.assertEquals(combination.getRating(), 2);
+        combinationStarRateService.createCombinationStarRate(combination.getId(), member, combinationStarRateRequestDto1);
+
+        //when
+        assertEquals(combination.getRating(), 2);
         combination.getCombinationStarRates().set(0, insert);
         doReturn(Optional.ofNullable(insert))
                 .when(combinationStarRateRepository).findIdAndMemberAndComb(insert.getId(), member, combination.getId());
 
 
-        request1.setStarNumber(4);
-        combinationStarRateService.updateCombinationStarRate(combination.getId(), insert.getId(), member, request1);
+        CombinationStarRateRequestDto combinationStarRateRequestDto2 = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(4).build());
+        combinationStarRateService.updateCombinationStarRate(combination.getId(), insert.getId(), member, combinationStarRateRequestDto2);
 
-        Assertions.assertEquals(combination.getRating(),4);
+        assertEquals(combination.getRating(),4);
     }
 
     @Test
-    public void 조합_별점_업데이트_영양제존재X_테스트(){
-        CombineStarRateRequest request = new CombineStarRateRequest();
-        request.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 수정 오류(영양제 조합 존재X)")
+    public void 영양제_조합_별점_수정_영양제_조합_존재X(){
+        CombinationStarRateRequestDto combinationStarRateRequestDto = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
+
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.updateCombinationStarRate(2L,1L, member, request),
+                ()->combinationStarRateService.updateCombinationStarRate(2L,1L, member, combinationStarRateRequestDto),
                 "2의 영양제 조합이 존재하지 않습니다.");
     }
 
     @Test
-    public void 조합_별점_업데이트_영양제별점존재X_테스트(){
-        CombineStarRateRequest request = new CombineStarRateRequest();
-        request.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 수정 오류(영양제 조합 별점 존재X)")
+    public void 영양제_조합_별점_수정_영양제_조합_별점_존재X(){
+        CombinationStarRateRequestDto combinationStarRateRequestDto = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
 
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.updateCombinationStarRate(combination.getId(),1L, member, request));
+                ()->combinationStarRateService.updateCombinationStarRate(combination.getId(),1L, member, combinationStarRateRequestDto));
     }
 
     @Test
-    public void 조합_별점_조회_테스트(){
-        CombineStarRateRequest request = new CombineStarRateRequest();
-        request.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 조회")
+    public void 영양제_조합_별점_조회(){
+        //given
+        CombinationStarRateRequestDto combinationStarRateRequestDto = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
 
         CombinationStarRate insert = CombinationStarRate.builder()
                 .id(1L)
-                .starNumber(request.getStarNumber())
+                .starNumber(combinationStarRateRequestDto.getStarNumber())
                 .build();
         given(combinationStarRateRepository.save(any())).willReturn(insert);
 
         given(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(), member)).willReturn(Optional.ofNullable(insert));
-        assertTrue(combinationStarRateService.getCombineStarRateByCombination(combination.getId(), member).isPresent());
+
+        //when
+        CombinationStarRateResponseDto combinationStarRateResponseDto = combinationStarRateService.getCombinationStarRateByCombination(combination.getId(), member);
+
+        //then
+        assertEquals(combinationStarRateResponseDto.getId(), 1L);
+        assertEquals(combinationStarRateResponseDto.getStarNumber(), combinationStarRateRequestDto.getStarNumber());
     }
 
     @Test
-    public void 조합_별점_삭제_테스트(){
-        CombineStarRateRequest request = new CombineStarRateRequest();
-        request.setStarNumber(2);
+    @DisplayName("영양제 조합 별점 삭제")
+    public void 영양제_조합_별점_삭제(){
+        //given
+        CombinationStarRateRequestDto combinationStarRateRequestDto = new CombinationStarRateRequestDto(CombinationStarRateRequest.builder().starNumber(2).build());
         CombinationStarRate insert = CombinationStarRate.builder()
                 .id(1L)
                 .member(member)
-                .starNumber(request.getStarNumber())
+                .starNumber(combinationStarRateRequestDto.getStarNumber())
                 .build();
         given(combinationStarRateRepository.save(any())).willReturn(insert);
         given(combinationStarRateRepository.findById(any())).willReturn(Optional.ofNullable(insert));
-        combinationStarRateService.createCombinationStarRate(combination.getId(),member,request);
-
+        combinationStarRateService.createCombinationStarRate(combination.getId(),member,combinationStarRateRequestDto);
+        //when
         combinationStarRateService.deleteCombinationStarRate(insert.getId(), member);
+        CombinationStarRateResponseDto combinationStarRateResponseDto = combinationStarRateService.getCombinationStarRateByCombination(combination.getId(), member);
+        //then
+        assertNull(combinationStarRateResponseDto.getId());
+        assertNull(combinationStarRateResponseDto.getStarNumber());
 
-        assertFalse(combinationStarRateService.getCombineStarRateByCombination(combination.getId(), member).isPresent());
     }
 }

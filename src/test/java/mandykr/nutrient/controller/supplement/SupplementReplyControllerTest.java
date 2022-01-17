@@ -1,6 +1,7 @@
 package mandykr.nutrient.controller.supplement;
 
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
@@ -67,9 +68,9 @@ class SupplementReplyControllerTest {
     @DisplayName("해당 영양제의 부모 댓글 보기")
     public void 영양제_부모_댓글_보기() throws Exception {
         //given
-        List<SupplementReplyDto> supplementReplyDtos = new ArrayList<>();
-        supplementReplyDtos.add(
-            new SupplementReplyDto(
+        List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
+        supplementReplyResponseDtos.add(
+            new SupplementReplyResponseDto(
                 SupplementReply
                     .builder()
                     .id(1L)
@@ -83,8 +84,8 @@ class SupplementReplyControllerTest {
                     .build()
             )
         );
-        supplementReplyDtos.add(
-            new SupplementReplyDto(
+        supplementReplyResponseDtos.add(
+            new SupplementReplyResponseDto(
                 SupplementReply.builder()
                         .id(2L)
                         .supplement(saveSupplement)
@@ -97,7 +98,7 @@ class SupplementReplyControllerTest {
                         .build()
             )
         );
-        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willReturn(supplementReplyDtos);
+        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -130,8 +131,8 @@ class SupplementReplyControllerTest {
     @DisplayName("해당 영양제의 부모 댓글 보기(데이터 없음)")
     public void 영양제_부모_댓글_보기_데이터없음() throws Exception {
         //given
-        List<SupplementReplyDto> supplementReplyDtos = new ArrayList<>();
-        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willReturn(supplementReplyDtos);
+        List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
+        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -154,7 +155,7 @@ class SupplementReplyControllerTest {
     @DisplayName("해당 영양제의 부모 댓글 보기(영양제 없음)")
     public void 영양제_부모_댓글_보기_영양제없음() throws Exception {
         //given
-        List<SupplementReplyDto> supplementReplyDtos = new ArrayList<>();
+        List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
         given(supplementReplyService.getSupplementReplyBySupplement(1L)).willThrow(new EntityNotFoundException("not found Supplement : 1"));
 
         //when
@@ -178,9 +179,9 @@ class SupplementReplyControllerTest {
     @DisplayName("부모댓글의 대댓글 보기")
     public void 부모댓글의_대댓글_보기() throws Exception {
         //given
-        List<SupplementReplyDto> supplementReplyDtos = new ArrayList<>();
-        supplementReplyDtos.add(
-            new SupplementReplyDto(
+        List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
+        supplementReplyResponseDtos.add(
+            new SupplementReplyResponseDto(
                 SupplementReply.builder()
                 .id(2L)
                 .supplement(saveSupplement)
@@ -192,8 +193,8 @@ class SupplementReplyControllerTest {
                 .deleteFlag(false)
                 .build()
             ));
-        supplementReplyDtos.add(
-            new SupplementReplyDto(
+        supplementReplyResponseDtos.add(
+            new SupplementReplyResponseDto(
                 SupplementReply.builder()
                 .id(3L)
                 .supplement(saveSupplement)
@@ -205,7 +206,7 @@ class SupplementReplyControllerTest {
                 .deleteFlag(false)
                 .build()
             ));
-        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willReturn(supplementReplyDtos);
+        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -238,8 +239,8 @@ class SupplementReplyControllerTest {
     @DisplayName("부모댓글의 대댓글 보기(데이터없음)")
     public void 부모댓글의_대댓글_보기_데이터없음() throws Exception {
         //given
-        List<SupplementReplyDto> supplementReplyDtos = new ArrayList<>();
-        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willReturn(supplementReplyDtos);
+        List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
+        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -261,7 +262,7 @@ class SupplementReplyControllerTest {
     @DisplayName("부모댓글의 대댓글 보기(영양제없음)")
     public void 부모댓글의_대댓글_보기_영양제없음() throws Exception {
         //given
-        List<SupplementReplyDto> supplementReplyDtos = new ArrayList<>();
+        List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
         given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willThrow(new EntityNotFoundException("not found Supplement : 1"));
 
         //when
@@ -285,8 +286,8 @@ class SupplementReplyControllerTest {
     @DisplayName("댓글 달기 테스트")
     public void 댓글_달기_테스트() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                     SupplementReply.builder()
                         .id(1L)
                         .supplement(saveSupplement)
@@ -299,7 +300,7 @@ class SupplementReplyControllerTest {
                         .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyDto.class))).willReturn(supplementReplyDto);
+        given(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willReturn(supplementReplyResponseDto);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -327,8 +328,8 @@ class SupplementReplyControllerTest {
     @DisplayName("댓글 달기 테스트(영양제 없음)")
     public void 댓글_달기_테스트_영양제없음() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                         SupplementReply.builder()
                                 .id(1L)
                                 .supplement(saveSupplement)
@@ -341,7 +342,7 @@ class SupplementReplyControllerTest {
                                 .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyDto.class))).willThrow(new EntityNotFoundException("not found Supplement : 1"));
+        given(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willThrow(new EntityNotFoundException("not found Supplement : 1"));
 
         //when
         ResultActions result = mockMvc.perform(
@@ -365,8 +366,8 @@ class SupplementReplyControllerTest {
     @DisplayName("대댓글 달기 테스트")
     public void 대댓글_달기_테스트() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                         SupplementReply.builder()
                                 .id(2L)
                                 .supplement(saveSupplement)
@@ -379,7 +380,7 @@ class SupplementReplyControllerTest {
                                 .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyDto.class))).willReturn(supplementReplyDto);
+        given(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willReturn(supplementReplyResponseDto);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -406,8 +407,8 @@ class SupplementReplyControllerTest {
     @DisplayName("대댓글 달기 테스트(영양제없음)")
     public void 대댓글_달기_테스트_영양제없음() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                         SupplementReply.builder()
                                 .id(2L)
                                 .supplement(saveSupplement)
@@ -420,7 +421,7 @@ class SupplementReplyControllerTest {
                                 .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyDto.class))).willThrow(new EntityNotFoundException("not found Supplement : 1"));
+        given(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willThrow(new EntityNotFoundException("not found Supplement : 1"));
 
         //when
         ResultActions result = mockMvc.perform(
@@ -445,8 +446,8 @@ class SupplementReplyControllerTest {
     @DisplayName("대댓글 달기 테스트(부모 댓글 없음)")
     public void 대댓글_달기_테스트_부모_댓글_없음() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                         SupplementReply.builder()
                                 .id(2L)
                                 .supplement(saveSupplement)
@@ -459,7 +460,7 @@ class SupplementReplyControllerTest {
                                 .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyDto.class))).willThrow(new EntityNotFoundException("not found SupplementReply : 1"));
+        given(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willThrow(new EntityNotFoundException("not found SupplementReply : 1"));
 
         //when
         ResultActions result = mockMvc.perform(
@@ -485,8 +486,8 @@ class SupplementReplyControllerTest {
     @DisplayName("댓글 수정 테스트")
     public void 댓글_수정_테스트() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                         SupplementReply.builder()
                                 .id(1L)
                                 .supplement(saveSupplement)
@@ -499,7 +500,7 @@ class SupplementReplyControllerTest {
                                 .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyDto.class))).willReturn(supplementReplyDto);
+        given(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willReturn(supplementReplyResponseDto);
         //when
         ResultActions result = mockMvc.perform(
                 put("/supplement-reply/1")
@@ -526,8 +527,8 @@ class SupplementReplyControllerTest {
     @DisplayName("댓글 수정 테스트(댓글Id, Member 에 해당되는 데이터 없음)")
     public void 댓글_수정_테스트_오류() throws Exception {
         //given
-        SupplementReplyDto supplementReplyDto =
-                new SupplementReplyDto(
+        SupplementReplyResponseDto supplementReplyResponseDto =
+                new SupplementReplyResponseDto(
                         SupplementReply.builder()
                                 .id(1L)
                                 .supplement(saveSupplement)
@@ -540,7 +541,7 @@ class SupplementReplyControllerTest {
                                 .build()
                 );
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
-        given(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyDto.class))).willThrow(new EntityNotFoundException("not found SupplementReply : 1"));
+        given(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class))).willThrow(new EntityNotFoundException("not found SupplementReply : 1"));
         //when
         ResultActions result = mockMvc.perform(
                 put("/supplement-reply/1")

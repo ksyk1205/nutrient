@@ -2,7 +2,8 @@ package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
@@ -32,17 +33,17 @@ public class SupplementReplyService {
     private final SupplementRepository supplementRepository;
 
     @Transactional
-    public SupplementReplyDto createSupplementReply(Long supplementId, Member member, SupplementReplyDto supplementReplyDto){
+    public SupplementReplyResponseDto createSupplementReply(Long supplementId, Member member, SupplementReplyRequestDto supplementReplyRequestDto){
         //첫 댓글
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
         Long groups = supplementReplyRepository.findByLastOrderWithParent(supplementId);
         if(groups == null)
             groups = 0L;
-        return Optional.ofNullable(
+        return Optional.of(
                 supplementReplyRepository.save(
                     SupplementReply.builder()
-                    .content(supplementReplyDto.getContent())
+                    .content(supplementReplyRequestDto.getContent())
                     .groups(groups)
                     .groupOrder(1L)
                     .member(member)
@@ -51,12 +52,12 @@ public class SupplementReplyService {
                     .supplement(supplement)
                     .build()
                 )
-            ).map(SupplementReplyDto::new)
+            ).map(SupplementReplyResponseDto::new)
             .get();
     }
 
     @Transactional
-    public SupplementReplyDto createSupplementReply(Long supplementId, Long supplementReplyId, Member member, SupplementReplyDto supplementReplyDto) {
+    public SupplementReplyResponseDto createSupplementReply(Long supplementId, Long supplementReplyId, Member member, SupplementReplyRequestDto supplementReplyRequestDto) {
         //대댓글
         Supplement supplement = supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
@@ -67,21 +68,21 @@ public class SupplementReplyService {
         if(groupOrder == null)
             groupOrder = 1L;
         SupplementReply saveSupplementReply = supplementReplyRepository.save(SupplementReply.builder()
-                                                .content(supplementReplyDto.getContent())
+                                                .content(supplementReplyRequestDto.getContent())
                                                 .groups(supplementReply.getGroups())
                                                 .groupOrder(groupOrder+1)
                                                 .deleteFlag(false)
                                                 .supplement(supplement)
                                                 .build());
         saveSupplementReply.addParents(supplementReply);
-        return Optional.ofNullable(saveSupplementReply).map(SupplementReplyDto::new).get();
+        return Optional.of(saveSupplementReply).map(SupplementReplyResponseDto::new).get();
     }
 
-    public List<SupplementReplyDto> getSupplementReplyBySupplement(Long supplementId){
+    public List<SupplementReplyResponseDto> getSupplementReplyBySupplement(Long supplementId){
         return supplementReplyRepository.findBySupplementAndParentIsNull(supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId)), by(ASC, "groups", "groupOrder"))
                 .stream()
-                .map(SupplementReplyDto::new)
+                .map(SupplementReplyResponseDto::new)
                 .collect(Collectors.toList());
     }
 
@@ -89,22 +90,22 @@ public class SupplementReplyService {
         return supplementReplyRepository.findById(supplementReplyId)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
     }
-    public List<SupplementReplyDto> getSupplementReplyBySupplementWithParent(Long supplementId, Long supplementReplyId){
+    public List<SupplementReplyResponseDto> getSupplementReplyBySupplementWithParent(Long supplementId, Long supplementReplyId){
         return supplementReplyRepository.findBySupplementAndParent(supplementRepository.findById(supplementId)
                 .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId))
                         , getSupplementReply(supplementReplyId)
                         , by(ASC, "groups", "groupOrder"))
                 .stream()
-                .map(SupplementReplyDto::new)
+                .map(SupplementReplyResponseDto::new)
                 .collect(Collectors.toList());
     }
 
-    public SupplementReplyDto updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyDto supplementReplyDto){
+    public SupplementReplyResponseDto updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyRequestDto supplementReplyRequestDto){
         //변경감지
         SupplementReply findSupplementReply = supplementReplyRepository.findByIdAndMember(supplementReplyId, member)
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
-        findSupplementReply.changeContent(supplementReplyDto.getContent());
-        return Optional.ofNullable(findSupplementReply).map(SupplementReplyDto::new).get();
+        findSupplementReply.changeContent(supplementReplyRequestDto.getContent());
+        return Optional.of(findSupplementReply).map(SupplementReplyResponseDto::new).get();
     }
     @Transactional
     public void deleteSupplementReply(Long supplementReplyId, Member member){
