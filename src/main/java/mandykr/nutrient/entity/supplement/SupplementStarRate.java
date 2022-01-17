@@ -4,13 +4,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
+import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class SupplementStarRate {
+public class SupplementStarRate extends BaseTimeEntity {
     @Id
     @GeneratedValue
     @Column(name = "STARRATE_ID")

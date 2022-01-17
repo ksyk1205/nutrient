@@ -2,7 +2,7 @@ package mandykr.nutrient.controller.supplement;
 
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
-import mandykr.nutrient.dto.request.StarRateRequest;
+import mandykr.nutrient.dto.request.SupplementStarRateRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.supplement.SupplementStarRateService;
@@ -29,7 +29,7 @@ public class SupplementStarRateController {
     @PostMapping("/{supplementId}")
     public ApiResult<SupplementStarRateDto> createStarRate(
             @PathVariable Long supplementId,
-            @RequestBody @Valid StarRateRequest starRateRequest){
+            @RequestBody @Valid SupplementStarRateRequest starRateRequest){
         return success(starRateService.createStarRate(supplementId, starRateRequest.getStarNumber(), getMember()));
     }
 
@@ -44,7 +44,7 @@ public class SupplementStarRateController {
     public ApiResult<SupplementStarRateDto> updateStarRate(
             @PathVariable Long supplementId,
             @PathVariable Long starRateId,
-            @RequestBody @Valid StarRateRequest starRateRequest){
+            @RequestBody @Valid SupplementStarRateRequest starRateRequest){
         return success(starRateService.updateStarRate(supplementId, starRateId, starRateRequest.getStarNumber(), getMember()));
     }
 

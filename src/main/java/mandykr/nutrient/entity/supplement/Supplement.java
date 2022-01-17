@@ -1,7 +1,9 @@
 package mandykr.nutrient.entity.supplement;
 
 import lombok.*;
+import mandykr.nutrient.dto.supplement.SupplementDto;
 import mandykr.nutrient.entity.SupplementCategory;
+import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Supplement {
+public class Supplement extends BaseTimeEntity {
     @Id @GeneratedValue
     @Column(name = "SUPPLEMENT_ID")
     private Long id;
@@ -30,13 +32,18 @@ public class Supplement {
     @Builder.Default
     private List<SupplementStarRate> starRateList = new ArrayList<>();
 
+    private boolean deleteFlag;
+
     //수정을 위한 메서드
-    public void updateNameAndPrdlst(String name, String prdlstReportNo) {
+    public void updateNameAndPrdlstAndCategory(String name, String prdlstReportNo,SupplementCategory supplementCategory) {
         if(name != null) {
             this.name = name;
         }
         if(prdlstReportNo != null) {
             this.prdlstReportNo = prdlstReportNo;
+        }
+        if(supplementCategory.getId()!=this.supplementCategory.getId()){
+            this.supplementCategory = supplementCategory;
         }
     }
 
@@ -65,5 +72,9 @@ public class Supplement {
                 return;
             }
         }
+    }
+
+    public void updateDeleteFlag() {
+        this.deleteFlag = true;
     }
 }

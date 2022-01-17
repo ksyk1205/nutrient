@@ -61,7 +61,7 @@ class SupplementRepositoryTest {
         //given
         Supplement supplement = supplementRepository.save(supplement1);
         //when
-        supplement.updateNameAndPrdlst("비타민C",null);
+        supplement.updateNameAndPrdlstAndCategory("비타민C",null,category);
         //then
         assertEquals(supplementRepository.findById(supplement.getId()).get().getName(),"비타민C");
 
