@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 import static com.querydsl.core.types.Projections.bean;
-import static mandykr.nutrient.entity.QSupplement.supplement;
+import static mandykr.nutrient.entity.supplement.QSupplement.supplement;
 import static mandykr.nutrient.entity.QSupplementCategory.supplementCategory;
 import static mandykr.nutrient.entity.QSupplementCombination.supplementCombination;
 import static mandykr.nutrient.entity.combination.QCombination.combination;
