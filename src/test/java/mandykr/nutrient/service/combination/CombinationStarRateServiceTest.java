@@ -100,7 +100,7 @@ class CombinationStarRateServiceTest {
         //when
         when(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(), member))
                 .thenReturn(Optional.empty())
-                .thenReturn(Optional.ofNullable(insert));
+                .thenReturn(Optional.of(insert));
         when(combinationStarRateRepository.save(any(CombinationStarRate.class)))
             .thenReturn(
                 CombinationStarRate
@@ -124,7 +124,8 @@ class CombinationStarRateServiceTest {
 
         //then
         assertThrows(IllegalArgumentException.class,
-                ()->combinationStarRateService.createCombinationStarRate(combination.getId(), member, combinationStarRateRequestDto2));
+                ()->combinationStarRateService.createCombinationStarRate(combination.getId(), member, combinationStarRateRequestDto2)
+        , "등록한 영양제 조합 별점이 존재합니다");
     }
 
     @Test

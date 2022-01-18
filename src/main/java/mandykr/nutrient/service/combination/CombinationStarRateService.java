@@ -27,7 +27,7 @@ public class CombinationStarRateService {
                 .orElseThrow(()->new IllegalArgumentException(combinationId+"의 영양제 조합이 존재하지 않습니다."));
         combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
         .ifPresent(m ->{
-            throw new IllegalArgumentException(m + "의 영양제 조합 별점이 존재합니다");
+            throw new IllegalArgumentException("등록한 영양제 조합 별점이 존재합니다");
         });
         //영양제 조합 평점 업데이트
         CombinationStarRate saveCombineStarRate = CombinationStarRate.builder()
@@ -55,8 +55,7 @@ public class CombinationStarRateService {
 
 
     public CombinationStarRateResponseDto getCombinationStarRateByCombination(Long combinationId, Member member) {
-        CombinationStarRateImpl combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
-                .orElse(CombinationStarRateImpl.NULL); //NULL OBJECT 패턴
+        CombinationStarRateImpl combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member).get(); //NULL OBJECT 패턴
         return new CombinationStarRateResponseDto(combinationStarRate);
     }
 

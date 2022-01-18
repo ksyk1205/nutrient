@@ -19,6 +19,7 @@ import static mandykr.nutrient.util.ApiUtils.success;
 @RequiredArgsConstructor
 @RequestMapping("/supplement-reply")
 public class SupplementReplyController {
+
     private final SupplementReplyService supplementReplyService;
     private final MemberRepository memberRepository;
 
@@ -28,8 +29,8 @@ public class SupplementReplyController {
      * @return ApiResult<List<SupplementReplyResponseDto>>
      */
     @GetMapping("{supplementId}")
-    public ApiResult<List<SupplementReplyResponseDto>> getSupplementReplyBySupplement(@PathVariable Long supplementId){
-        return success(supplementReplyService.getSupplementReplyBySupplement(supplementId));
+    public ApiResult<List<SupplementReplyResponseDto>> getSupplementRepliesBySupplement(@PathVariable Long supplementId){
+        return success(supplementReplyService.getSupplementRepliesBySupplement(supplementId));
     }
 
     /**
@@ -38,10 +39,10 @@ public class SupplementReplyController {
      * @return ApiResult<List<SupplementReplyResponseDto>>
      */
     @GetMapping("{supplementId}/{parentId}")
-    public ApiResult<List<SupplementReplyResponseDto>> getSupplementReplyList(
+    public ApiResult<List<SupplementReplyResponseDto>> getSupplementRepliesByParent(
             @PathVariable Long supplementId,
-            @PathVariable Long parentId ){
-        return success(supplementReplyService.getSupplementReplyBySupplementWithParent(supplementId, parentId));
+            @PathVariable Long parentId){
+        return success(supplementReplyService.getSupplementRepliesByParent(supplementId, parentId));
     }
 
     /**
@@ -52,9 +53,10 @@ public class SupplementReplyController {
      */
     @PostMapping("{supplementId}")
     public ApiResult<SupplementReplyResponseDto> createSupplementReply(
-            @PathVariable("supplementId") Long supplementId
-            ,@RequestBody @Valid SupplementReplyRequest request){
-        return success(supplementReplyService.createSupplementReply(supplementId, getMember(), new SupplementReplyRequestDto(request)));
+            @PathVariable("supplementId") Long supplementId,
+            @RequestBody @Valid SupplementReplyRequest request){
+        SupplementReplyRequestDto supplementReplyRequestDto = new SupplementReplyRequestDto(request);
+        return success(supplementReplyService.createSupplementReply(supplementId, getMember(), supplementReplyRequestDto));
     }
 
 
@@ -70,7 +72,8 @@ public class SupplementReplyController {
             @PathVariable("supplementId") Long supplementId,
             @PathVariable("replyId") Long replyId,
             @RequestBody @Valid SupplementReplyRequest request){
-        return success(supplementReplyService.createSupplementReply(supplementId, replyId, getMember(), new SupplementReplyRequestDto(request)));
+        SupplementReplyRequestDto supplementReplyRequestDto = new SupplementReplyRequestDto(request);
+        return success(supplementReplyService.createSupplementReply(supplementId, replyId, getMember(), supplementReplyRequestDto));
     }
 
 
@@ -84,7 +87,8 @@ public class SupplementReplyController {
     public ApiResult<SupplementReplyResponseDto> updateSupplementReply(
             @PathVariable Long replyId,
             @RequestBody @Valid SupplementReplyRequest request){
-        return success(supplementReplyService.updateSupplementReply(replyId, getMember(), new SupplementReplyRequestDto(request)));
+        SupplementReplyRequestDto supplementReplyRequestDto = new SupplementReplyRequestDto(request);
+        return success(supplementReplyService.updateSupplementReply(replyId, getMember(), supplementReplyRequestDto));
     }
 
     /**

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
@@ -77,6 +78,11 @@ class CombinationStarRateRepositoryTest {
                         .build());
 
         assertTrue(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(),member).isPresent());
+    }
+
+    @Test
+    public void 영양제번호로_조회_테스트_없을때(){
+        assertFalse(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(),member).isPresent());
     }
 
 }

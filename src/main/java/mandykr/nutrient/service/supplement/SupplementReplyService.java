@@ -21,16 +21,33 @@ import java.util.stream.Collectors;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.by;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class SupplementReplyService {
 
     private final SupplementReplyRepository supplementReplyRepository;
 
     private final SupplementRepository supplementRepository;
+
+    public List<SupplementReplyResponseDto> getSupplementRepliesBySupplement(Long supplementId){
+        Supplement supplement = getSupplement(supplementId);
+        return supplementReplyRepository
+                .findBySupplementAndParentIsNull(supplement, by(ASC, "groups", "groupOrder"))
+                .stream()
+                .map(SupplementReplyResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<SupplementReplyResponseDto> getSupplementRepliesByParent(Long supplementId, Long supplementReplyId){
+        Supplement supplement = getSupplement(supplementId);
+        SupplementReply supplementReply = getSupplementReply(supplementReplyId);
+        return supplementReplyRepository.findBySupplementAndParent(supplement, supplementReply, by(ASC, "groups", "groupOrder"))
+            .stream()
+            .map(SupplementReplyResponseDto::new)
+            .collect(Collectors.toList());
+    }
 
     @Transactional
     public SupplementReplyResponseDto createSupplementReply(Long supplementId, Member member, SupplementReplyRequestDto supplementReplyRequestDto){
@@ -65,8 +82,9 @@ public class SupplementReplyService {
                 .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
 
         Long groupOrder = supplementReplyRepository.findByLastOrderWithChild(supplementId, supplementReplyId);
-        if(groupOrder == null)
+        if(groupOrder == null) {
             groupOrder = 1L;
+        }
         SupplementReply saveSupplementReply = supplementReplyRepository.save(SupplementReply.builder()
                                                 .content(supplementReplyRequestDto.getContent())
                                                 .groups(supplementReply.getGroups())
@@ -78,27 +96,9 @@ public class SupplementReplyService {
         return Optional.of(saveSupplementReply).map(SupplementReplyResponseDto::new).get();
     }
 
-    public List<SupplementReplyResponseDto> getSupplementReplyBySupplement(Long supplementId){
-        return supplementReplyRepository.findBySupplementAndParentIsNull(supplementRepository.findById(supplementId)
-                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId)), by(ASC, "groups", "groupOrder"))
-                .stream()
-                .map(SupplementReplyResponseDto::new)
-                .collect(Collectors.toList());
-    }
 
-    public SupplementReply getSupplementReply(Long supplementReplyId){
-        return supplementReplyRepository.findById(supplementReplyId)
-                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
-    }
-    public List<SupplementReplyResponseDto> getSupplementReplyBySupplementWithParent(Long supplementId, Long supplementReplyId){
-        return supplementReplyRepository.findBySupplementAndParent(supplementRepository.findById(supplementId)
-                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId))
-                        , getSupplementReply(supplementReplyId)
-                        , by(ASC, "groups", "groupOrder"))
-                .stream()
-                .map(SupplementReplyResponseDto::new)
-                .collect(Collectors.toList());
-    }
+
+
 
     public SupplementReplyResponseDto updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyRequestDto supplementReplyRequestDto){
         //변경감지
@@ -132,5 +132,12 @@ public class SupplementReplyService {
         }
 
     }
-
+    private Supplement getSupplement(Long supplementId) {
+        return supplementRepository.findById(supplementId)
+                .orElseThrow(() -> new EntityNotFoundException("not found Supplement : " + supplementId));
+    }
+    private SupplementReply getSupplementReply(Long supplementReplyId){
+        return supplementReplyRepository.findById(supplementReplyId)
+                .orElseThrow(() -> new EntityNotFoundException("not found SupplementReply : " + supplementReplyId));
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
@@ -45,8 +46,14 @@ class SupplementReplyControllerTest {
     @MockBean
     MemberRepository memberRepository;
 
-    Supplement saveSupplement;
-    Member saveMember;
+    Supplement supplement;
+    Member member;
+    SupplementReply parent1;
+    SupplementReply child1_1;
+    SupplementReply child1_2;
+    SupplementReply parent2;
+    SupplementReply child2_1;
+
 
     @BeforeEach
     public void setup(){
@@ -54,51 +61,81 @@ class SupplementReplyControllerTest {
         supplement.setId(1L);
         supplement.setName("test1");
         supplement.setRanking(4.2);
-        this.saveSupplement = supplement;
+        this.supplement = supplement;
 
         Member member = new Member();
         member.setId(1L);
         member.setMemberId("testMember");
         member.setName("KIM");
-        this.saveMember = member;
+        this.member = member;
+
+        parent1 = makeParent(1L, "TEST1", 1L, 1L);
+        child1_1 = makeChild(2L, "TEST1-1", 1L, 2L, parent1);
+        child1_2 = makeChild(3L, "TEST1-2", 1L, 2L, parent1);
+        parent2 = makeParent(4L, "TEST2", 2L, 1L);
+        child2_1 = makeChild(5L, "TEST2-1", 2L, 2L, parent2);
 
     }
+
+    private SupplementReply makeParent(Long id, String content, Long groupId, Long groupOrder) {
+        return SupplementReply.builder()
+                .id(id)
+                .supplement(supplement)
+                .member(member)
+                .parent(null)
+                .content(content)
+                .groups(groupId)
+                .groupOrder(groupOrder)
+                .deleteFlag(false)
+                .build();
+    }
+
+    private SupplementReply makeChild(Long id, String content, Long groupId, Long groupOrder, SupplementReply parent) {
+        return SupplementReply.builder()
+                .id(id)
+                .supplement(supplement)
+                .member(member)
+                .parent(parent)
+                .content(content)
+                .groups(groupId)
+                .groupOrder(groupOrder)
+                .deleteFlag(false)
+                .build();
+    }
+    private void handlerCheck(
+            ResultActions result,
+            ResultMatcher status,
+            Class<SupplementReplyController> className,
+            String methodName) throws Exception {
+        result.andDo(print())
+                .andExpect(status)
+                .andExpect(handler().handlerType(className))
+                .andExpect(handler().methodName(methodName));
+    }
+
+    private void successCheckMany(ResultActions result, List<SupplementReplyResponseDto> supplementReplyResponseDtos) throws Exception {
+        result.andDo(print())
+                .andExpect(jsonPath("$.response").isArray())
+                .andExpect(jsonPath("$.response.length()", is(supplementReplyResponseDtos.size())));
+        for(int i=0; i < supplementReplyResponseDtos.size();++i){
+            result.andDo(print())
+                    .andExpect(jsonPath("$.response[" + i + "].id", is(supplementReplyResponseDtos.get(i).getId().intValue())))
+                    .andExpect(jsonPath("$.response[" + i + "].content", is(supplementReplyResponseDtos.get(i).getContent())))
+                    .andExpect(jsonPath("$.response[" + i + "].groups", is(supplementReplyResponseDtos.get(i).getGroups().intValue())))
+                    .andExpect(jsonPath("$.response[" + i + "].groupOrder", is(supplementReplyResponseDtos.get(i).getGroupOrder().intValue())))
+                    .andExpect(jsonPath("$.response[" + i + "].deleteFlag", is(supplementReplyResponseDtos.get(i).getDeleteFlag())));
+        }
+    }
+
 
     @Test
     @DisplayName("해당 영양제의 부모 댓글 보기")
     public void 영양제_부모_댓글_보기() throws Exception {
         //given
         List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
-        supplementReplyResponseDtos.add(
-            new SupplementReplyResponseDto(
-                SupplementReply
-                    .builder()
-                    .id(1L)
-                    .supplement(saveSupplement)
-                    .member(saveMember)
-                    .parent(null)
-                    .content("reply1")
-                    .groups(1L)
-                    .groupOrder(1L)
-                    .deleteFlag(false)
-                    .build()
-            )
-        );
-        supplementReplyResponseDtos.add(
-            new SupplementReplyResponseDto(
-                SupplementReply.builder()
-                        .id(2L)
-                        .supplement(saveSupplement)
-                        .member(saveMember)
-                        .parent(null)
-                        .content("reply2")
-                        .groups(2L)
-                        .groupOrder(1L)
-                        .deleteFlag(false)
-                        .build()
-            )
-        );
-        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willReturn(supplementReplyResponseDtos);
+        supplementReplyResponseDtos.add(new SupplementReplyResponseDto(parent1));
+        supplementReplyResponseDtos.add(new SupplementReplyResponseDto(parent2));
+        given(supplementReplyService.getSupplementRepliesBySupplement(1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -107,24 +144,12 @@ class SupplementReplyControllerTest {
         );
 
         //then
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(handler().handlerType(SupplementReplyController.class))
-                .andExpect(handler().methodName("getSupplementReplyBySupplement"))
-                .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.response").isArray())
-                .andExpect(jsonPath("$.response.length()", is(2)))
-                .andExpect(jsonPath("$.response[0].id", is(1)))
-                .andExpect(jsonPath("$.response[0].content", is("reply1")))
-                .andExpect(jsonPath("$.response[0].groups", is(1)))
-                .andExpect(jsonPath("$.response[0].groupOrder", is(1)))
-                .andExpect(jsonPath("$.response[0].deleteFlag", is(false)))
-                .andExpect(jsonPath("$.response[1].id", is(2)))
-                .andExpect(jsonPath("$.response[1].content", is("reply2")))
-                .andExpect(jsonPath("$.response[1].groups", is(2)))
-                .andExpect(jsonPath("$.response[1].groupOrder", is(1)))
-                .andExpect(jsonPath("$.response[1].deleteFlag", is(false)));
+        handlerCheck(result, status().isOk(), SupplementReplyController.class, "getSupplementRepliesBySupplement");
+        successCheckMany(result, supplementReplyResponseDtos);
     }
+
+
+
 
 
     @Test
@@ -132,7 +157,7 @@ class SupplementReplyControllerTest {
     public void 영양제_부모_댓글_보기_데이터없음() throws Exception {
         //given
         List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
-        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willReturn(supplementReplyResponseDtos);
+        given(supplementReplyService.getSupplementRepliesBySupplement(1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -141,22 +166,17 @@ class SupplementReplyControllerTest {
         );
 
         //then
-        result.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(handler().handlerType(SupplementReplyController.class))
-                .andExpect(handler().methodName("getSupplementReplyBySupplement"))
-                .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.response").isArray())
-                .andExpect(jsonPath("$.response.length()", is(0)));
+        handlerCheck(result, status().isOk(), SupplementReplyController.class, "getSupplementRepliesBySupplement");
+        successCheckMany(result, supplementReplyResponseDtos);
     }
-
+   /*
 
     @Test
     @DisplayName("해당 영양제의 부모 댓글 보기(영양제 없음)")
     public void 영양제_부모_댓글_보기_영양제없음() throws Exception {
         //given
         List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
-        given(supplementReplyService.getSupplementReplyBySupplement(1L)).willThrow(new EntityNotFoundException("not found Supplement : 1"));
+        given(supplementReplyService.getSupplementRepliesBySupplement(1L)).willThrow(new EntityNotFoundException("not found Supplement : 1"));
 
         //when
         ResultActions result = mockMvc.perform(
@@ -168,7 +188,7 @@ class SupplementReplyControllerTest {
         result.andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(handler().handlerType(SupplementReplyController.class))
-                .andExpect(handler().methodName("getSupplementReplyBySupplement"))
+                .andExpect(handler().methodName("getSupplementRepliesBySupplement"))
                 .andExpect(jsonPath("$.success", is(false)))
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.error.status", is(400)))
@@ -206,7 +226,7 @@ class SupplementReplyControllerTest {
                 .deleteFlag(false)
                 .build()
             ));
-        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willReturn(supplementReplyResponseDtos);
+        given(supplementReplyService.getSupplementRepliesByParent(1L, 1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -218,7 +238,7 @@ class SupplementReplyControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(handler().handlerType(SupplementReplyController.class))
-                .andExpect(handler().methodName("getSupplementReplyList"))
+                .andExpect(handler().methodName("getSupplementRepliesByParent"))
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.response").isArray())
                 .andExpect(jsonPath("$.response.length()", is(2)))
@@ -240,7 +260,7 @@ class SupplementReplyControllerTest {
     public void 부모댓글의_대댓글_보기_데이터없음() throws Exception {
         //given
         List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
-        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willReturn(supplementReplyResponseDtos);
+        given(supplementReplyService.getSupplementRepliesByParent(1L, 1L)).willReturn(supplementReplyResponseDtos);
 
         //when
         ResultActions result = mockMvc.perform(
@@ -252,7 +272,7 @@ class SupplementReplyControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(handler().handlerType(SupplementReplyController.class))
-                .andExpect(handler().methodName("getSupplementReplyList"))
+                .andExpect(handler().methodName("getSupplementRepliesByParent"))
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.response").isArray())
                 .andExpect(jsonPath("$.response.length()", is(0)));
@@ -263,7 +283,7 @@ class SupplementReplyControllerTest {
     public void 부모댓글의_대댓글_보기_영양제없음() throws Exception {
         //given
         List<SupplementReplyResponseDto> supplementReplyResponseDtos = new ArrayList<>();
-        given(supplementReplyService.getSupplementReplyBySupplementWithParent(1L, 1L)).willThrow(new EntityNotFoundException("not found Supplement : 1"));
+        given(supplementReplyService.getSupplementRepliesByParent(1L, 1L)).willThrow(new EntityNotFoundException("not found Supplement : 1"));
 
         //when
         ResultActions result = mockMvc.perform(
@@ -275,7 +295,7 @@ class SupplementReplyControllerTest {
         result.andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(handler().handlerType(SupplementReplyController.class))
-                .andExpect(handler().methodName("getSupplementReplyList"))
+                .andExpect(handler().methodName("getSupplementRepliesByParent"))
                 .andExpect(jsonPath("$.success", is(false)))
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.error.status", is(400)))
@@ -687,5 +707,7 @@ class SupplementReplyControllerTest {
                 .andExpect(jsonPath("$.error.status", is(400)))
                 .andExpect(jsonPath("$.error.message", is("not found SupplementReply : 1")));
     }
-    
+
+
+     */
 }
