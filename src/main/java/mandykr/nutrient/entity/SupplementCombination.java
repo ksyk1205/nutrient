@@ -2,6 +2,7 @@ package mandykr.nutrient.entity;
 
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.combination.Combination;
+import mandykr.nutrient.entity.supplement.Supplement;
 
 import javax.persistence.*;
 

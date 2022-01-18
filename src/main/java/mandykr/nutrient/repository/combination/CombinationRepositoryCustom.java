@@ -4,7 +4,6 @@ import mandykr.nutrient.dto.combination.CombinationConditionCategory;
 import mandykr.nutrient.dto.combination.CombinationConditionSupplement;
 import mandykr.nutrient.dto.combination.CombinationDto;
 import mandykr.nutrient.dto.combination.CombinationSearchCondition;
-import mandykr.nutrient.entity.Supplement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static mandykr.nutrient.entity.QSupplement.*;
+import static mandykr.nutrient.entity.supplement.QSupplement.*;
 
 @Repository
 public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
