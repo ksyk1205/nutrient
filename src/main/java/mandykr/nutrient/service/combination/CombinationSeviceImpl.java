@@ -23,8 +23,21 @@ public class CombinationSeviceImpl implements CombinationService{
         if (condition.isEmpty()) {
             resultPage = combinationRepository.findWithSupplement(pageable);
         } else {
-            resultPage = combinationRepository.searchWithSupplement(condition, pageable);
+            resultPage = getCombinationsBySearchCondition(condition, pageable);
         }
         return resultPage;
     }
+
+    private Page<CombinationDto> getCombinationsBySearchCondition(
+            CombinationSearchCondition condition, Pageable pageable) {
+        Page<CombinationDto> resultPage = null;
+
+        if (condition.getCategoryList().isEmpty()) {
+            resultPage = combinationRepository.searchBySupplementList(condition.getSupplementList(), pageable);
+        } else {
+            resultPage = combinationRepository.searchByCategoryList(condition.getCategoryList(), pageable);
+        }
+        return resultPage;
+    }
+
 }

@@ -62,15 +62,49 @@ public class CombinationRepositoryImpl implements CombinationRepositoryCustom{
     }
 
     @Override
-    public Page<CombinationDto> searchWithSupplement(CombinationSearchCondition condition, Pageable pageable) {
+    public Page<CombinationDto> searchBySupplementList(List<CombinationConditionSupplement> supplementList, Pageable pageable) {
         List<CombinationDto> content = queryFactory
                 .from(combination)
                 .join(combination.supplementCombinations, supplementCombination)
                 .join(supplementCombination.supplement, supplement)
                 .join(supplement.supplementCategory, supplementCategory)
                 .where(
-                        containsSupplements(condition.getSupplementList()),
-                        containsCategories(condition.getCategoryList())
+                        containsSupplements(supplementList)
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .transform(
+                        groupBy(combination.id)
+                                .list(
+                                        bean(CombinationDto.class,
+                                                combination.id,
+                                                combination.caption,
+                                                combination.rating,
+                                                list(
+                                                        bean(CombinationDto.SupplementDto.class,
+                                                                supplement.id,
+                                                                supplement.name,
+                                                                supplementCategory.id.as("categoryId"),
+                                                                supplementCategory.name.as("categoryName")
+                                                        )
+                                                ).as("supplementDtoList")
+                                        )
+                                )
+                );
+
+
+        return new PageImpl<>(content, pageable, content.size());
+    }
+
+    @Override
+    public Page<CombinationDto> searchByCategoryList(List<CombinationConditionCategory> categoryList, Pageable pageable) {
+        List<CombinationDto> content = queryFactory
+                .from(combination)
+                .join(combination.supplementCombinations, supplementCombination)
+                .join(supplementCombination.supplement, supplement)
+                .join(supplement.supplementCategory, supplementCategory)
+                .where(
+                        containsCategories(categoryList)
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

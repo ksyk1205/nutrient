@@ -54,21 +54,31 @@ class CombinationRepositoryCustomTest {
     }
 
     @Test
-    void searchWithSupplement() {
-        CombinationSearchCondition condition = new CombinationSearchCondition();
-
+    void searchBySupplementList() {
         List<CombinationConditionSupplement> supplementList = new ArrayList<>();
         supplementList.add(new CombinationConditionSupplement(3L));
         supplementList.add(new CombinationConditionSupplement(5L));
-        condition.setSupplementList(supplementList);
 
+        Pageable pageable = new PageRequestUtil().getPageable();
+        Page<CombinationDto> combinationDtoPage = combinationRepository.searchBySupplementList(supplementList, pageable);
+        combinationDtoPage.forEach(d -> {
+            System.out.println(d.getCaption());
+            d.getSupplementDtoList().forEach(s -> {
+                System.out.println(s.getName());
+                System.out.println(s.getCategoryName());
+            });
+            System.out.println();
+        });
+    }
+
+    @Test
+    void searchByCategoryList() {
         List<CombinationConditionCategory> categoryList = new ArrayList<>();
         categoryList.add(new CombinationConditionCategory(3L));
         categoryList.add(new CombinationConditionCategory(5L));
-        condition.setCategoryList(categoryList);
 
         Pageable pageable = new PageRequestUtil().getPageable();
-        Page<CombinationDto> combinationDtoPage = combinationRepository.searchWithSupplement(condition, pageable);
+        Page<CombinationDto> combinationDtoPage = combinationRepository.searchByCategoryList(categoryList, pageable);
         combinationDtoPage.forEach(d -> {
             System.out.println(d.getCaption());
             d.getSupplementDtoList().forEach(s -> {
