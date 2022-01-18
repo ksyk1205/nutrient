@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
 import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 
-import mandykr.nutrient.repository.SupplementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

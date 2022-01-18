@@ -1,18 +1,14 @@
-package mandykr.nutrient.service.Supplement;
+package mandykr.nutrient.service.supplement;
 
 
-import mandykr.nutrient.dto.SupplementCategoryDto;
 import mandykr.nutrient.dto.supplement.SupplementDto;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
-import mandykr.nutrient.service.supplement.SupplementService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,7 +2,6 @@ package mandykr.nutrient.entity.supplement;
 
 import lombok.*;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.Supplement;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;

@@ -1,10 +1,11 @@
 package mandykr.nutrient.repository.supplement.reply;
 
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.Supplement;
+
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
 import mandykr.nutrient.repository.MemberRepository;
-import mandykr.nutrient.repository.SupplementRepository;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +39,9 @@ class SupplementReplyRepositoryTest {
     Member member;
     @BeforeEach
     public void setup(){
-        Supplement supplement1 = new Supplement();
-        supplement1.setName("test1");
+        Supplement supplement1 = Supplement.builder().name("test1").build();
+        //supplement1.setName("test1");
+
         this.saveSupplement1 = supplementRepository.save(supplement1);
 
         Member member = new Member();
@@ -214,8 +216,8 @@ class SupplementReplyRepositoryTest {
     @Test
     public void 댓글_정렬_조회() throws Exception{
         //given
-        Supplement supplement2 = new Supplement();
-        supplement2.setName("test2");
+        Supplement supplement2 = Supplement.builder().name("test2").build();
+        //supplement2.setName("test2");
         Supplement saveSupplement2 = supplementRepository.save(supplement2);
 
         //when

@@ -1,4 +1,4 @@
-package mandykr.nutrient.service.Supplement;
+package mandykr.nutrient.service.supplement;
 
 import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
 import mandykr.nutrient.entity.Member;
@@ -8,7 +8,6 @@ import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.repository.supplement.SupplementStarRateRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 
-import mandykr.nutrient.service.supplement.SupplementStarRateService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
