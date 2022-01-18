@@ -21,22 +21,23 @@ public class CombinationReplyDto {
     private Long parentId;
 
     public static CombinationReplyDto of(CombinationReply entity) {
+        Long parentId = entity.getParent() != null ? entity.getParent().getId() : null;
         return CombinationReplyDto.builder()
                 .id(entity.getId())
                 .content(entity.getContent())
                 .orders(entity.getOrders())
-                .deleteFlag(entity.isDeleteFlag())
+                .deleteFlag(entity.isDeleted())
                 .combinationId(entity.getCombination().getId())
-                .parentId(entity.getParent().getId())
+                .parentId(parentId)
                 .build();
     }
 
-    public static CombinationReply createReply(CombinationReplyDto dto) {
+    public static CombinationReply createReplyEntity(CombinationReplyDto dto) {
         return CombinationReply.builder()
                 .id(dto.getId())
                 .content(dto.getContent())
                 .orders(dto.getOrders())
-                .deleteFlag(dto.isDeleteFlag())
+                .deleted(dto.isDeleteFlag())
                 .combination(new Combination(dto.getCombinationId()))
                 .parent(new CombinationReply(dto.getParentId()))
                 .build();

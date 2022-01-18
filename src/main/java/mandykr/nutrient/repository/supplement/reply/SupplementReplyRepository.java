@@ -1,8 +1,8 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.supplement.reply;
 
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.entity.SupplementReply;
+import mandykr.nutrient.entity.supplement.SupplementReply;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

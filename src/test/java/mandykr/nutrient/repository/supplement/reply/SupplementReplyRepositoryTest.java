@@ -1,17 +1,18 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.supplement.reply;
 
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.Supplement;
-import mandykr.nutrient.entity.SupplementReply;
+import mandykr.nutrient.entity.supplement.SupplementReply;
+import mandykr.nutrient.repository.MemberRepository;
+import mandykr.nutrient.repository.SupplementRepository;
+import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.data.domain.Sort.Direction.ASC;

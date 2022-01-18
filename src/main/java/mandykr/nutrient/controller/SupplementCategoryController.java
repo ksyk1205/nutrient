@@ -61,7 +61,7 @@ public class SupplementCategoryController {
         return SupplementCategoryDto.toCategoryDto(
                 categoryRequest.getId(),
                 categoryRequest.getName(),
-                categoryRequest.getLevel(),
+                categoryRequest.getDepth(),
                 categoryRequest.getParentId());
     }
 
@@ -80,7 +80,7 @@ public class SupplementCategoryController {
         private Long id;
         @NotEmpty
         private String name;
-        private int level;
+        private int depth;
         private Long parentId;
     }
 }
