@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -16,8 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CombinationReply extends BaseTimeEntity {
-    @Transient public static final int MIN_ORDERS = 1;
-    @Transient public static final int MAX_ORDERS = 2;
+    @Transient public static final int PARENT_ORDERS = 1;
+    @Transient public static final int CHILD_ORDERS = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +30,7 @@ public class CombinationReply extends BaseTimeEntity {
     @Lob
     private String content;
     private long orders;
-    private boolean deleteFlag = false;
+    private boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMBINATION_ID")
@@ -41,12 +44,24 @@ public class CombinationReply extends BaseTimeEntity {
     @Builder.Default
     private List<CombinationReply> childList = new ArrayList<>();
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
+
     public CombinationReply(Long id) {
         this.id = id;
     }
 
+    public boolean isParent() {
+        return orders == PARENT_ORDERS;
+    }
+
+    public boolean isChild() {
+        return orders == CHILD_ORDERS;
+    }
+
     public void changeContent(String content) {
-        if (isValid(content)) {
+        if (!isValid(content)) {
             throw new IllegalArgumentException("유효하지 않은 댓글 내용입니다.");
         }
         this.content = content;
@@ -59,7 +74,7 @@ public class CombinationReply extends BaseTimeEntity {
     }
 
     public void deleteLogical() {
-        this.deleteFlag = true;
+        this.deleted = true;
     }
 
     public boolean existChildren() {
@@ -73,13 +88,13 @@ public class CombinationReply extends BaseTimeEntity {
 
     public boolean wereChildrenDeleted() {
         return childList.stream()
-                .allMatch(r -> r.deleteFlag);
+                .allMatch(r -> r.deleted);
     }
 
-    public void addChild(CombinationReply child1_1) {
-        if (!childList.contains(child1_1)) {
-            childList.add(child1_1);
+    public void addChild(CombinationReply child) {
+        if (!childList.contains(child)) {
+            childList.add(child);
         }
-        child1_1.parent = this;
+        child.parent = this;
     }
 }

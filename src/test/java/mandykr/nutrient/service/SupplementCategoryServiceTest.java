@@ -59,7 +59,7 @@ class SupplementCategoryServiceTest {
         then(categoryRepository).should(times(1)).findById(categoryId);
         then(categoryRepository).should(times(1)).findById(findParentId);
         assertEquals(categoryDto.getName(), updateCategory.getName());
-        assertEquals(findParentCategory.getLevel() + 1, updateCategory.getLevel());
+        assertEquals(findParentCategory.getDepth() + 1, updateCategory.getDepth());
         assertEquals(findParentId, updateCategory.getParentCategory().getId());
     }
 

@@ -2,6 +2,7 @@ package mandykr.nutrient.entity.combination;
 
 import lombok.*;
 import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -36,12 +37,16 @@ public class Combination extends BaseTimeEntity {
     @Builder.Default
     private List<CombinationStarRate> combinationStarRates = new ArrayList<>();
 
-    public void updateRating() {
-        this.rating = combinationStarRates.stream().mapToInt(o -> o.getStarNumber()).average().getAsDouble();
-    }
+    @OneToMany(mappedBy = "combination")
+    @Builder.Default
+    private List<SupplementCombination> supplementCombinations = new ArrayList<>();
 
     public Combination(Long id) {
         this.id = id;
+    }
+
+    public void updateRating() {
+        this.rating = combinationStarRates.stream().mapToInt(o -> o.getStarNumber()).average().getAsDouble();
     }
 
     public void updateList(CombinationStarRate combinationStarRate) {

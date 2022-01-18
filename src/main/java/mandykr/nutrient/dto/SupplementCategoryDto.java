@@ -1,7 +1,6 @@
 package mandykr.nutrient.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.SupplementCategory;
@@ -12,24 +11,24 @@ import mandykr.nutrient.entity.SupplementCategory;
 public class SupplementCategoryDto {
     private Long id;
     private String name;
-    private int level;
+    private int depth;
     private SupplementParentCategoryDto parentCategory;
 
-    public SupplementCategoryDto(Long id, String name, int level) {
+    public SupplementCategoryDto(Long id, String name, int depth) {
         this.id = id;
         this.name = name;
-        this.level = level;
+        this.depth = depth;
     }
 
     public static SupplementCategoryDto toCategoryDto(SupplementCategory category) {
-        SupplementCategoryDto categoryDto = new SupplementCategoryDto(category.getId(), category.getName(), category.getLevel());
+        SupplementCategoryDto categoryDto = new SupplementCategoryDto(category.getId(), category.getName(), category.getDepth());
         categoryDto.setParentCategory(category.getParentCategory() == null ?
                 null : new SupplementParentCategoryDto(category.getParentCategory().getId()));
         return categoryDto;
     }
 
-    public static SupplementCategoryDto toCategoryDto(Long id, String name, int level, Long parentId) {
-        SupplementCategoryDto categoryDto = new SupplementCategoryDto(id, name, level);
+    public static SupplementCategoryDto toCategoryDto(Long id, String name, int depth, Long parentId) {
+        SupplementCategoryDto categoryDto = new SupplementCategoryDto(id, name, depth);
         categoryDto.setParentCategory(new SupplementParentCategoryDto(parentId));
         return categoryDto;
     }

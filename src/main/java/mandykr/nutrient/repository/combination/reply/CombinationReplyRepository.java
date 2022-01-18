@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CombinationReplyRepository extends JpaRepository<CombinationReply, Long> {
-    Page<CombinationReply> findByCombinationAndOrders(Combination combination, long orders, Pageable pageable);
+    Page<CombinationReply> findByCombinationAndOrders(Combination combination, int orders, Pageable pageable);
     Page<CombinationReply> findByCombinationAndParent(Combination combination, CombinationReply parent, Pageable pageable);
 }
