@@ -1,8 +1,8 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.supplement;
 
-import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.SupplementCategory;
-import org.junit.jupiter.api.Assertions;
+import mandykr.nutrient.repository.SupplementCategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ class SupplementRepositoryTest {
         //given
         Supplement supplement = supplementRepository.save(supplement1);
         //when
-        supplement.updateNameAndPrdlst("비타민C",null);
+        supplement.updateNameAndPrdlstAndCategory("비타민C",null,category);
         //then
         assertEquals(supplementRepository.findById(supplement.getId()).get().getName(),"비타민C");
 

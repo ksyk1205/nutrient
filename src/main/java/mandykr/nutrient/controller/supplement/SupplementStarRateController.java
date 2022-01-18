@@ -1,11 +1,11 @@
-package mandykr.nutrient.controller;
+package mandykr.nutrient.controller.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.StarRateDto;
-import mandykr.nutrient.dto.request.StarRateRequest;
+import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
+import mandykr.nutrient.dto.request.SupplementStarRateRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
-import mandykr.nutrient.service.StarRateService;
+import mandykr.nutrient.service.supplement.SupplementStarRateService;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +16,8 @@ import static mandykr.nutrient.util.ApiUtils.success;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/star-rate")
-public class StarRateController {
-    private final StarRateService starRateService;
+public class SupplementStarRateController {
+    private final SupplementStarRateService starRateService;
     private final MemberRepository memberRepository;
 
     /**
@@ -27,9 +27,9 @@ public class StarRateController {
      * @return
      */
     @PostMapping("/{supplementId}")
-    public ApiResult<StarRateDto> createStarRate(
+    public ApiResult<SupplementStarRateDto> createStarRate(
             @PathVariable Long supplementId,
-            @RequestBody @Valid StarRateRequest starRateRequest){
+            @RequestBody @Valid SupplementStarRateRequest starRateRequest){
         return success(starRateService.createStarRate(supplementId, starRateRequest.getStarNumber(), getMember()));
     }
 
@@ -41,10 +41,10 @@ public class StarRateController {
      * @return
      */
     @PutMapping("/{supplementId}/{starRateId}")
-    public ApiResult<StarRateDto> updateStarRate(
+    public ApiResult<SupplementStarRateDto> updateStarRate(
             @PathVariable Long supplementId,
             @PathVariable Long starRateId,
-            @RequestBody @Valid StarRateRequest starRateRequest){
+            @RequestBody @Valid SupplementStarRateRequest starRateRequest){
         return success(starRateService.updateStarRate(supplementId, starRateId, starRateRequest.getStarNumber(), getMember()));
     }
 
@@ -54,7 +54,7 @@ public class StarRateController {
      * @return
      */
     @GetMapping("/{supplementId}")
-    public ApiResult<StarRateDto> getStarRateWithMember(
+    public ApiResult<SupplementStarRateDto> getStarRateWithMember(
             @PathVariable Long supplementId
             //, Member member
             ){
@@ -64,8 +64,7 @@ public class StarRateController {
 
     //임의의 member 값
     private Member getMember() {
-        Member member = memberRepository.findById("testMemberId1").get();
-        return member;
+        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다."));
     }
 
     /**

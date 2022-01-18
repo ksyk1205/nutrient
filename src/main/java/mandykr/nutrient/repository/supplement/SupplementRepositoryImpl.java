@@ -1,9 +1,9 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.supplement;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import mandykr.nutrient.dto.SupplementDto;
+import mandykr.nutrient.dto.supplement.SupplementDto;
 import mandykr.nutrient.dto.SupplementSearchCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,8 @@
-package mandykr.nutrient.entity;
+package mandykr.nutrient.entity.supplement;
 
 import lombok.*;
+import mandykr.nutrient.entity.SupplementCategory;
+import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,11 +10,10 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class Supplement {
+public class Supplement extends BaseTimeEntity {
     @Id @GeneratedValue
     @Column(name = "SUPPLEMENT_ID")
     private Long id;
@@ -27,22 +28,28 @@ public class Supplement {
     private Double ranking; //별점
 
     @OneToMany(mappedBy = "supplement")
-    private List<StarRate> starRateList = new ArrayList<>();
+    @Builder.Default
+    private List<SupplementStarRate> starRateList = new ArrayList<>();
+
+    private boolean deleteFlag;
 
     //수정을 위한 메서드
-    public void updateNameAndPrdlst(String name, String prdlstReportNo) {
+    public void updateNameAndPrdlstAndCategory(String name, String prdlstReportNo, SupplementCategory supplementCategory) {
         if(name != null) {
             this.name = name;
         }
         if(prdlstReportNo != null) {
             this.prdlstReportNo = prdlstReportNo;
         }
+        if(supplementCategory.getId()!=this.supplementCategory.getId()){
+            this.supplementCategory = supplementCategory;
+        }
     }
 
     //평점 수정을 위한 메서드
     public void updateRanking(){
         double ranking = starRateList.stream()
-                .mapToInt(StarRate::getStarNumber)
+                .mapToInt(SupplementStarRate::getStarNumber)
                 .average()
                 .getAsDouble();
 
@@ -50,7 +57,7 @@ public class Supplement {
     }
 
     public void insertList(Long id, int starNumber) {
-        StarRate starRate = new StarRate();
+        SupplementStarRate starRate = new SupplementStarRate();
         starRate.updateStarRate(id,starNumber);
         this.starRateList.add(starRate);
     }
@@ -58,11 +65,15 @@ public class Supplement {
     public void updateList(Long starRateId, int starNumber) {
         for(int i=0;i < starRateList.size(); i++) {
             if (starRateList.get(i).getId() == starRateId) {
-                StarRate starRate = new StarRate();
+                SupplementStarRate starRate = new SupplementStarRate();
                 starRate.updateStarRate(null,starNumber);
                 starRateList.set(i, starRate);
                 return;
             }
         }
+    }
+
+    public void updateDeleteFlag() {
+        this.deleteFlag = true;
     }
 }

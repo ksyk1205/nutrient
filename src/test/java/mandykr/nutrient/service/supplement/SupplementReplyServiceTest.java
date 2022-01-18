@@ -4,13 +4,11 @@ import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
 import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
 import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
-import mandykr.nutrient.repository.SupplementRepository;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
@@ -40,9 +38,9 @@ class SupplementReplyServiceTest {
     @BeforeEach
     void setup(){
         Supplement supplement = new Supplement();
-        supplement.setId(1L);
-        supplement.setName("test1");
-        supplement.setRanking(4.2);
+        //supplement.setId(1L);
+        //supplement.setName("test1");
+        //supplement.setRanking(4.2);
 
         this.saveSupplement = supplement;
 

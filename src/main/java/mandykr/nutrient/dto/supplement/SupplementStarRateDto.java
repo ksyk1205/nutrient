@@ -1,16 +1,16 @@
-package mandykr.nutrient.dto;
+package mandykr.nutrient.dto.supplement;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import mandykr.nutrient.entity.StarRate;
-import mandykr.nutrient.entity.Supplement;
+import mandykr.nutrient.entity.supplement.SupplementStarRate;
+import mandykr.nutrient.entity.supplement.Supplement;
 import org.springframework.beans.BeanUtils;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class StarRateDto { //화면에 출력되는 값들
+public class SupplementStarRateDto { //화면에 출력되는 값들
     private Long id; //영양제 별점 번호
     private int starNumber; //별점 갯수
     private Supplement supplement; //영양제 번호
@@ -18,7 +18,7 @@ public class StarRateDto { //화면에 출력되는 값들
     //private Member member;
 
     //Entity -> Dto
-    public StarRateDto(StarRate starRate){
-        BeanUtils.copyProperties(starRate,this);
+    public SupplementStarRateDto(SupplementStarRate starRate){
+        BeanUtils.copyProperties(starRate, this);
     }
 }
