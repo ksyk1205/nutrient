@@ -18,7 +18,7 @@ public class SupplementDto {
 
     //Entity -> Dto
     public SupplementDto(Supplement supplement){
-        BeanUtils.copyProperties(supplement,this);
+        BeanUtils.copyProperties(supplement, this);
     }
 
 }

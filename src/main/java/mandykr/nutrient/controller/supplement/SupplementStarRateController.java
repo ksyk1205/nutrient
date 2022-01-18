@@ -64,7 +64,7 @@ public class SupplementStarRateController {
 
     //임의의 member 값
     private Member getMember() {
-        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다,"));
+        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다."));
     }
 
     /**

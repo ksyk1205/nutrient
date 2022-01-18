@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -23,7 +21,7 @@ public class SupplementService {
 
     @Transactional(readOnly = true)
     public SupplementDto getSupplement(long supplementId) {
-        Supplement supplement = getSupplementById(supplementId, "not found Supplement");
+        Supplement supplement = getSupplementById(supplementId);
 
         return new SupplementDto(supplement);
     }
@@ -52,21 +50,21 @@ public class SupplementService {
     public SupplementDto updateSupplement(SupplementDto supplementDto, Long categoryId) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
-        Supplement supplement = getSupplementById(supplementDto.getId(), "not found Supplement");
-        supplement.updateNameAndPrdlstAndCategory(supplementDto.getName(),supplementDto.getPrdlstReportNo(),supplementCategory);
+        Supplement supplement = getSupplementById(supplementDto.getId());
+        supplement.updateNameAndPrdlstAndCategory(supplementDto.getName(), supplementDto.getPrdlstReportNo(), supplementCategory);
 
         return new SupplementDto(supplement);
     }
 
 
     public void deleteSupplement(Long supplementId) {
-        Supplement supplement = getSupplementById(supplementId, "not found Supplement");
+        Supplement supplement = getSupplementById(supplementId);
 
         supplement.updateDeleteFlag();
     }
 
-    private Supplement getSupplementById(Long supplementId, String s) {
-        return supplementRepository.findById(supplementId).orElseThrow(() -> new IllegalArgumentException(s));
+    private Supplement getSupplementById(Long supplementId) {
+        return supplementRepository.findById(supplementId).orElseThrow(() -> new IllegalArgumentException("not found Supplement"));
     }
 
     private SupplementCategory getCategory(Long categoryId) {

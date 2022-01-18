@@ -1,7 +1,6 @@
 package mandykr.nutrient.entity.supplement;
 
 import lombok.*;
-import mandykr.nutrient.dto.supplement.SupplementDto;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
@@ -35,7 +34,7 @@ public class Supplement extends BaseTimeEntity {
     private boolean deleteFlag;
 
     //수정을 위한 메서드
-    public void updateNameAndPrdlstAndCategory(String name, String prdlstReportNo,SupplementCategory supplementCategory) {
+    public void updateNameAndPrdlstAndCategory(String name, String prdlstReportNo, SupplementCategory supplementCategory) {
         if(name != null) {
             this.name = name;
         }

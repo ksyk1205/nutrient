@@ -3,7 +3,6 @@ package mandykr.nutrient.entity.supplement;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -14,7 +13,7 @@ import javax.persistence.*;
 public class SupplementStarRate extends BaseTimeEntity {
     @Id
     @GeneratedValue
-    @Column(name = "STARRATE_ID")
+    @Column(name = "SUPPLEMENT_STAR_RATE_ID")
     private Long id; //영양제 별점 번호
 
     private int starNumber; //별점 갯수
@@ -43,7 +42,7 @@ public class SupplementStarRate extends BaseTimeEntity {
     }
 
     //별점 수정을 위한 메서드
-    public void updateStarRate(Long id,int starNumber){
+    public void updateStarRate(Long id, int starNumber){
         if(id!=null) {
             this.id = id;
         }

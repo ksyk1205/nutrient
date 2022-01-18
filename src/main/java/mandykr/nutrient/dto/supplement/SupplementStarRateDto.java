@@ -19,6 +19,6 @@ public class SupplementStarRateDto { //화면에 출력되는 값들
 
     //Entity -> Dto
     public SupplementStarRateDto(SupplementStarRate starRate){
-        BeanUtils.copyProperties(starRate,this);
+        BeanUtils.copyProperties(starRate, this);
     }
 }
