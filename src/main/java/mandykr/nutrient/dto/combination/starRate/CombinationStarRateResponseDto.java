@@ -2,9 +2,7 @@ package mandykr.nutrient.dto.combination.starRate;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequest;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
-import mandykr.nutrient.entity.combination.CombinationStarRateImpl;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -14,7 +12,9 @@ public class CombinationStarRateResponseDto {
     private Long id; //별점 번호
     private Integer starNumber; //별점 갯수
 
-    public CombinationStarRateResponseDto(CombinationStarRateImpl source) {
+    public CombinationStarRateResponseDto(CombinationStarRate source) {
+        if(source.getId() == null)
+            return;
         copyProperties(source, this);
     }
 

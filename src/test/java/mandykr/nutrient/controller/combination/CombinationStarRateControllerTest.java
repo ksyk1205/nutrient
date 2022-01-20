@@ -5,7 +5,6 @@ import mandykr.nutrient.dto.combination.starRate.CombinationStarRateResponseDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
-import mandykr.nutrient.entity.combination.CombinationStarRateImpl;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.combination.CombinationStarRateService;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,10 +92,7 @@ class CombinationStarRateControllerTest {
     @Test
     @DisplayName("내가 등록한 별점 보기(데이터 없음)")
     public void 등록한_별점_조회_데이터없음() throws Exception {
-        CombinationStarRateResponseDto combinationStarRateResponseDto =
-                new CombinationStarRateResponseDto(
-                        CombinationStarRateImpl.NULL
-                );
+        CombinationStarRateResponseDto combinationStarRateResponseDto = new CombinationStarRateResponseDto();
         given(memberRepository.findById("testMemberId1")).willReturn(Optional.ofNullable(saveMember));
         given(combinationStarRateService.getCombinationStarRateByCombination(anyLong(), any(Member.class))).willReturn(combinationStarRateResponseDto);
 

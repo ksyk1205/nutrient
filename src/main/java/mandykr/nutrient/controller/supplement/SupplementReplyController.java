@@ -7,6 +7,10 @@ import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.supplement.SupplementReplyService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,8 +33,10 @@ public class SupplementReplyController {
      * @return ApiResult<List<SupplementReplyResponseDto>>
      */
     @GetMapping("{supplementId}")
-    public ApiResult<List<SupplementReplyResponseDto>> getSupplementRepliesBySupplement(@PathVariable Long supplementId){
-        return success(supplementReplyService.getSupplementRepliesBySupplement(supplementId));
+    public ApiResult<Page<SupplementReplyResponseDto>> getSupplementRepliesWithParent(
+            @PathVariable Long supplementId,
+            final @PageableDefault(sort = "groupOrder") Pageable pageable){
+        return success(supplementReplyService.getSupplementRepliesWithParent(supplementId, pageable));
     }
 
     /**
@@ -39,10 +45,11 @@ public class SupplementReplyController {
      * @return ApiResult<List<SupplementReplyResponseDto>>
      */
     @GetMapping("{supplementId}/{parentId}")
-    public ApiResult<List<SupplementReplyResponseDto>> getSupplementRepliesByParent(
+    public ApiResult<Page<SupplementReplyResponseDto>> getSupplementRepliesWithChild(
             @PathVariable Long supplementId,
-            @PathVariable Long parentId){
-        return success(supplementReplyService.getSupplementRepliesByParent(supplementId, parentId));
+            @PathVariable Long parentId,
+            final @PageableDefault(sort = "groups") Pageable pageable){
+        return success(supplementReplyService.getSupplementRepliesWithChild(supplementId, parentId, pageable));
     }
 
     /**
@@ -104,7 +111,7 @@ public class SupplementReplyController {
     
     //임의의 member 값
     private Member getMember() {
-        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다,"));
+        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다."));
     }
 
 }

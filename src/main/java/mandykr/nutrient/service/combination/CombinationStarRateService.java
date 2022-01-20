@@ -3,11 +3,9 @@ package mandykr.nutrient.service.combination;
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.combination.starRate.CombinationStarRateRequestDto;
 import mandykr.nutrient.dto.combination.starRate.CombinationStarRateResponseDto;
-import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequest;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.combination.CombinationStarRateImpl;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 import mandykr.nutrient.repository.combination.CombinationRepository;
 import org.springframework.stereotype.Service;
@@ -55,7 +53,8 @@ public class CombinationStarRateService {
 
 
     public CombinationStarRateResponseDto getCombinationStarRateByCombination(Long combinationId, Member member) {
-        CombinationStarRateImpl combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member).get(); //NULL OBJECT 패턴
+        CombinationStarRate combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
+                .orElseGet(() -> CombinationStarRate.builder().build()); //NULL OBJECT 패턴
         return new CombinationStarRateResponseDto(combinationStarRate);
     }
 

@@ -35,7 +35,7 @@ public class SupplementReply extends BaseTimeEntity {
     //좋아요 / 싫어요 기능 추가 여부
 
     //삭제된 내역
-    private Boolean deleteFlag;
+    private Boolean deleted;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "PARENT_ID")
@@ -57,8 +57,15 @@ public class SupplementReply extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void changeTrueDeleteFlag(){
-        this.deleteFlag = true;
+    public void delete(){
+        if(this.deleted){
+            throw new IllegalArgumentException("이미 삭제된 데이터 입니다.");
+        }
+        this.deleted = true;
+    }
+
+    public boolean isDeleted(){
+        return deleted;
     }
 
     public void addParents(SupplementReply parent){
@@ -68,7 +75,15 @@ public class SupplementReply extends BaseTimeEntity {
         }
     }
 
-    public void removeChild(SupplementReply supplementReply) {
+    public boolean childIsEmpty(){
+        return child.isEmpty();
+    }
+
+    public boolean parentIsNull(){
+        return this.parent == null;
+    }
+
+    public void deleteChild(SupplementReply supplementReply) {
         child.remove(supplementReply);
     }
 }
