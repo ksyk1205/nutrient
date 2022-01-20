@@ -1,122 +1,119 @@
 package mandykr.nutrient.service.supplement;
 
+import mandykr.nutrient.dto.supplement.SupplementDto;
 import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
 import mandykr.nutrient.entity.supplement.Supplement;
-import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.repository.supplement.SupplementStarRateRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.transaction.annotation.Transactional;
 
+
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.*;
 
 
-@SpringBootTest
-@Transactional
 class SupplementStarRateServiceTest {
 
-    @Autowired
-    SupplementStarRateService starRateService;
-    @Autowired
-    SupplementStarRateRepository starRateRepository;
-    @Autowired
-    SupplementRepository supplementRepository;
-    @Autowired
-    MemberRepository memberRepository;
+    private SupplementStarRateRepository starRateRepository = mock(SupplementStarRateRepository.class);
+    private SupplementRepository supplementRepository = mock(SupplementRepository.class);
+
+    private SupplementStarRateService starRateService = new SupplementStarRateService(starRateRepository, supplementRepository);
+
+    Supplement supplement;
+    SupplementStarRate supplementStarRate;
+    Member member;
 
 
-    @Test
-    public void 별점_등록_성공(){
-        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
-        Supplement supplement1 = supplementRepository.save(supplement);
+    @BeforeEach
+    void before(){
+        supplement = Supplement.builder().id(1L).name("testSupplement").ranking(0.0).build();
 
-        Member member = new Member();
+        member = new Member();
         member.setMemberId("test");
         member.setName("name1");
-        Member member1 = memberRepository.save(member);
 
-        SupplementStarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
+        supplementStarRate = new SupplementStarRate(3,supplement,member);
 
-        assertThat(supplementRepository.findById(supplement1.getId()).get().getRanking()).isEqualTo(2.0);
+        supplement.insertList(supplementStarRate.getId(), supplementStarRate.getStarNumber());
     }
 
     @Test
-    @DisplayName("등록되지 않은 영양제로 별점을 조회하면 예외가 발생한다.")
-    public void 영양제_조회_실패(){
-        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
+    void 별점_등록_성공(){
+        //given
 
-        Member member = new Member();
-        member.setMemberId("test");
-        member.setName("name1");
-        Member member1 = memberRepository.save(member);
-        //영양제 없는거로 조회하니까 에러 발생
-        assertThrows(InvalidDataAccessApiUsageException.class, new Executable() {
-            @Override
-            public void execute() throws Throwable {
-                starRateService.createStarRate(supplement.getId(),2,member1);
-            }
-        });
+        //when
+        when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
+        when(starRateRepository.save(isA(SupplementStarRate.class))).thenReturn(supplementStarRate);
+        SupplementStarRateDto starRateDto = starRateService.createStarRate(supplement.getId(), supplementStarRate.getStarNumber(), member);
+
+        //then
+        assertThat(supplementStarRate.getId()).isEqualTo(starRateDto.getId());
+        assertThat(supplement.getRanking()).isEqualTo(3.0);
     }
 
     @Test
-    public void 별점_수정_성공(){
-        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
-        Supplement supplement1 = supplementRepository.save(supplement);
+    void 별점_조회(){
+        //given
 
-        Member member = new Member();
-        member.setMemberId("test");
-        member.setName("name1");
-        Member member1 = memberRepository.save(member);
+        //when
+        when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
+        when(starRateRepository.findBySupplementAndMember(supplement,member)).thenReturn(Optional.of(supplementStarRate));
+        SupplementStarRateDto starRateWithMemberDto = starRateService.getStarRateWithMember(supplement.getId(), member);
 
-        SupplementStarRateDto starRateDto = starRateService.createStarRate(supplement1.getId(),2,member1);
-
-
-        starRateService.updateStarRate(supplement1.getId(),starRateDto.getId(),5,member1);
-
-        assertThat(supplementRepository.findById(supplement1.getId()).get().getRanking()).isEqualTo(5.0);
+        //then
+        assertThat(supplementStarRate.getId()).isEqualTo(starRateWithMemberDto.getId());
     }
-
     @Test
     @DisplayName("별점 수정을 위하여 별점 조회 했을때 빈 객체가 반환되는지 확인한다.")
-    public void 별점_조회(){
-        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
-        Supplement supplement1 = supplementRepository.save(supplement);
+    void 별점_빈객체_조회(){
+        //given
+        SupplementDto supplementDto = new SupplementDto();
+        //when
+        when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
+        when(starRateRepository.findBySupplementAndMember(supplement,member)).thenReturn(Optional.empty());
+        SupplementStarRateDto starRateWithMemberDto = starRateService.getStarRateWithMember(supplement.getId(), member);
 
-        Member member = new Member();
-        member.setMemberId("test");
-        member.setName("name1");
-        Member member1 = memberRepository.save(member);
-
-        assertThat(starRateService.getStarRateWithMember(supplement1.getId(),member1).getId()).isNull();
+        //then
+        assertThat(starRateWithMemberDto.getId()).isNull();
     }
 
+
     @Test
-    public void 별점_삭제(){
-        Supplement supplement = Supplement.builder().name("testname").ranking(0.0).build();
-        Supplement supplement1 = supplementRepository.save(supplement);
+    void 별점_수정(){
+        //given
 
-        Member member = new Member();
-        member.setMemberId("test");
-        member.setName("name1");
-        Member member1 = memberRepository.save(member);
+        //when
+        when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
+        when(starRateRepository.findBySupplementAndMember(supplement,member)).thenReturn(Optional.of(supplementStarRate));
+        SupplementStarRateDto supplementStarRateDto = starRateService.updateStarRate(supplement.getId(), supplementStarRate.getId(), 2, member);
 
-        SupplementStarRate starRate = new SupplementStarRate(2,supplement1,member1);
-        SupplementStarRate starRate1 = starRateRepository.save(starRate);
+        //then
+        assertThat(supplementStarRate.getId()).isEqualTo(supplementStarRateDto.getId());
+        assertThat(supplementStarRate.getStarNumber()).isEqualTo(supplementStarRateDto.getStarNumber());
+        assertThat(supplement.getRanking()).isEqualTo(2.0);
 
-        assertThat(starRateRepository.findById(starRate1.getId()).isPresent()).isEqualTo(true);
+    }
 
-        starRateService.deleteStarRate(starRate1.getId());
 
-        assertThat(starRateRepository.findById(starRate1.getId()).isPresent()).isEqualTo(false);
+
+    @Test
+    void 별점_삭제(){
+        //given
+
+        //when
+        when(starRateRepository.findByMemberAndId(member,supplementStarRate.getId())).thenReturn(Optional.of(supplementStarRate));
+        starRateRepository.deleteById(supplementStarRate.getId());
+        //then
+        then(starRateRepository).should(times(1)).deleteById(supplementStarRate.getId());
     }
 }

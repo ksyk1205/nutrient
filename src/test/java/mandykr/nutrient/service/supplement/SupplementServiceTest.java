@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
@@ -29,7 +30,7 @@ class SupplementServiceTest {
     Supplement supplement;
 
     @BeforeEach
-    public void before(){
+    void before(){
         category = SupplementCategory.toEntity(1L, "자식 카테고리", 1);
 
         supplement = Supplement.builder()
@@ -42,7 +43,7 @@ class SupplementServiceTest {
     }
 
     @Test
-    public void 영양제_단건_조회(){
+    void 영양제_단건_조회(){
         //given
 
         //when
@@ -56,7 +57,7 @@ class SupplementServiceTest {
     }
 
     @Test
-    public void 영양제_전체_조회(){
+    void 영양제_전체_조회(){
         //given
 
         Supplement supplement2 = Supplement.builder().id(3L).name("testSupplement2").prdlstReportNo("222-123").ranking(0.0).build();
@@ -72,13 +73,13 @@ class SupplementServiceTest {
     }
 
     @Test
-    public void 영양제_등록(){
+    void 영양제_등록(){
         //given
 
         //when
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.save(isA(Supplement.class))).thenReturn(supplement);
-        SupplementDto supplementDto = new SupplementDto(null,"testSupplement1", "111-123", 0.0);
+        SupplementDto supplementDto = new SupplementDto(null, "testSupplement1", "111-123", 0.0);
         SupplementDto testSupplement1 = supplementService.createSupplement(supplementDto,category.getId());
         //then
         assertThat(testSupplement1.getName()).isEqualTo(supplement.getName());
@@ -86,7 +87,7 @@ class SupplementServiceTest {
     }
 
     @Test
-    public void 영양제_수정(){
+    void 영양제_수정(){
         //given
 
         //when
@@ -99,13 +100,13 @@ class SupplementServiceTest {
     }
 
     @Test
-    public void 영양제_삭제(){
+    void 영양제_삭제(){
         //given
 
         //when
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         supplementService.deleteSupplement(supplement.getId());
         //then
-        Assertions.assertTrue(supplement.isDeleteFlag());
+        assertTrue(supplement.isDeleteFlag());
     }
 }

@@ -1,5 +1,6 @@
 package mandykr.nutrient.repository.supplement;
 
+import mandykr.nutrient.config.TestConfig;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@Import(TestConfig.class)
 class SupplementRepositoryTest {
     @Autowired
     SupplementRepository supplementRepository;
@@ -26,7 +29,7 @@ class SupplementRepositoryTest {
     Supplement supplement2;
 
     @BeforeEach
-    void setup() {
+    void before() {
         parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").depth(0).build();
         category = SupplementCategory.builder().name("오메가3").depth(1).parentCategory(parentCategory).build();
         SupplementCategory saveParentCategory = categoryRepository.save(parentCategory);

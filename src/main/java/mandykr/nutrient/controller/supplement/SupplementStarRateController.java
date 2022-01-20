@@ -73,7 +73,8 @@ public class SupplementStarRateController {
      */
     @DeleteMapping("/{starRateId}")
     public void deleteStarRate(@PathVariable Long starRateId){
-        starRateService.deleteStarRate(starRateId);
+                                //, Member meber
+        starRateService.deleteStarRate(starRateId, getMember());
     }
 
 }
