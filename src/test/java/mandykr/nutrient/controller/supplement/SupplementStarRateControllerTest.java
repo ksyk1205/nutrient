@@ -1,7 +1,6 @@
 package mandykr.nutrient.controller.supplement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
+import mandykr.nutrient.dto.supplement.starRate.SupplementStarRateDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
@@ -10,7 +9,6 @@ import mandykr.nutrient.service.supplement.SupplementStarRateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,7 +19,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

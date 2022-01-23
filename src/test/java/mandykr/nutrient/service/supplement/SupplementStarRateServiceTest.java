@@ -1,7 +1,7 @@
 package mandykr.nutrient.service.supplement;
 
-import mandykr.nutrient.dto.supplement.SupplementDto;
-import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
+import mandykr.nutrient.dto.supplement.SupplementResponseDto;
+import mandykr.nutrient.dto.supplement.starRate.SupplementStarRateDto;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
 import mandykr.nutrient.entity.supplement.Supplement;
@@ -77,7 +77,7 @@ class SupplementStarRateServiceTest {
     @DisplayName("별점 수정을 위하여 별점 조회 했을때 빈 객체가 반환되는지 확인한다.")
     void 별점_빈객체_조회(){
         //given
-        SupplementDto supplementDto = new SupplementDto();
+        SupplementResponseDto supplementDto = new SupplementResponseDto();
         //when
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         when(starRateRepository.findBySupplementAndMember(supplement,member)).thenReturn(Optional.empty());

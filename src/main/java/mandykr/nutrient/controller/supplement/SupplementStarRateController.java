@@ -1,8 +1,8 @@
 package mandykr.nutrient.controller.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.supplement.SupplementStarRateDto;
-import mandykr.nutrient.dto.request.SupplementStarRateRequest;
+import mandykr.nutrient.dto.supplement.starRate.SupplementStarRateDto;
+import mandykr.nutrient.dto.supplement.starRate.SupplementStarRateRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.supplement.SupplementStarRateService;

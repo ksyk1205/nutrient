@@ -1,10 +1,12 @@
 package mandykr.nutrient.repository.supplement;
 
 import mandykr.nutrient.config.TestConfig;
+import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -30,10 +32,8 @@ class SupplementRepositoryTest {
 
     @BeforeEach
     void before() {
-        parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").depth(0).build();
-        category = SupplementCategory.builder().name("오메가3").depth(1).parentCategory(parentCategory).build();
-        SupplementCategory saveParentCategory = categoryRepository.save(parentCategory);
-        SupplementCategory saveCategory = categoryRepository.save(category);
+        parentCategory = categoryRepository.save(SupplementCategory.builder().name("오메가369/피쉬오일").depth(0).build());
+        category = categoryRepository.save(SupplementCategory.builder().name("오메가3").depth(1).parentCategory(parentCategory).build());
 
         supplement1 = Supplement.builder().supplementCategory(category).name("비타민A").prdlstReportNo("1-2-3").ranking(0.0).build();
         supplement2 = Supplement.builder().supplementCategory(category).name("비타민B").prdlstReportNo("2-2-3").ranking(0.0).build();
@@ -49,24 +49,71 @@ class SupplementRepositoryTest {
     }
 
     @Test
+    @DisplayName("영양제 전체 조회(검색조건 X)")
     public void 영양제_전체_조회(){
         //given
         supplementRepository.save(supplement1);
         supplementRepository.save(supplement2);
+        SupplementSearch supplementSearch = new SupplementSearch();
         //when
-        List<Supplement> findAll = supplementRepository.findAll();
+        List<SupplementSearchResponse> findAll = supplementRepository.searchSupplementList(supplementSearch);
         //then
         assertEquals(findAll.size(),2);
+    }
+
+    @Test
+    @DisplayName("카테고리별 영양제 조회")
+    public void 영양제_카테고리_조회(){
+        //given
+        Supplement supplement3 = Supplement.builder().supplementCategory(parentCategory).name("비타민C").prdlstReportNo("7-8-9").ranking(0.0).build();
+        supplementRepository.save(supplement1);
+        supplementRepository.save(supplement2);
+        supplementRepository.save(supplement3);
+        SupplementSearch supplementSearch = new SupplementSearch(parentCategory.getId(),null);
+
+        //when
+        List<SupplementSearchResponse> searchResponseList = supplementRepository.searchSupplementList(supplementSearch);
+        //then
+        assertEquals(searchResponseList.size(),1);
+    }
+
+
+    @Test
+    @DisplayName("영양제 이름으로 조회")
+    public void 영양제이름_조회(){
+        //given
+        supplementRepository.save(supplement1);
+        supplementRepository.save(supplement2);
+        SupplementSearch supplementSearch = new SupplementSearch(null,"B");
+
+        //when
+        List<SupplementSearchResponse> searchResponseList = supplementRepository.searchSupplementList(supplementSearch);
+        //then
+        assertEquals(searchResponseList.size(),1);
     }
 
     @Test
     public void 영양제_수정(){
         //given
         Supplement supplement = supplementRepository.save(supplement1);
+        SupplementRequest supplementRequest = new SupplementRequest("비타민C", supplement.getPrdlstReportNo());
         //when
-        supplement.updateNameAndPrdlstAndCategory("비타민C",null,category);
+        supplement.updateNameAndPrdlstAndCategory(new SupplementRequestDto(supplementRequest),category);
         //then
         assertEquals(supplementRepository.findById(supplement.getId()).get().getName(),"비타민C");
+
+    }
+
+    @Test
+    @DisplayName("영양제 콤보 조회")
+    void 영양제_콤보(){
+        //given
+        supplementRepository.save(supplement1);
+        supplementRepository.save(supplement2);
+        //when
+        List<SupplementSearchComboResponse> supplementDtoList = supplementRepository.searchCombo(new SupplementSearchCombo("비민"));
+        //then
+        assertEquals(supplementDtoList.size(),0);
 
     }
 

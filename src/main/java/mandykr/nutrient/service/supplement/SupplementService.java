@@ -1,7 +1,7 @@
 package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.supplement.SupplementDto;
+import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -19,41 +18,43 @@ public class SupplementService {
     private final SupplementRepository supplementRepository;
     private final SupplementCategoryRepository supplementCategoryRepository;
 
+    private final static Double ZERO = 0.0;
+
     @Transactional(readOnly = true)
-    public SupplementDto getSupplement(long supplementId) {
+    public SupplementResponseDto getSupplement(long supplementId) {
         Supplement supplement = getSupplementById(supplementId);
 
-        return new SupplementDto(supplement);
+        return new SupplementResponseDto(supplement);
     }
 
     @Transactional(readOnly = true)
-    public List<SupplementDto> getSupplementList() {
-        return supplementRepository.findAll().stream().map(SupplementDto::new).collect(Collectors.toList());
+    public List<SupplementSearchResponse> getSupplementList(SupplementSearch supplementSearch) {
+        return supplementRepository.searchSupplementList(supplementSearch);
 
     }
 
-    public SupplementDto createSupplement(SupplementDto supplementDto, Long categoryId) {
+    public SupplementResponseDto createSupplement(SupplementRequestDto supplementRequestDto, Long categoryId) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
-        return new SupplementDto(
+        return new SupplementResponseDto(
                 supplementRepository.save(
                         Supplement.builder()
-                                .name(supplementDto.getName())
-                                .prdlstReportNo(supplementDto.getPrdlstReportNo())
-                                .ranking(0.0)
+                                .name(supplementRequestDto.getName())
+                                .prdlstReportNo(supplementRequestDto.getPrdlstReportNo())
+                                .ranking(ZERO)
                                 .supplementCategory(supplementCategory)
                                 .deleteFlag(false).build()));
     }
 
 
 
-    public SupplementDto updateSupplement(SupplementDto supplementDto, Long categoryId) {
+    public SupplementResponseDto updateSupplement(Long categoryId, Long supplementId, SupplementRequestDto supplementRequestDto) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
-        Supplement supplement = getSupplementById(supplementDto.getId());
-        supplement.updateNameAndPrdlstAndCategory(supplementDto.getName(), supplementDto.getPrdlstReportNo(), supplementCategory);
+        Supplement supplement = getSupplementById(supplementId);
+        supplement.updateNameAndPrdlstAndCategory(supplementRequestDto, supplementCategory);
 
-        return new SupplementDto(supplement);
+        return new SupplementResponseDto(supplement);
     }
 
 
@@ -61,6 +62,10 @@ public class SupplementService {
         Supplement supplement = getSupplementById(supplementId);
 
         supplement.updateDeleteFlag();
+    }
+
+    public List<SupplementSearchComboResponse> getSearchCombo(SupplementSearchCombo supplementSearchCombo){
+        return supplementRepository.searchCombo(supplementSearchCombo);
     }
 
     private Supplement getSupplementById(Long supplementId) {

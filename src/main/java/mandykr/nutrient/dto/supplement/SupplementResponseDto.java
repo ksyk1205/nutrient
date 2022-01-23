@@ -10,14 +10,14 @@ import org.springframework.beans.BeanUtils;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SupplementDto {
+public class SupplementResponseDto {
     private Long id;
     private String name;
     private String prdlstReportNo; //품목제조번호
     private Double ranking; //별점
 
     //Entity -> Dto
-    public SupplementDto(Supplement supplement){
+    public SupplementResponseDto(Supplement supplement){
         BeanUtils.copyProperties(supplement, this);
     }
 
