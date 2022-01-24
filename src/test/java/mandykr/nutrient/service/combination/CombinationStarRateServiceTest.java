@@ -25,8 +25,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-@DisplayName("CombineStarRateServiceTest")
+@DisplayName("CombinationStarRateServiceTest")
 class CombinationStarRateServiceTest {
     CombinationRepository combinationRepository = mock(CombinationRepository.class);
 

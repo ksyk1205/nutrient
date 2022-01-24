@@ -1,5 +1,6 @@
 package mandykr.nutrient.entity;
 
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
@@ -21,4 +22,9 @@ public class SupplementCombination {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COMBINATION_ID")
     private Combination combination;
+
+    public SupplementCombination(Supplement supplement, Combination combination) {
+        this.supplement = supplement;
+        this.combination = combination;
+    }
 }

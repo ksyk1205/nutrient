@@ -1,12 +1,22 @@
 package mandykr.nutrient.repository.combination;
 
+import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
+import mandykr.nutrient.entity.supplement.Supplement;
+import mandykr.nutrient.repository.SupplementCategoryRepository;
+import mandykr.nutrient.repository.SupplementCombinationRepository;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
+import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @DataJpaTest
 public class CombinationRepositoryTest {
@@ -15,6 +25,8 @@ public class CombinationRepositoryTest {
     CombinationStarRateRepository combinationStarRateRepository;
     @Autowired
     CombinationRepository combinationRepository;
+
+
 
     @Test
     public void 영양제_페치조인_조회(){
