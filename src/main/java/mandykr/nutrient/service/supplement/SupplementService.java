@@ -6,6 +6,8 @@ import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +30,8 @@ public class SupplementService {
     }
 
     @Transactional(readOnly = true)
-    public List<SupplementSearchResponse> getSupplementList(SupplementSearch supplementSearch) {
-        return supplementRepository.searchSupplementList(supplementSearch);
+    public Page<SupplementSearchResponse> getSupplementList(SupplementSearchRequest supplementSearch, Pageable pageable) {
+        return supplementRepository.searchSupplementList(supplementSearch, pageable);
 
     }
 
@@ -64,8 +66,8 @@ public class SupplementService {
         supplement.updateDeleteFlag();
     }
 
-    public List<SupplementSearchComboResponse> getSearchCombo(SupplementSearchCombo supplementSearchCombo){
-        return supplementRepository.searchCombo(supplementSearchCombo);
+    public List<SupplementSearchComboResponse> getSupplementSearchCombo(SupplementSearchComboRequest supplementSearchCombo){
+        return supplementRepository.searchSupplementCombo(supplementSearchCombo);
     }
 
     private Supplement getSupplementById(Long supplementId) {

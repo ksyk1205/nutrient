@@ -6,9 +6,13 @@ import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
+import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,9 @@ class SupplementServiceTest {
     SupplementCategory category;
     Supplement supplement;
     Supplement supplement2;
+    List<SupplementSearchResponse> supplementList = new ArrayList<>();
+    Pageable pageable;
+    Page<SupplementSearchResponse> supplementSearchResponses;
 
     @BeforeEach
     void before(){
@@ -49,6 +56,26 @@ class SupplementServiceTest {
                 .ranking(0.0)
                 .supplementCategory(category)
                 .deleteFlag(false).build();
+
+
+        supplementList.add(new SupplementSearchResponse(supplement.getId(),
+                supplement.getName(),
+                supplement.getPrdlstReportNo(),
+                supplement.getRanking(),
+                supplement.isDeleteFlag(),
+                new SupplementSearchResponse.SupplementCategoryDto(category.getId(),
+                        category.getName())));
+
+        supplementList.add( new SupplementSearchResponse(supplement2.getId(),
+                supplement2.getName(),
+                supplement2.getPrdlstReportNo(),
+                supplement2.getRanking(),
+                supplement2.isDeleteFlag(),
+                new SupplementSearchResponse.SupplementCategoryDto(category.getId(),
+                        category.getName())));
+
+        pageable = new PageRequestUtil(1,2).getPageable();
+        supplementSearchResponses = new PageImpl<>(supplementList, pageable, supplementList.size());
     }
 
     @Test
@@ -68,74 +95,43 @@ class SupplementServiceTest {
     @Test
     void 영양제_전체_조회(){
         //given
-        List<SupplementSearchResponse> supplementList = new ArrayList<>();
-        supplementList.add(new SupplementSearchResponse(supplement.getId(),
-                supplement.getName(),
-                supplement.getPrdlstReportNo(),
-                supplement.getRanking(),
-                supplement.isDeleteFlag(),
-                new SupplementSearchResponse.SupplementCategoryDto(category.getId(),
-                                                                    category.getName())));
 
-        supplementList.add( new SupplementSearchResponse(supplement2.getId(),
-                supplement2.getName(),
-                supplement2.getPrdlstReportNo(),
-                supplement2.getRanking(),
-                supplement2.isDeleteFlag(),
-                new SupplementSearchResponse.SupplementCategoryDto(category.getId(),
-                                                                    category.getName())));
-        SupplementSearch supplementSearch = new SupplementSearch();
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest();
         //when
-        when(supplementRepository.searchSupplementList(supplementSearch)).thenReturn(supplementList);
-        List<SupplementSearchResponse> supplementDtoList = supplementService.getSupplementList(supplementSearch);
+        when(supplementRepository.searchSupplementList(supplementSearch, pageable)).thenReturn(supplementSearchResponses);
+        Page<SupplementSearchResponse> supplementDtoList = supplementService.getSupplementList(supplementSearch, pageable);
+
         //then
-        assertThat(supplementDtoList.size()).isEqualTo(2);
+        assertThat(supplementDtoList.getContent().size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("카테고리별 영양제 조회")
     public void 영양제_카테고리_조회(){
         //given
-        List<SupplementSearchResponse> supplementList = new ArrayList<>();
-        supplementList.add(new SupplementSearchResponse(supplement.getId(),
-                supplement.getName(),
-                supplement.getPrdlstReportNo(),
-                supplement.getRanking(),
-                supplement.isDeleteFlag(),
-                new SupplementSearchResponse.SupplementCategoryDto(category.getId(),
-                        category.getName())));
 
-
-        SupplementSearch supplementSearch = new SupplementSearch(1L,null);
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest(1L, null);
 
         //when
-        when(supplementRepository.searchSupplementList(supplementSearch)).thenReturn(supplementList);
-        List<SupplementSearchResponse> supplementDtoList = supplementService.getSupplementList(supplementSearch);
+        when(supplementRepository.searchSupplementList(supplementSearch, pageable)).thenReturn(supplementSearchResponses);
+        Page<SupplementSearchResponse> supplementDtoList = supplementService.getSupplementList(supplementSearch, pageable);
+
         //then
-        assertThat(supplementDtoList.size()).isEqualTo(1);
+        assertThat(supplementDtoList.getContent().size()).isEqualTo(2);
     }
 
     @Test
     @DisplayName("영양제 이름으로 조회")
     public void 영양제이름_조회() {
         //given
-        List<SupplementSearchResponse> supplementList = new ArrayList<>();
-        supplementList.add(new SupplementSearchResponse(supplement.getId(),
-                supplement.getName(),
-                supplement.getPrdlstReportNo(),
-                supplement.getRanking(),
-                supplement.isDeleteFlag(),
-                new SupplementSearchResponse.SupplementCategoryDto(category.getId(),
-                        category.getName())));
-
-
-        SupplementSearch supplementSearch = new SupplementSearch(null,"test");
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest(null, "test");
 
         //when
-        when(supplementRepository.searchSupplementList(supplementSearch)).thenReturn(supplementList);
-        List<SupplementSearchResponse> supplementDtoList = supplementService.getSupplementList(supplementSearch);
+        when(supplementRepository.searchSupplementList(supplementSearch, pageable)).thenReturn(supplementSearchResponses);
+        Page<SupplementSearchResponse> supplementDtoList = supplementService.getSupplementList(supplementSearch, pageable);
+
         //then
-        assertThat(supplementDtoList.size()).isEqualTo(1);
+        assertThat(supplementDtoList.getContent().size()).isEqualTo(2);
     }
 
     @Test
@@ -146,7 +142,7 @@ class SupplementServiceTest {
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.save(isA(Supplement.class))).thenReturn(supplement);
 
-        SupplementResponseDto testSupplement1 = supplementService.createSupplement(new SupplementRequestDto(supplementRequest),category.getId());
+        SupplementResponseDto testSupplement1 = supplementService.createSupplement(new SupplementRequestDto(supplementRequest), category.getId());
         //then
         assertThat(testSupplement1.getName()).isEqualTo(supplement.getName());
 
@@ -160,7 +156,7 @@ class SupplementServiceTest {
 
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
-        SupplementResponseDto updateSupplement = supplementService.updateSupplement(category.getId(),supplement.getId(),new SupplementRequestDto(supplementDto));
+        SupplementResponseDto updateSupplement = supplementService.updateSupplement(category.getId(),supplement.getId(), new SupplementRequestDto(supplementDto));
         //then
         assertThat(updateSupplement.getId()).isEqualTo(supplement.getId());
     }
@@ -182,10 +178,10 @@ class SupplementServiceTest {
         List<SupplementSearchComboResponse> supplementDtoList = new ArrayList<>();
         supplementDtoList.add(new SupplementSearchComboResponse(supplement.getId(),supplement.getName()));
         supplementDtoList.add(new SupplementSearchComboResponse(supplement2.getId(),supplement2.getName()));
-        SupplementSearchCombo supplementSearchCombo = new SupplementSearchCombo("test");
+        SupplementSearchComboRequest supplementSearchCombo = new SupplementSearchComboRequest("test");
         //when
-        when(supplementRepository.searchCombo(supplementSearchCombo)).thenReturn(supplementDtoList);
-        List<SupplementSearchComboResponse> supplementList = supplementService.getSearchCombo(supplementSearchCombo);
+        when(supplementRepository.searchSupplementCombo(supplementSearchCombo)).thenReturn(supplementDtoList);
+        List<SupplementSearchComboResponse> supplementList = supplementService.getSupplementSearchCombo(supplementSearchCombo);
 
         //then
         assertThat(supplementDtoList.size()).isEqualTo(supplementList.size());

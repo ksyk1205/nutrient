@@ -5,10 +5,10 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SupplementSearchCombo {
+public class SupplementSearchComboRequest {
     private String name;
 
-    public SupplementSearchCombo(String name) {
+    public SupplementSearchComboRequest(String name) {
         this.name = name;
     }
 

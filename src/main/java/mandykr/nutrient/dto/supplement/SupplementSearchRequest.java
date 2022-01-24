@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SupplementSearch {
+public class SupplementSearchRequest {
     private Long categoryId;
     private String supplementName;
 

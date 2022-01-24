@@ -37,10 +37,10 @@ public class Supplement extends BaseTimeEntity {
     //수정을 위한 메서드
     public void updateNameAndPrdlstAndCategory(SupplementRequestDto supplementRequestDto, SupplementCategory supplementCategory) {
         if(supplementRequestDto.getName() != null) {
-            this.name = name;
+            this.name = supplementRequestDto.getName();
         }
         if(supplementRequestDto.getPrdlstReportNo() != null) {
-            this.prdlstReportNo = prdlstReportNo;
+            this.prdlstReportNo = supplementRequestDto.getPrdlstReportNo();
         }
         if(supplementCategory.getId()!=this.supplementCategory.getId()){
             this.supplementCategory = supplementCategory;

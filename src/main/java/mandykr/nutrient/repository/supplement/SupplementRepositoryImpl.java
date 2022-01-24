@@ -3,13 +3,13 @@ package mandykr.nutrient.repository.supplement;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import mandykr.nutrient.dto.supplement.*;
-import mandykr.nutrient.entity.QSupplementCategory;
-import mandykr.nutrient.entity.supplement.QSupplement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -18,8 +18,6 @@ import java.util.List;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.types.Projections.bean;
 import static mandykr.nutrient.entity.QSupplementCategory.supplementCategory;
-import static mandykr.nutrient.entity.QSupplementCombination.supplementCombination;
-import static mandykr.nutrient.entity.combination.QCombination.combination;
 import static mandykr.nutrient.entity.supplement.QSupplement.*;
 
 @Repository
@@ -32,7 +30,7 @@ public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
     }
 
     @Override
-    public List<SupplementSearchResponse> searchSupplementList(SupplementSearch condition) {
+    public Page<SupplementSearchResponse> searchSupplementList(SupplementSearchRequest condition, Pageable pageable) {
         List<SupplementSearchResponse> result = queryFactory
                 .select(
                     Projections.constructor(SupplementSearchResponse.class,
@@ -52,10 +50,12 @@ public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
                         categoryEq(condition.getCategoryId()),
                         supplementsNameEq(condition.getSupplementName())
                 )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch()
                 ;
 
-        return result;
+        return new PageImpl<>(result, pageable, result.size());
     }
 
     private Predicate categoryEq(Long categoryId) {
@@ -63,7 +63,7 @@ public class SupplementRepositoryImpl implements SupplementRepositoryCustom {
     }
 
     @Override
-    public List<SupplementSearchComboResponse> searchCombo(SupplementSearchCombo condition) {
+    public List<SupplementSearchComboResponse> searchSupplementCombo(SupplementSearchComboRequest condition) {
         List<SupplementSearchComboResponse> result = queryFactory
                 .select(Projections.constructor(SupplementSearchComboResponse.class,
                         supplement.id,

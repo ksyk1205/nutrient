@@ -5,12 +5,15 @@ import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.repository.SupplementCategoryRepository;
+import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +32,7 @@ class SupplementRepositoryTest {
     SupplementCategory category;
     Supplement supplement1;
     Supplement supplement2;
+    Pageable pageable;
 
     @BeforeEach
     void before() {
@@ -37,6 +41,8 @@ class SupplementRepositoryTest {
 
         supplement1 = Supplement.builder().supplementCategory(category).name("비타민A").prdlstReportNo("1-2-3").ranking(0.0).build();
         supplement2 = Supplement.builder().supplementCategory(category).name("비타민B").prdlstReportNo("2-2-3").ranking(0.0).build();
+
+        pageable = new PageRequestUtil(1, 2).getPageable();
     }
 
     @Test
@@ -45,7 +51,7 @@ class SupplementRepositoryTest {
         Supplement save = supplementRepository.save(supplement1);
         //when
         Optional<Supplement> findById = supplementRepository.findById(save.getId());
-        assertEquals(findById.get().getName(),save.getName());
+        assertEquals(findById.get().getName(), save.getName());
     }
 
     @Test
@@ -54,11 +60,11 @@ class SupplementRepositoryTest {
         //given
         supplementRepository.save(supplement1);
         supplementRepository.save(supplement2);
-        SupplementSearch supplementSearch = new SupplementSearch();
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest();
         //when
-        List<SupplementSearchResponse> findAll = supplementRepository.searchSupplementList(supplementSearch);
+        Page<SupplementSearchResponse> findAll = supplementRepository.searchSupplementList(supplementSearch, pageable);
         //then
-        assertEquals(findAll.size(),2);
+        assertEquals(findAll.getContent().size(), 2);
     }
 
     @Test
@@ -69,12 +75,12 @@ class SupplementRepositoryTest {
         supplementRepository.save(supplement1);
         supplementRepository.save(supplement2);
         supplementRepository.save(supplement3);
-        SupplementSearch supplementSearch = new SupplementSearch(parentCategory.getId(),null);
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest(parentCategory.getId(), null);
 
         //when
-        List<SupplementSearchResponse> searchResponseList = supplementRepository.searchSupplementList(supplementSearch);
+        Page<SupplementSearchResponse> findAll = supplementRepository.searchSupplementList(supplementSearch, pageable);
         //then
-        assertEquals(searchResponseList.size(),1);
+        assertEquals(findAll.getContent().size(),1);
     }
 
 
@@ -84,12 +90,12 @@ class SupplementRepositoryTest {
         //given
         supplementRepository.save(supplement1);
         supplementRepository.save(supplement2);
-        SupplementSearch supplementSearch = new SupplementSearch(null,"B");
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest(null, "B");
 
         //when
-        List<SupplementSearchResponse> searchResponseList = supplementRepository.searchSupplementList(supplementSearch);
+        Page<SupplementSearchResponse> findAll = supplementRepository.searchSupplementList(supplementSearch, pageable);
         //then
-        assertEquals(searchResponseList.size(),1);
+        assertEquals(findAll.getContent().size(),1);
     }
 
     @Test
@@ -98,9 +104,9 @@ class SupplementRepositoryTest {
         Supplement supplement = supplementRepository.save(supplement1);
         SupplementRequest supplementRequest = new SupplementRequest("비타민C", supplement.getPrdlstReportNo());
         //when
-        supplement.updateNameAndPrdlstAndCategory(new SupplementRequestDto(supplementRequest),category);
+        supplement.updateNameAndPrdlstAndCategory(new SupplementRequestDto(supplementRequest), category);
         //then
-        assertEquals(supplementRepository.findById(supplement.getId()).get().getName(),"비타민C");
+        assertEquals(supplementRepository.findById(supplement.getId()).get().getName(), "비타민C");
 
     }
 
@@ -111,7 +117,7 @@ class SupplementRepositoryTest {
         supplementRepository.save(supplement1);
         supplementRepository.save(supplement2);
         //when
-        List<SupplementSearchComboResponse> supplementDtoList = supplementRepository.searchCombo(new SupplementSearchCombo("비민"));
+        List<SupplementSearchComboResponse> supplementDtoList = supplementRepository.searchSupplementCombo(new SupplementSearchComboRequest("비민"));
         //then
         assertEquals(supplementDtoList.size(),0);
 

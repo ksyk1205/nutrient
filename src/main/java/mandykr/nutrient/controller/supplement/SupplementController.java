@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.service.supplement.SupplementService;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,16 +19,18 @@ import static mandykr.nutrient.util.ApiUtils.success;
 public class SupplementController {
     private final SupplementService supplementService;
 
+
     /**
      * 영양제 조회
      * @return
      */
     @GetMapping("/supplement")
-    public ApiResult<List<SupplementSearchResponse>> getSupplementList(
+    public ApiResult<Page<SupplementSearchResponse>> getSupplementList(
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String supplementName){
-        SupplementSearch supplementSearch = new SupplementSearch(categoryId, supplementName);
-        return success(supplementService.getSupplementList(supplementSearch));
+            @RequestParam(required = false) String supplementName,
+            final Pageable pageable){
+        SupplementSearchRequest supplementSearch = new SupplementSearchRequest(categoryId, supplementName);
+        return success(supplementService.getSupplementList(supplementSearch, pageable));
     }
 
     /**
@@ -77,5 +81,11 @@ public class SupplementController {
     public void deleteSupplement(
             @PathVariable Long supplementId){
         supplementService.deleteSupplement(supplementId);
+    }
+
+    @GetMapping("/supplement/combo")
+    public ApiResult<List<SupplementSearchComboResponse>> getSupplementSearchCombo(
+            @RequestParam(required = true) String name){
+        return success(supplementService.getSupplementSearchCombo(new SupplementSearchComboRequest(name)));
     }
 }
