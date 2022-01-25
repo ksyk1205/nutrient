@@ -142,9 +142,10 @@ class SupplementServiceTest {
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.save(isA(Supplement.class))).thenReturn(supplement);
 
-        SupplementResponseDto testSupplement1 = supplementService.createSupplement(new SupplementRequestDto(supplementRequest), category.getId());
+        SupplementResponseDto testSupplement1 = supplementService.createSupplement(supplementRequest, category.getId());
         //then
         assertThat(testSupplement1.getName()).isEqualTo(supplement.getName());
+        assertThat(testSupplement1.getRanking()).isEqualTo(0.0);
 
     }
 
@@ -156,7 +157,7 @@ class SupplementServiceTest {
 
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
-        SupplementResponseDto updateSupplement = supplementService.updateSupplement(category.getId(),supplement.getId(), new SupplementRequestDto(supplementDto));
+        SupplementResponseDto updateSupplement = supplementService.updateSupplement(category.getId(),supplement.getId(), supplementDto);
         //then
         assertThat(updateSupplement.getId()).isEqualTo(supplement.getId());
     }

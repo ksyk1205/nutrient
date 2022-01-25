@@ -35,26 +35,25 @@ public class SupplementService {
 
     }
 
-    public SupplementResponseDto createSupplement(SupplementRequestDto supplementRequestDto, Long categoryId) {
+    public SupplementResponseDto createSupplement(SupplementRequest supplementRequest, Long categoryId) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
         return new SupplementResponseDto(
                 supplementRepository.save(
                         Supplement.builder()
-                                .name(supplementRequestDto.getName())
-                                .prdlstReportNo(supplementRequestDto.getPrdlstReportNo())
-                                .ranking(ZERO)
+                                .name(supplementRequest.getName())
+                                .prdlstReportNo(supplementRequest.getPrdlstReportNo())
                                 .supplementCategory(supplementCategory)
                                 .deleteFlag(false).build()));
     }
 
 
 
-    public SupplementResponseDto updateSupplement(Long categoryId, Long supplementId, SupplementRequestDto supplementRequestDto) {
+    public SupplementResponseDto updateSupplement(Long categoryId, Long supplementId, SupplementRequest supplementRequest) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
         Supplement supplement = getSupplementById(supplementId);
-        supplement.updateNameAndPrdlstAndCategory(supplementRequestDto, supplementCategory);
+        supplement.updateNameAndPrdlstAndCategory(supplementRequest.getName(), supplementRequest.getPrdlstReportNo(), supplementCategory);
 
         return new SupplementResponseDto(supplement);
     }

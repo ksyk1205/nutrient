@@ -21,7 +21,8 @@ public class SupplementController {
 
 
     /**
-     * 영양제 조회
+     * 영양제 전체 조회
+     * (이름으로 조회, 카테고리로 조회)
      * @return
      */
     @GetMapping("/supplement")
@@ -54,8 +55,7 @@ public class SupplementController {
     public ApiResult<SupplementResponseDto> createSupplement(
             @PathVariable Long categoryId,
             @RequestBody @Valid SupplementRequest supplementRequest){
-        SupplementRequestDto supplementRequestDto = new SupplementRequestDto(supplementRequest);
-        return success(supplementService.createSupplement(supplementRequestDto,categoryId));
+        return success(supplementService.createSupplement(supplementRequest,categoryId));
     }
 
     /**
@@ -70,7 +70,7 @@ public class SupplementController {
             @PathVariable Long categoryId,
             @PathVariable Long supplementId,
             @RequestBody @Valid SupplementRequest supplementRequest){
-        return success(supplementService.updateSupplement(categoryId,supplementId,new SupplementRequestDto(supplementRequest)));
+        return success(supplementService.updateSupplement(categoryId,supplementId,supplementRequest));
     }
 
     /**
@@ -83,6 +83,11 @@ public class SupplementController {
         supplementService.deleteSupplement(supplementId);
     }
 
+    /**
+     * 영양제 이름으로 아이디 검색
+     * @param name
+     * @return
+     */
     @GetMapping("/supplement/combo")
     public ApiResult<List<SupplementSearchComboResponse>> getSupplementSearchCombo(
             @RequestParam(required = true) String name){

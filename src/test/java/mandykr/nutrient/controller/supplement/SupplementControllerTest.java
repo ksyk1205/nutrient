@@ -167,7 +167,7 @@ class SupplementControllerTest {
         //given
         SupplementRequest supplementRequest = new SupplementRequest(supplement1.getName(), supplement1.getPrdlstReportNo());
         //when
-        when(supplementService.createSupplement(new SupplementRequestDto(supplementRequest), category.getId()))
+        when(supplementService.createSupplement(supplementRequest, category.getId()))
                 .thenReturn(new SupplementResponseDto(supplement1));
         ResultActions perform = mockMvc.perform(post("/api/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -199,7 +199,7 @@ class SupplementControllerTest {
         SupplementRequest supplementRequest = new SupplementRequest(updatesupplement.getName(), updatesupplement.getPrdlstReportNo());
 
         //when
-        when(supplementService.updateSupplement(category.getId(), updatesupplement.getId(), new SupplementRequestDto(supplementRequest)))
+        when(supplementService.updateSupplement(category.getId(), updatesupplement.getId(), supplementRequest))
                 .thenReturn(new SupplementResponseDto(updatesupplement));
         ResultActions perform = mockMvc.perform(put("/api/1/3")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -104,7 +104,7 @@ class SupplementRepositoryTest {
         Supplement supplement = supplementRepository.save(supplement1);
         SupplementRequest supplementRequest = new SupplementRequest("비타민C", supplement.getPrdlstReportNo());
         //when
-        supplement.updateNameAndPrdlstAndCategory(new SupplementRequestDto(supplementRequest), category);
+        supplement.updateNameAndPrdlstAndCategory(supplementRequest.getName(), supplementRequest.getPrdlstReportNo(), category);
         //then
         assertEquals(supplementRepository.findById(supplement.getId()).get().getName(), "비타민C");
 
