@@ -25,22 +25,18 @@ import java.util.stream.Collectors;
 @Transactional
 public class CombinationServiceImpl implements CombinationService{
     private final CombinationRepository combinationRepository;
-    private final SupplementRepository supplementRepository;
-    private final SupplementCombinationRepository supplementCombinationRepository;
+    private final SupplementCombinationService supplementCombinationService;
 
 
     @Override
-    public CombinationDto createCombination(CombinationCreateDto combinationCreateDto, Member member) {
-        //영양제 조회
-        List<Supplement> supplements = supplementRepository.findAllById(combinationCreateDto.getSupplementIds());
+    public CombinationDto createCombination(CombinationCreateDto combinationCreateDto) {
         Combination combination = Combination.builder()
                 .caption(combinationCreateDto.getCaption())
                 .rating(Combination.ZERO)
                 .build();
-        //영양제 조합 저장
         Combination saveCombination = combinationRepository.save(combination);
-        List<SupplementCombination> supplementCombinations = supplements.stream().map(supplement -> new SupplementCombination(supplement, saveCombination)).collect(Collectors.toList());
-        supplementCombinationRepository.saveAll(supplementCombinations);
+        //메핑테이블 저장 책임을 영양제 메핑테이블에 전가
+        supplementCombinationService.createSupplementCombinations(combinationCreateDto.getSupplementIds(), saveCombination);
         return CombinationDto.of(saveCombination);
     }
 

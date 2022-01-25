@@ -1,18 +1,13 @@
 package mandykr.nutrient.controller.combination;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.combination.CombinationConditionCategory;
-import mandykr.nutrient.dto.combination.CombinationConditionSupplement;
-import mandykr.nutrient.dto.combination.CombinationDto;
-import mandykr.nutrient.dto.combination.CombinationSearchCondition;
+import mandykr.nutrient.dto.combination.*;
 import mandykr.nutrient.service.combination.CombinationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static mandykr.nutrient.util.ApiUtils.ApiResult;
@@ -37,4 +32,12 @@ public class CombinationController {
         return success(combinationService.getCombinations(condition, pageable));
     }
 
+    /**
+     * 영양제 번호 List, Caption을 입력받아 영양제 조합을 저장한다.
+     */
+    @PostMapping("/combinations")
+    public ApiResult<CombinationDto> createCombination(
+            @RequestBody @Valid CombinationCreateRequest combinationCreateRequest) {
+        return success(combinationService.createCombination(combinationCreateRequest.of()));
+    }
 }

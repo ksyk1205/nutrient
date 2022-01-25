@@ -27,46 +27,16 @@ import static org.mockito.Mockito.when;
 class CombinationServiceTest {
 
     CombinationRepository combinationRepository = mock(CombinationRepository.class);
-    SupplementRepository supplementRepository = mock(SupplementRepository.class);
-    SupplementCombinationRepository supplementCombinationRepository = mock(SupplementCombinationRepository.class);
+    SupplementCombinationService supplementCombinationService = mock(SupplementCombinationService.class);
 
 
-    CombinationService combinationService = new CombinationServiceImpl(combinationRepository, supplementRepository, supplementCombinationRepository);
+    CombinationService combinationService = new CombinationServiceImpl(combinationRepository, supplementCombinationService);
 
-    List<Supplement> supplements = new ArrayList<>();
-    Supplement supplement1;
-    Supplement supplement2;
-    Supplement supplement3;
-    Member member;
-    List<SupplementCombination> supplementCombinations = new ArrayList<>();
 
 
 
     @BeforeEach
     public void setup(){
-        supplement1 = Supplement.builder()
-                .id(1L)
-                .name("영양제1")
-                .build();
-        supplement2 = Supplement.builder()
-                .id(2L)
-                .name("영양제2")
-                .build();
-        supplement3 = Supplement.builder()
-                .id(3L)
-                .name("영양제3")
-                .build();
-
-        supplements.add(supplement1);
-        supplements.add(supplement2);
-        supplements.add(supplement3);
-        
-        member = new Member();
-        member.setId(1L);
-        member.setMemberId("TEST");
-        member.setName("TEST_계정");
-
-
 
     }
 
@@ -81,15 +51,11 @@ class CombinationServiceTest {
                 .caption(combinationCreateDto.getCaption())
                 .rating(Combination.ZERO)
                 .build();
-        supplementCombinations.add(new SupplementCombination(supplement1, combination));
-        supplementCombinations.add(new SupplementCombination(supplement2, combination));
-        supplementCombinations.add(new SupplementCombination(supplement3, combination));
+
 
         //when
-        when(supplementRepository.findAllById(supplementIds)).thenReturn(supplements);
         when(combinationRepository.save(any(Combination.class))).thenReturn(combination);
-        when(supplementCombinationRepository.saveAll(anyList())).thenReturn(supplementCombinations);
-        CombinationDto saveCombinationDto = combinationService.createCombination(combinationCreateDto, member);
+        CombinationDto saveCombinationDto = combinationService.createCombination(combinationCreateDto);
 
         //then
         assertEquals(saveCombinationDto.getId(), combination.getId());

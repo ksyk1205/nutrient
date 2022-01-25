@@ -13,5 +13,5 @@ import java.util.List;
 public interface CombinationService {
     Page<CombinationDto> getCombinations(CombinationSearchCondition condition, Pageable pageable);
 
-    CombinationDto createCombination(CombinationCreateDto combinationCreateDto, Member member);
+    CombinationDto createCombination(CombinationCreateDto combinationCreateDto);
 }
