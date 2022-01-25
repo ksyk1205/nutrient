@@ -1,10 +1,12 @@
 package mandykr.nutrient.repository.supplement;
 
-import mandykr.nutrient.dto.supplement.SupplementDto;
-import mandykr.nutrient.dto.SupplementSearchCondition;
+import mandykr.nutrient.dto.supplement.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface SupplementRepositoryCustom {
-    List<SupplementDto> search(SupplementSearchCondition condition);
+    List<SupplementSearchComboResponse> searchSupplementCombo(SupplementSearchComboRequest condition);
+    Page<SupplementSearchResponse> searchSupplementList(SupplementSearchRequest condition, Pageable pageables);
 }

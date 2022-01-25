@@ -25,7 +25,7 @@ public class Supplement extends BaseTimeEntity {
     @JoinColumn(name = "SUPPLEMENT_CATEGORY_ID")
     private SupplementCategory supplementCategory;
 
-    private Double ranking; //별점
+    private double ranking; //별점
 
     @OneToMany(mappedBy = "supplement")
     @Builder.Default
