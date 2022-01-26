@@ -27,7 +27,7 @@ public class Combination extends BaseTimeEntity {
 
     private String caption;
 
-    private Double rating;
+    private double rating;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID")

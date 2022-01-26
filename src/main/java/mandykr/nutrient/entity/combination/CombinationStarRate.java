@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class CombinationStarRate extends BaseTimeEntity implements CombinationStarRateImpl {
+public class CombinationStarRate extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
@@ -32,12 +32,10 @@ public class CombinationStarRate extends BaseTimeEntity implements CombinationSt
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @Override
     public void updateStarNumber(int starNumber) {
         this.starNumber = starNumber;
     }
 
-    @Override
     public void addStarRate(Combination combination) {
         this.combination = combination;
         if(!combination.getCombinationStarRates().contains(this)){

@@ -1,23 +1,24 @@
 package mandykr.nutrient.controller.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.supplement.SupplementReplyService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static mandykr.nutrient.util.ApiUtils.ApiResult;
 import static mandykr.nutrient.util.ApiUtils.success;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/supplement-reply")
+@RequestMapping("/api/supplement-reply")
 public class SupplementReplyController {
 
     private final SupplementReplyService supplementReplyService;
@@ -29,8 +30,10 @@ public class SupplementReplyController {
      * @return ApiResult<List<SupplementReplyResponseDto>>
      */
     @GetMapping("{supplementId}")
-    public ApiResult<List<SupplementReplyResponseDto>> getSupplementRepliesBySupplement(@PathVariable Long supplementId){
-        return success(supplementReplyService.getSupplementRepliesBySupplement(supplementId));
+    public ApiResult<Page<SupplementReplyDto>> getSupplementRepliesWithParent(
+            @PathVariable Long supplementId,
+            final @PageableDefault(sort = "groupOrder") Pageable pageable){
+        return success(supplementReplyService.getSupplementRepliesWithParent(supplementId, pageable));
     }
 
     /**
@@ -39,10 +42,11 @@ public class SupplementReplyController {
      * @return ApiResult<List<SupplementReplyResponseDto>>
      */
     @GetMapping("{supplementId}/{parentId}")
-    public ApiResult<List<SupplementReplyResponseDto>> getSupplementRepliesByParent(
+    public ApiResult<Page<SupplementReplyDto>> getSupplementRepliesWithChild(
             @PathVariable Long supplementId,
-            @PathVariable Long parentId){
-        return success(supplementReplyService.getSupplementRepliesByParent(supplementId, parentId));
+            @PathVariable Long parentId,
+            final @PageableDefault(sort = "groups") Pageable pageable){
+        return success(supplementReplyService.getSupplementRepliesWithChild(supplementId, parentId, pageable));
     }
 
     /**
@@ -52,11 +56,10 @@ public class SupplementReplyController {
      * @return ApiResult<SupplementReplyResponseDto>
      */
     @PostMapping("{supplementId}")
-    public ApiResult<SupplementReplyResponseDto> createSupplementReply(
+    public ApiResult<SupplementReplyDto> createSupplementReply(
             @PathVariable("supplementId") Long supplementId,
             @RequestBody @Valid SupplementReplyRequest request){
-        SupplementReplyRequestDto supplementReplyRequestDto = new SupplementReplyRequestDto(request);
-        return success(supplementReplyService.createSupplementReply(supplementId, getMember(), supplementReplyRequestDto));
+        return success(supplementReplyService.createSupplementReply(supplementId, getMember(), request));
     }
 
 
@@ -68,12 +71,11 @@ public class SupplementReplyController {
      * @return ApiResult<SupplementReplyResponseDto>
      */
     @PostMapping("{supplementId}/{replyId}")
-    public ApiResult<SupplementReplyResponseDto> createSupplementReplyByReply(
+    public ApiResult<SupplementReplyDto> createSupplementReplyByReply(
             @PathVariable("supplementId") Long supplementId,
             @PathVariable("replyId") Long replyId,
             @RequestBody @Valid SupplementReplyRequest request){
-        SupplementReplyRequestDto supplementReplyRequestDto = new SupplementReplyRequestDto(request);
-        return success(supplementReplyService.createSupplementReply(supplementId, replyId, getMember(), supplementReplyRequestDto));
+        return success(supplementReplyService.createSupplementReply(supplementId, replyId, getMember(), request));
     }
 
 
@@ -84,11 +86,10 @@ public class SupplementReplyController {
      * @return ApiResult<SupplementReplyResponseDto>
      */
     @PutMapping("{replyId}")
-    public ApiResult<SupplementReplyResponseDto> updateSupplementReply(
+    public ApiResult<SupplementReplyDto> updateSupplementReply(
             @PathVariable Long replyId,
             @RequestBody @Valid SupplementReplyRequest request){
-        SupplementReplyRequestDto supplementReplyRequestDto = new SupplementReplyRequestDto(request);
-        return success(supplementReplyService.updateSupplementReply(replyId, getMember(), supplementReplyRequestDto));
+        return success(supplementReplyService.updateSupplementReply(replyId, getMember(), request));
     }
 
     /**
@@ -104,7 +105,7 @@ public class SupplementReplyController {
     
     //임의의 member 값
     private Member getMember() {
-        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다,"));
+        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다."));
     }
 
 }

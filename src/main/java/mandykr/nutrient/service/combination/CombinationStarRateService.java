@@ -1,13 +1,11 @@
 package mandykr.nutrient.service.combination;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.combination.starRate.CombinationStarRateRequestDto;
-import mandykr.nutrient.dto.combination.starRate.CombinationStarRateResponseDto;
+import mandykr.nutrient.dto.combination.starRate.CombinationStarRateDto;
 import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequest;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.combination.CombinationStarRateImpl;
 import mandykr.nutrient.repository.combination.starrate.CombinationStarRateRepository;
 import mandykr.nutrient.repository.combination.CombinationRepository;
 import org.springframework.stereotype.Service;
@@ -22,9 +20,8 @@ public class CombinationStarRateService {
     private final CombinationRepository combinationRepository;
 
 
-    public CombinationStarRateResponseDto createCombinationStarRate(Long combinationId, Member member, CombinationStarRateRequestDto request) {
-        Combination combination = combinationRepository.findByIdFetch(combinationId)
-                .orElseThrow(()->new IllegalArgumentException(combinationId+"의 영양제 조합이 존재하지 않습니다."));
+    public CombinationStarRateDto createCombinationStarRate(Long combinationId, Member member, CombinationStarRateRequest request) {
+        Combination combination = getCombination(combinationId);
         combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
         .ifPresent(m ->{
             throw new IllegalArgumentException("등록한 영양제 조합 별점이 존재합니다");
@@ -37,35 +34,50 @@ public class CombinationStarRateService {
         saveCombineStarRate.addStarRate(combination);
         combination.updateRating();
         return Optional.of(combinationStarRateRepository.save(saveCombineStarRate))
-                .map(CombinationStarRateResponseDto::new)
+                .map(CombinationStarRateDto::new)
                 .get();
     }
 
-    public CombinationStarRateResponseDto updateCombinationStarRate(Long combinationId, Long combinationStarRateId, Member member, CombinationStarRateRequestDto request) {
-        Combination combination = combinationRepository.findByIdFetch(combinationId)
-                .orElseThrow(() -> new IllegalArgumentException(combinationId+"의 영양제 조합이 존재하지 않습니다."));
-        CombinationStarRate combinationStarRate = combinationStarRateRepository.findIdAndMemberAndComb(combinationStarRateId, member, combinationId)
-                .orElseThrow(() -> new IllegalArgumentException(combinationStarRateId+"의 영양제 조합 별점이 존재하지 않습니다."));
+
+
+    public CombinationStarRateDto updateCombinationStarRate(Long combinationId, Long combinationStarRateId, Member member, CombinationStarRateRequest request) {
+        Combination combination = getCombination(combinationId);
+        CombinationStarRate combinationStarRate = getCombinationStarRate(combinationId, combinationStarRateId, member);
         combinationStarRate.updateStarNumber(request.getStarNumber());
         combination.updateList(combinationStarRate);
         combination.updateRating();
-        return Optional.of(combinationStarRate).map(CombinationStarRateResponseDto::new)
+        return Optional.of(combinationStarRate).map(CombinationStarRateDto::new)
                 .get();
     }
 
 
-    public CombinationStarRateResponseDto getCombinationStarRateByCombination(Long combinationId, Member member) {
-        CombinationStarRateImpl combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member).get(); //NULL OBJECT 패턴
-        return new CombinationStarRateResponseDto(combinationStarRate);
+
+
+    public CombinationStarRateDto getCombinationStarRateByCombination(Long combinationId, Member member) {
+        CombinationStarRate combinationStarRate = combinationStarRateRepository.findByCombinationIdAndMember(combinationId, member)
+                .orElseGet(() -> CombinationStarRate.builder().build());
+        return new CombinationStarRateDto(combinationStarRate);
     }
 
     public boolean deleteCombinationStarRate(Long combinationStarRateId, Member member) {
-        CombinationStarRate combinationStarRate = combinationStarRateRepository.findById(combinationStarRateId)
-                .orElseThrow(() -> new IllegalArgumentException(combinationStarRateId + "의 영양제 조합 별점이 존재하지 않습니다."));
-        if(combinationStarRate.getMember().getId().equals(member.getId())){
-            combinationStarRateRepository.deleteById(combinationStarRateId);
-            return true;
-        }
-        throw new IllegalArgumentException(member.getMemberId() + "의 영양제 조합 별점이 존재하지 않습니다.");
+        CombinationStarRate combinationStarRate = getCombinationStarRate(combinationStarRateId, member);
+        combinationStarRateRepository.deleteById(combinationStarRateId);
+        return true;
+    }
+
+    private CombinationStarRate getCombinationStarRate(Long combinationStarRateId, Member member) {
+        return combinationStarRateRepository.findIdAndMember(combinationStarRateId, member)
+                .orElseThrow(() -> new IllegalArgumentException(combinationStarRateId+"의 영양제 조합 별점이 존재하지 않습니다."));
+    }
+
+
+    private CombinationStarRate getCombinationStarRate(Long combinationId, Long combinationStarRateId, Member member) {
+        return combinationStarRateRepository.findIdAndMemberAndComb(combinationStarRateId, member, combinationId)
+                .orElseThrow(() -> new IllegalArgumentException(combinationStarRateId+"의 영양제 조합 별점이 존재하지 않습니다."));
+    }
+
+    private Combination getCombination(Long combinationId) {
+        return combinationRepository.findByIdFetch(combinationId)
+                .orElseThrow(() -> new IllegalArgumentException(combinationId + "의 영양제 조합이 존재하지 않습니다."));
     }
 }

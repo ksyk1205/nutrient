@@ -1,5 +1,6 @@
 package mandykr.nutrient.repository.combination.starRate;
 
+import mandykr.nutrient.config.TestConfig;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
 import mandykr.nutrient.entity.Member;
@@ -11,11 +12,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@Import(TestConfig.class)
 class CombinationStarRateRepositoryTest {
     @Autowired
     CombinationStarRateRepository combinationStarRateRepository;
@@ -26,12 +29,12 @@ class CombinationStarRateRepositoryTest {
     MemberRepository memberRepository;
 
 
-    private Combination combination;
-    private Member member;
+    Combination combination;
+    Member member;
 
 
     @BeforeEach
-    public void 등록전_값_입력(){
+    public void setup(){
         this.combination = combinationRepository.save(Combination.builder()
                 .caption("영양제조합")
                 .rating(0.0)
@@ -43,7 +46,7 @@ class CombinationStarRateRepositoryTest {
     }
 
     @Test
-    public void 등록_테스트(){
+    public void 등록(){
         CombinationStarRate starRate = combinationStarRateRepository.save(
                                         CombinationStarRate.builder()
                                         .starNumber(2)
@@ -55,7 +58,7 @@ class CombinationStarRateRepositoryTest {
 
 
     @Test
-    public void 업데이트_테스트(){
+    public void 업데이트(){
         CombinationStarRate starRate = combinationStarRateRepository.save(
                 CombinationStarRate.builder()
                         .starNumber(2)
@@ -69,8 +72,8 @@ class CombinationStarRateRepositoryTest {
     }
 
     @Test
-    public void 영양제번호로_조회_테스트(){
-        CombinationStarRate starRate1 = combinationStarRateRepository.save(
+    public void 조회_영양제ID_MEMBER(){
+        combinationStarRateRepository.save(
                 CombinationStarRate.builder()
                         .starNumber(2)
                         .member(member)
@@ -81,8 +84,39 @@ class CombinationStarRateRepositoryTest {
     }
 
     @Test
-    public void 영양제번호로_조회_테스트_없을때(){
+    public void 조회_영양제ID_MEMBER_없을때(){
         assertFalse(combinationStarRateRepository.findByCombinationIdAndMember(combination.getId(),member).isPresent());
     }
 
+    @Test
+    public void 조회_영양제ID_MEMBER_ID(){
+        CombinationStarRate combinationStarRate = combinationStarRateRepository.save(
+                CombinationStarRate.builder()
+                        .starNumber(2)
+                        .member(member)
+                        .combination(combination)
+                        .build());
+        assertTrue(combinationStarRateRepository.findIdAndMemberAndComb(combinationStarRate.getId(), member, combination.getId()).isPresent());
+    }
+
+    @Test
+    public void 조회_영양제ID_MEMBER_ID_없을때(){
+        assertFalse(combinationStarRateRepository.findIdAndMemberAndComb(0L, member, combination.getId()).isPresent());
+    }
+
+    @Test
+    public void 조회_MEMBER_ID(){
+        CombinationStarRate combinationStarRate = combinationStarRateRepository.save(
+                CombinationStarRate.builder()
+                        .starNumber(2)
+                        .member(member)
+                        .combination(combination)
+                        .build());
+        assertTrue(combinationStarRateRepository.findIdAndMember(combinationStarRate.getId(), member).isPresent());
+    }
+
+    @Test
+    public void 조회_MEMBER_ID_없을때(){
+        assertFalse(combinationStarRateRepository.findIdAndMember(0L, member).isPresent());
+    }
 }
