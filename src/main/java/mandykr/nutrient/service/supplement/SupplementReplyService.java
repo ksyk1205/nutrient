@@ -2,8 +2,8 @@ package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
@@ -11,17 +11,13 @@ import mandykr.nutrient.repository.supplement.SupplementRepository;
 import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.by;
 
 @Slf4j
@@ -34,22 +30,22 @@ public class SupplementReplyService {
 
     private final SupplementRepository supplementRepository;
 
-    public Page<SupplementReplyResponseDto> getSupplementRepliesWithParent(Long supplementId, Pageable pageable){
+    public Page<SupplementReplyDto> getSupplementRepliesWithParent(Long supplementId, Pageable pageable){
         Supplement supplement = getSupplement(supplementId);
         return supplementReplyRepository
                 .findBySupplementWithParent(supplement, pageable)
-                .map(SupplementReplyResponseDto::new);
+                .map(SupplementReplyDto::new);
     }
 
-    public Page<SupplementReplyResponseDto> getSupplementRepliesWithChild(Long supplementId, Long supplementReplyId, Pageable pageable){
+    public Page<SupplementReplyDto> getSupplementRepliesWithChild(Long supplementId, Long supplementReplyId, Pageable pageable){
         Supplement supplement = getSupplement(supplementId);
         SupplementReply supplementReply = getSupplementReply(supplementReplyId);
         return supplementReplyRepository.findBySupplementWithChild(supplement, supplementReply, pageable)
-            .map(SupplementReplyResponseDto::new);
+            .map(SupplementReplyDto::new);
     }
 
     @Transactional
-    public SupplementReplyResponseDto createSupplementReply(Long supplementId, Member member, SupplementReplyRequestDto supplementReplyRequestDto){
+    public SupplementReplyDto createSupplementReply(Long supplementId, Member member, SupplementReplyRequest supplementReplyRequest){
         //첫 댓글
         Supplement supplement = getSupplement(supplementId);
         Long lastGroup = isNull(supplementReplyRepository.findByParentLastGroup(supplementId));
@@ -57,7 +53,7 @@ public class SupplementReplyService {
         return Optional.of(
                 supplementReplyRepository.save(
                     SupplementReply.builder()
-                    .content(supplementReplyRequestDto.getContent())
+                    .content(supplementReplyRequest.getContent())
                     .groups(lastGroup)
                     .groupOrder(1L)
                     .member(member)
@@ -66,39 +62,39 @@ public class SupplementReplyService {
                     .supplement(supplement)
                     .build()
                 )
-            ).map(SupplementReplyResponseDto::new)
+            ).map(SupplementReplyDto::new)
             .get();
     }
 
 
 
     @Transactional
-    public SupplementReplyResponseDto createSupplementReply(Long supplementId, Long supplementReplyId, Member member, SupplementReplyRequestDto supplementReplyRequestDto) {
+    public SupplementReplyDto createSupplementReply(Long supplementId, Long supplementReplyId, Member member, SupplementReplyRequest supplementReplyRequest) {
         //대댓글
         Supplement supplement = getSupplement(supplementId);
         SupplementReply supplementReply = getSupplementReply(supplementReplyId);
 
         Long groupOrder = isNull(supplementReplyRepository.findByChildLastGroupOrder(supplementId, supplementReplyId));
         SupplementReply saveSupplementReply = supplementReplyRepository.save(SupplementReply.builder()
-                                                .content(supplementReplyRequestDto.getContent())
+                                                .content(supplementReplyRequest.getContent())
                                                 .groups(supplementReply.getGroups())
                                                 .groupOrder(groupOrder+1)
                                                 .deleted(false)
                                                 .supplement(supplement)
                                                 .build());
         saveSupplementReply.addParents(supplementReply);
-        return Optional.of(saveSupplementReply).map(SupplementReplyResponseDto::new).get();
+        return Optional.of(saveSupplementReply).map(SupplementReplyDto::new).get();
     }
 
 
 
 
 
-    public SupplementReplyResponseDto updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyRequestDto supplementReplyRequestDto){
+    public SupplementReplyDto updateSupplementReply(Long supplementReplyId, Member member, SupplementReplyRequest supplementReplyRequest){
         //변경감지
         SupplementReply findSupplementReply = getSupplementReplyWithMember(supplementReplyId, member);
-        findSupplementReply.changeContent(supplementReplyRequestDto.getContent());
-        return Optional.of(findSupplementReply).map(SupplementReplyResponseDto::new).get();
+        findSupplementReply.changeContent(supplementReplyRequest.getContent());
+        return Optional.of(findSupplementReply).map(SupplementReplyDto::new).get();
     }
 
     @Transactional

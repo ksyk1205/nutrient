@@ -1,7 +1,6 @@
 package mandykr.nutrient.service.supplement;
 
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
@@ -12,7 +11,6 @@ import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
@@ -50,7 +48,7 @@ class SupplementReplyServiceTest {
     Page<SupplementReply> parentReplyPageResult;
     Page<SupplementReply> childReplyPageResult;
 
-    SupplementReplyRequestDto supplementReplyRequestDto;
+    SupplementReplyRequest supplementReplyRequest;
 
     @BeforeEach
     void setup(){
@@ -74,10 +72,7 @@ class SupplementReplyServiceTest {
         pageRequest = new PageRequestUtil(PAGE, PAGE_SIZE).getPageable();
         parentReplyPageResult = new PageImpl<>(parentList, pageRequest, parentList.size());
         childReplyPageResult = new PageImpl<>(childList, pageRequest, childList.size());
-        SupplementReplyRequest supplementReplyRequest = new SupplementReplyRequest();
-        supplementReplyRequest.setContent("TEST");
-
-        supplementReplyRequestDto = new SupplementReplyRequestDto(supplementReplyRequest);
+        supplementReplyRequest = new SupplementReplyRequest("TEST");
     }
 
     private SupplementReply makeChild(Long id, String content, Long groups, Long groupOrder, SupplementReply parent) {
@@ -106,7 +101,7 @@ class SupplementReplyServiceTest {
                 .build();
     }
 
-    private void isEqualTo(SupplementReplyResponseDto expect, SupplementReply actually) {
+    private void isEqualTo(SupplementReplyDto expect, SupplementReply actually) {
         Long actuallyParent = actually.getParent() == null ? null : actually.getParent().getId();
         assertThat(expect.getId()).isEqualTo(actually.getId());
         assertThat(expect.getContent()).isEqualTo(actually.getContent());
@@ -126,11 +121,11 @@ class SupplementReplyServiceTest {
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         given(supplementReplyRepository.findBySupplementWithParent(supplement, pageRequest))
                 .willReturn(parentReplyPageResult);
-        Page<SupplementReplyResponseDto> page = supplementReplyService.getSupplementRepliesWithParent(supplement.getId(), pageRequest);
+        Page<SupplementReplyDto> page = supplementReplyService.getSupplementRepliesWithParent(supplement.getId(), pageRequest);
 
         //then
         assertThat(page.getSize()).isEqualTo(2);
-        List<SupplementReplyResponseDto> content = page.getContent();
+        List<SupplementReplyDto> content = page.getContent();
         for(int i=0;i<content.size();++i){
             isEqualTo(content.get(i), parentList.get(i));
         }
@@ -163,11 +158,11 @@ class SupplementReplyServiceTest {
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         when(supplementReplyRepository.findById(parent1.getId())).thenReturn(Optional.of(parent1));
         when(supplementReplyRepository.findBySupplementWithChild(supplement, parent1, pageRequest)).thenReturn(childReplyPageResult);
-        Page<SupplementReplyResponseDto> page = supplementReplyService.getSupplementRepliesWithChild(supplement.getId(), parent1.getId(), pageRequest);
+        Page<SupplementReplyDto> page = supplementReplyService.getSupplementRepliesWithChild(supplement.getId(), parent1.getId(), pageRequest);
 
         //then
         assertThat(page.getSize()).isEqualTo(2);
-        List<SupplementReplyResponseDto> content = page.getContent();
+        List<SupplementReplyDto> content = page.getContent();
         for(int i=0;i<content.size();++i){
             isEqualTo(content.get(i), childList.get(i));
         }
@@ -221,7 +216,7 @@ class SupplementReplyServiceTest {
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         when(supplementReplyRepository.findByParentLastGroup(supplement.getId())).thenReturn(null);
         when(supplementReplyRepository.save(any(SupplementReply.class))).thenReturn(parent1);
-        SupplementReplyResponseDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequestDto);
+        SupplementReplyDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequest);
 
         //then
         isEqualTo(supplementReply, parent1);
@@ -236,7 +231,7 @@ class SupplementReplyServiceTest {
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         when(supplementReplyRepository.findByParentLastGroup(supplement.getId())).thenReturn(1L);
         when(supplementReplyRepository.save(any(SupplementReply.class))).thenReturn(parent2);
-        SupplementReplyResponseDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequestDto);
+        SupplementReplyDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequest);
 
         //then
         isEqualTo(supplementReply, parent2);
@@ -253,7 +248,7 @@ class SupplementReplyServiceTest {
         //then
         assertThrows(
                 EntityNotFoundException.class,
-                () -> supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequestDto),
+                () -> supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequest),
                 "not found Supplement : " + supplement.getId()
         );
     }
@@ -269,7 +264,7 @@ class SupplementReplyServiceTest {
         when(supplementReplyRepository.findById(parent1.getId())).thenReturn(Optional.of(parent1));
         when(supplementReplyRepository.findByChildLastGroupOrder(supplement.getId(), parent1.getId())).thenReturn(null);
         when(supplementReplyRepository.save(any(SupplementReply.class))).thenReturn(child1_1);
-        SupplementReplyResponseDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), parent1.getId(), member, supplementReplyRequestDto);
+        SupplementReplyDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), parent1.getId(), member, supplementReplyRequest);
 
         //then
         isEqualTo(supplementReply, child1_1);
@@ -285,7 +280,7 @@ class SupplementReplyServiceTest {
         when(supplementReplyRepository.findById(parent1.getId())).thenReturn(Optional.of(parent1));
         when(supplementReplyRepository.findByChildLastGroupOrder(supplement.getId(), parent1.getId())).thenReturn(1L);
         when(supplementReplyRepository.save(any(SupplementReply.class))).thenReturn(child1_2);
-        SupplementReplyResponseDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), parent1.getId(), member, supplementReplyRequestDto);
+        SupplementReplyDto supplementReply = supplementReplyService.createSupplementReply(supplement.getId(), parent1.getId(), member, supplementReplyRequest);
 
         //then
         isEqualTo(supplementReply, child1_2);
@@ -303,7 +298,7 @@ class SupplementReplyServiceTest {
         //then
         assertThrows(
                 EntityNotFoundException.class,
-                () -> supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequestDto),
+                () -> supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequest),
                 "not found Supplement : " + supplement.getId()
         );
     }
@@ -321,7 +316,7 @@ class SupplementReplyServiceTest {
         //then
         assertThrows(
                 EntityNotFoundException.class,
-                () -> supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequestDto),
+                () -> supplementReplyService.createSupplementReply(supplement.getId(), member, supplementReplyRequest),
                 "not found SupplementReply : " + parent1.getId()
         );
     }
@@ -332,9 +327,9 @@ class SupplementReplyServiceTest {
     public void 댓글_수정_부모(){
 
         //given
-        supplementReplyRequestDto.setContent("test1(수정)");
+        supplementReplyRequest.setContent("test1(수정)");
         when(supplementReplyRepository.findByIdAndMember(parent1.getId(), member)).thenReturn(Optional.of(parent1));
-        SupplementReplyResponseDto result = supplementReplyService.updateSupplementReply(parent1.getId(), member, supplementReplyRequestDto);
+        SupplementReplyDto result = supplementReplyService.updateSupplementReply(parent1.getId(), member, supplementReplyRequest);
         
         //then
         isEqualTo(result, parent1);
@@ -345,9 +340,9 @@ class SupplementReplyServiceTest {
     public void 댓글_수정_자식(){
 
         //given
-        supplementReplyRequestDto.setContent("test1(수정)");
+        supplementReplyRequest.setContent("test1(수정)");
         when(supplementReplyRepository.findByIdAndMember(child1_1.getId(), member)).thenReturn(Optional.of(child1_1));
-        SupplementReplyResponseDto result = supplementReplyService.updateSupplementReply(child1_1.getId(), member, supplementReplyRequestDto);
+        SupplementReplyDto result = supplementReplyService.updateSupplementReply(child1_1.getId(), member, supplementReplyRequest);
 
         //then
         isEqualTo(result, child1_1);
@@ -358,14 +353,14 @@ class SupplementReplyServiceTest {
     public void 댓글_수정_자식_Memeber_조회_데이터X(){
 
         //given
-        supplementReplyRequestDto.setContent("test1(수정)");
+        supplementReplyRequest.setContent("test1(수정)");
         when(supplementReplyRepository.findByIdAndMember(child1_1.getId(), member))
                 .thenThrow(new EntityNotFoundException("not found SupplementReply : " + child1_1.getId()));
 
         //then
         assertThrows(
                 EntityNotFoundException.class,
-                () -> supplementReplyService.updateSupplementReply(child1_1.getId(), member, supplementReplyRequestDto),
+                () -> supplementReplyService.updateSupplementReply(child1_1.getId(), member, supplementReplyRequest),
                 "not found SupplementReply : " + child1_1.getId()
         );
     }

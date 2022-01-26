@@ -12,8 +12,13 @@ public interface CombinationStarRateRepository extends JpaRepository<Combination
     Optional<CombinationStarRate> findByCombinationIdAndMember(@Param("combinationId") Long combinationId,
                                                                    @Param("memberId") Member member);
 
-    @Query("select c from CombinationStarRate c where c.id = :id and c.member = :member and c.combination = :combination")
+    @Query("select c from CombinationStarRate c where c.id = :id and c.member = :member and c.combination.id = :combination")
     Optional<CombinationStarRate> findIdAndMemberAndComb(@Param("id") Long id,
                                                          @Param("member") Member member,
                                                          @Param("combination") Long combinationId);
+
+
+    @Query("select c from CombinationStarRate c where c.id = :id and c.member = :member")
+    Optional<CombinationStarRate> findIdAndMember(@Param("id") Long id,
+                                                 @Param("member") Member member);
 }

@@ -1,13 +1,12 @@
 package mandykr.nutrient.repository.combination;
 
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.combination.CombinationConditionCategory;
-import mandykr.nutrient.dto.combination.CombinationConditionSupplement;
-import mandykr.nutrient.dto.combination.CombinationDto;
-import mandykr.nutrient.dto.combination.CombinationSearchCondition;
+import mandykr.nutrient.dto.combination.*;
+import mandykr.nutrient.entity.combination.Combination;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -129,6 +128,41 @@ public class CombinationRepositoryImpl implements CombinationRepositoryCustom{
 
 
         return new PageImpl<>(content, pageable, content.size());
+    }
+
+    @Override
+    public CombinationDetailDto searchByCombination(Combination search) {
+        List<CombinationDetailDto> combinationDetailDto = queryFactory
+                .from(combination)
+                .join(combination.supplementCombinations, supplementCombination)
+                .join(supplementCombination.supplement, supplement)
+                .join(supplement.supplementCategory, supplementCategory)
+                .where(
+                        containCombination(search)
+                ) .transform(
+                        groupBy(combination.id)
+                                .list(
+                                        bean(CombinationDetailDto.class,
+                                                combination.id,
+                                                combination.caption,
+                                                combination.rating,
+                                                list(
+                                                        bean(CombinationDetailDto.SupplementDto.class,
+                                                                supplement.id,
+                                                                supplement.name,
+                                                                supplementCategory.id.as("categoryId"),
+                                                                supplementCategory.name.as("categoryName")
+                                                        )
+                                                ).as("supplementDtoList")
+                                        )
+                                )
+                );
+
+        return combinationDetailDto.get(0);
+    }
+
+    private Predicate containCombination(Combination search) {
+        return  combination.id.eq(search.getId());
     }
 
     private BooleanExpression containsSupplements(List<CombinationConditionSupplement> supplementList) {

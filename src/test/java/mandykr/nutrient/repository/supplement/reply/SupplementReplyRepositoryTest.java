@@ -1,15 +1,12 @@
 package mandykr.nutrient.repository.supplement.reply;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import mandykr.nutrient.config.TestConfig;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
 import mandykr.nutrient.entity.Member;
 
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
 import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
-import mandykr.nutrient.repository.supplement.reply.SupplementReplyRepository;
 import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,13 +17,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
 
-import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.by;
 
 @DataJpaTest //JPA 테스트

@@ -10,7 +10,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Getter
 @Setter
-public class SupplementReplyResponseDto {
+public class SupplementReplyDto {
     private Long id;
 
     private String content;
@@ -25,7 +25,7 @@ public class SupplementReplyResponseDto {
 
     private Long supplement;
 
-    public SupplementReplyResponseDto(SupplementReply source) {
+    public SupplementReplyDto(SupplementReply source) {
         copyProperties(source, this);
         this.parent = source.getParent() == null ? null : source.getParent().getId();
         this.supplement = source.getSupplement().getId(); //영양제는 반드시 있다.

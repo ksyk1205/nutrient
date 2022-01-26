@@ -1,7 +1,7 @@
 package mandykr.nutrient.controller.supplement;
 
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyRequestDto;
-import mandykr.nutrient.dto.supplement.reply.SupplementReplyResponseDto;
+import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
+import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
@@ -29,7 +29,6 @@ import org.springframework.util.MultiValueMap;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
@@ -59,17 +58,17 @@ class SupplementReplyControllerTest {
     final static int PAGE_SIZE = 2;
     Supplement supplement;
     Member member;
-    SupplementReplyResponseDto parent1;
-    SupplementReplyResponseDto child1_1;
-    SupplementReplyResponseDto child1_2;
-    SupplementReplyResponseDto parent2;
-    SupplementReplyResponseDto child2_1;
-    List<SupplementReplyResponseDto> parentList = new ArrayList<>();
-    List<SupplementReplyResponseDto> childList = new ArrayList<>();
+    SupplementReplyDto parent1;
+    SupplementReplyDto child1_1;
+    SupplementReplyDto child1_2;
+    SupplementReplyDto parent2;
+    SupplementReplyDto child2_1;
+    List<SupplementReplyDto> parentList = new ArrayList<>();
+    List<SupplementReplyDto> childList = new ArrayList<>();
 
     Pageable pageRequest;
-    Page<SupplementReplyResponseDto> parentReplyPageResult;
-    Page<SupplementReplyResponseDto> childReplyPageResult;
+    Page<SupplementReplyDto> parentReplyPageResult;
+    Page<SupplementReplyDto> childReplyPageResult;
 
     @BeforeEach
     public void setup(){
@@ -100,8 +99,8 @@ class SupplementReplyControllerTest {
         childReplyPageResult = new PageImpl<>(childList, pageRequest, childList.size());
     }
 
-    private SupplementReplyResponseDto makeParent(Long id, String content, Long groupId, Long groupOrder) {
-        return new SupplementReplyResponseDto(
+    private SupplementReplyDto makeParent(Long id, String content, Long groupId, Long groupOrder) {
+        return new SupplementReplyDto(
                 SupplementReply.builder()
                         .id(id)
                         .supplement(supplement)
@@ -114,8 +113,8 @@ class SupplementReplyControllerTest {
         );
     }
 
-    private SupplementReplyResponseDto makeChild(Long id, String content, Long groupId, Long groupOrder, Long parent) {
-        return new SupplementReplyResponseDto(
+    private SupplementReplyDto makeChild(Long id, String content, Long groupId, Long groupOrder, Long parent) {
+        return new SupplementReplyDto(
                 SupplementReply.builder()
                 .id(id)
                 .supplement(supplement)
@@ -139,11 +138,11 @@ class SupplementReplyControllerTest {
                 .andExpect(handler().methodName(methodName));
     }
 
-    private void successCheckMany(ResultActions result, Page<SupplementReplyResponseDto> replyPageResult) throws Exception {
+    private void successCheckMany(ResultActions result, Page<SupplementReplyDto> replyPageResult) throws Exception {
         result
                 .andExpect(jsonPath("$.response.size", is(replyPageResult.getContent().size())))
                 .andExpect(jsonPath("$.response.number", is(replyPageResult.getNumber())));
-        List<SupplementReplyResponseDto> content = replyPageResult.getContent();
+        List<SupplementReplyDto> content = replyPageResult.getContent();
 
         for(int i=0; i<content.size();++i){
             Integer parent = content.get(i).getParent() == null ?
@@ -159,20 +158,20 @@ class SupplementReplyControllerTest {
         }
     }
 
-    private void successCheckOne(ResultActions result, SupplementReplyResponseDto supplementReplyResponseDto) throws Exception {
-        Integer parent = supplementReplyResponseDto.getParent() == null ?
-                null : supplementReplyResponseDto.getParent().intValue();
+    private void successCheckOne(ResultActions result, SupplementReplyDto supplementReplyDto) throws Exception {
+        Integer parent = supplementReplyDto.getParent() == null ?
+                null : supplementReplyDto.getParent().intValue();
         result
-                .andExpect(jsonPath("$.response.id", is(supplementReplyResponseDto.getId().intValue())))
-                .andExpect(jsonPath("$.response.content", is(supplementReplyResponseDto.getContent())))
-                .andExpect(jsonPath("$.response.groups", is(supplementReplyResponseDto.getGroups().intValue())))
-                .andExpect(jsonPath("$.response.groupOrder", is(supplementReplyResponseDto.getGroupOrder().intValue())))
-                .andExpect(jsonPath("$.response.deleted", is(supplementReplyResponseDto.getDeleted())))
+                .andExpect(jsonPath("$.response.id", is(supplementReplyDto.getId().intValue())))
+                .andExpect(jsonPath("$.response.content", is(supplementReplyDto.getContent())))
+                .andExpect(jsonPath("$.response.groups", is(supplementReplyDto.getGroups().intValue())))
+                .andExpect(jsonPath("$.response.groupOrder", is(supplementReplyDto.getGroupOrder().intValue())))
+                .andExpect(jsonPath("$.response.deleted", is(supplementReplyDto.getDeleted())))
                 .andExpect(jsonPath("$.response.parent", is(parent)))
-                .andExpect(jsonPath("$.response.supplement", is(supplementReplyResponseDto.getSupplement().intValue())));
+                .andExpect(jsonPath("$.response.supplement", is(supplementReplyDto.getSupplement().intValue())));
     }
 
-    private void successCheckEmpty(ResultActions result, Page<SupplementReplyResponseDto> emptyPages) throws Exception {
+    private void successCheckEmpty(ResultActions result, Page<SupplementReplyDto> emptyPages) throws Exception {
         result
                 .andExpect(jsonPath("$.response.empty", is(true)))
                 .andExpect(jsonPath("$.response.last", is(true)))
@@ -204,7 +203,7 @@ class SupplementReplyControllerTest {
                 .thenReturn(parentReplyPageResult);
 
         ResultActions result = mockMvc.perform(
-                get("/supplement-reply/{supplementId}","1")
+                get("/api/supplement-reply/{supplementId}","1")
                 .params(toMultiValueMap(pageRequest))
                 .accept(MediaType.APPLICATION_JSON)
         );
@@ -221,14 +220,14 @@ class SupplementReplyControllerTest {
     @DisplayName("해당 영양제의 부모 댓글 보기(데이터 없음)")
     public void 영양제_부모_댓글_보기_데이터없음() throws Exception {
         //given
-        Page<SupplementReplyResponseDto> emptyPages = new PageImpl<>(new ArrayList<>(), pageRequest, 0);
+        Page<SupplementReplyDto> emptyPages = new PageImpl<>(new ArrayList<>(), pageRequest, 0);
 
         //when
         when(supplementReplyService.getSupplementRepliesWithParent(anyLong(), any(PageRequest.class)))
                 .thenReturn(emptyPages);
 
         ResultActions result = mockMvc.perform(
-                get("/supplement-reply/{supplementId}","1")
+                get("/api/supplement-reply/{supplementId}","1")
                 .params(toMultiValueMap(pageRequest))
                 .accept(MediaType.APPLICATION_JSON)
         );
@@ -247,7 +246,7 @@ class SupplementReplyControllerTest {
         when(supplementReplyService.getSupplementRepliesWithParent(anyLong(), any(PageRequest.class)))
                 .thenThrow(new EntityNotFoundException("not found Supplement : 1"));
         ResultActions result = mockMvc.perform(
-                get("/supplement-reply/{supplementId}","1")
+                get("/api/supplement-reply/{supplementId}","1")
                 .params(toMultiValueMap(pageRequest))
                 .accept(MediaType.APPLICATION_JSON)
         );
@@ -268,7 +267,7 @@ class SupplementReplyControllerTest {
         when(supplementReplyService.getSupplementRepliesWithChild(anyLong(), anyLong(), any(PageRequest.class)))
                 .thenReturn(childReplyPageResult);
         ResultActions result = mockMvc.perform(
-                get("/supplement-reply/{supplementId}/{parentId}", "1", "1")
+                get("/api/supplement-reply/{supplementId}/{parentId}", "1", "1")
                 .params(toMultiValueMap(pageRequest))
                 .accept(MediaType.APPLICATION_JSON)
         );
@@ -283,13 +282,13 @@ class SupplementReplyControllerTest {
     @DisplayName("부모댓글의 대댓글 보기(데이터없음)")
     public void 부모댓글의_대댓글_보기_데이터없음() throws Exception {
         //given
-        Page<SupplementReplyResponseDto> emptyPages = new PageImpl<>(new ArrayList<>(), pageRequest, 0);
+        Page<SupplementReplyDto> emptyPages = new PageImpl<>(new ArrayList<>(), pageRequest, 0);
 
         //when
         when(supplementReplyService.getSupplementRepliesWithChild(anyLong(), anyLong(), any(PageRequest.class)))
                 .thenReturn(emptyPages);
         ResultActions result = mockMvc.perform(
-                get("/supplement-reply/{supplementId}/{parentId}", "1", "1")
+                get("/api/supplement-reply/{supplementId}/{parentId}", "1", "1")
                 .params(toMultiValueMap(pageRequest))
                 .accept(MediaType.APPLICATION_JSON)
         );
@@ -311,7 +310,7 @@ class SupplementReplyControllerTest {
         when(supplementReplyService.getSupplementRepliesWithChild(anyLong(), anyLong(), any(PageRequest.class)))
                 .thenThrow(new EntityNotFoundException("not found Supplement : 1"));
         ResultActions result = mockMvc.perform(
-                get("/supplement-reply/{supplementId}/{parentId}", "1", "1")
+                get("/api/supplement-reply/{supplementId}/{parentId}", "1", "1")
                 .params(toMultiValueMap(pageRequest))
                 .accept(MediaType.APPLICATION_JSON)
         );
@@ -329,11 +328,11 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenReturn(parent1);
 
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}", "1")
+                post("/api/supplement-reply/{supplementId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"TEST1\"}")
@@ -352,7 +351,7 @@ class SupplementReplyControllerTest {
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}", "1")
+                post("/api/supplement-reply/{supplementId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"\"}")
@@ -370,7 +369,7 @@ class SupplementReplyControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}", "1")
+                post("/api/supplement-reply/{supplementId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}")
@@ -388,10 +387,10 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.createSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenThrow(new EntityNotFoundException("not found Supplement : " + parent1.getId()));
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}", "1")
+                post("/api/supplement-reply/{supplementId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"TEST1\"}")
@@ -409,10 +408,10 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenReturn(child1_1);
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}/{replyId}", "1", "1")
+                post("/api/supplement-reply/{supplementId}/{replyId}", "1", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"TEST1-1\"}")
@@ -430,10 +429,10 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenThrow(new EntityNotFoundException("not found Supplement : " + child1_1.getId()));
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}/{replyId}", "1", "1")
+                post("/api/supplement-reply/{supplementId}/{replyId}", "1", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"TEST1-1\"}")
@@ -451,11 +450,11 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.createSupplementReply(anyLong(), anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenThrow(new EntityNotFoundException("not found SupplementReply : 1"));
 
         ResultActions result = mockMvc.perform(
-                post("/supplement-reply/{supplementId}/{replyId}", "1", "1")
+                post("/api/supplement-reply/{supplementId}/{replyId}", "1", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"this is review content!\"}")
@@ -474,11 +473,11 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenReturn(parent1);
 
         ResultActions result = mockMvc.perform(
-                put("/supplement-reply/{replyId}", "1")
+                put("/api/supplement-reply/{replyId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"TEST2\"}")
@@ -497,10 +496,10 @@ class SupplementReplyControllerTest {
 
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
-        when(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequestDto.class)))
+        when(supplementReplyService.updateSupplementReply(anyLong(), any(Member.class), any(SupplementReplyRequest.class)))
                 .thenThrow(new EntityNotFoundException("not found SupplementReply : 1"));
         ResultActions result = mockMvc.perform(
-                put("/supplement-reply/{replyId}", "1")
+                put("/api/supplement-reply/{replyId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"content\":\"TEST1\"}")
@@ -520,7 +519,7 @@ class SupplementReplyControllerTest {
         //when
         when(memberRepository.findById("testMemberId1")).thenReturn(Optional.of(member));
         ResultActions result = mockMvc.perform(
-                delete("/supplement-reply/{replyId}", "1")
+                delete("/api/supplement-reply/{replyId}", "1")
                 .accept(MediaType.APPLICATION_JSON)
         );
 
@@ -539,7 +538,7 @@ class SupplementReplyControllerTest {
         doThrow(new EntityNotFoundException("not found SupplementReply : 1"))
                 .when(supplementReplyService).deleteSupplementReply(anyLong(), any(Member.class));
         ResultActions result = mockMvc.perform(
-                delete("/supplement-reply/{replyId}", "1")
+                delete("/api/supplement-reply/{replyId}", "1")
                         .accept(MediaType.APPLICATION_JSON)
         );
 

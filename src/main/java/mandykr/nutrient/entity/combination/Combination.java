@@ -19,7 +19,6 @@ import static javax.persistence.FetchType.LAZY;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
 public class Combination extends BaseTimeEntity {
-    public static final Double ZERO = 0.0;
 
     @Id
     @GeneratedValue
@@ -28,7 +27,7 @@ public class Combination extends BaseTimeEntity {
 
     private String caption;
 
-    private Double rating;
+    private double rating;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID")

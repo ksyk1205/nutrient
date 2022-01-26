@@ -36,8 +36,8 @@ public class CombinationController {
      * 영양제 번호 List, Caption을 입력받아 영양제 조합을 저장한다.
      */
     @PostMapping("/combinations")
-    public ApiResult<CombinationDto> createCombination(
+    public ApiResult<CombinationDetailDto> createCombination(
             @RequestBody @Valid CombinationCreateRequest combinationCreateRequest) {
-        return success(combinationService.createCombination(combinationCreateRequest.of()));
+        return success(combinationService.createCombination(combinationCreateRequest));
     }
 }

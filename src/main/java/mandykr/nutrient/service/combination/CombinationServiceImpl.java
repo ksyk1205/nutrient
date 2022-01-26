@@ -1,24 +1,16 @@
 package mandykr.nutrient.service.combination;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.combination.CombinationCreateDto;
+import mandykr.nutrient.dto.combination.CombinationCreateRequest;
+import mandykr.nutrient.dto.combination.CombinationDetailDto;
 import mandykr.nutrient.dto.combination.CombinationDto;
 import mandykr.nutrient.dto.combination.CombinationSearchCondition;
-import mandykr.nutrient.entity.Member;
-import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
-import mandykr.nutrient.entity.supplement.Supplement;
-import mandykr.nutrient.repository.SupplementCombinationRepository;
 import mandykr.nutrient.repository.combination.CombinationRepository;
-import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,15 +21,15 @@ public class CombinationServiceImpl implements CombinationService{
 
 
     @Override
-    public CombinationDto createCombination(CombinationCreateDto combinationCreateDto) {
+    public CombinationDetailDto createCombination(CombinationCreateRequest combinationCreateRequest) {
         Combination combination = Combination.builder()
-                .caption(combinationCreateDto.getCaption())
-                .rating(Combination.ZERO)
+                .caption(combinationCreateRequest.getCaption())
                 .build();
         Combination saveCombination = combinationRepository.save(combination);
         //메핑테이블 저장 책임을 영양제 메핑테이블에 전가
-        supplementCombinationService.createSupplementCombinations(combinationCreateDto.getSupplementIds(), saveCombination);
-        return CombinationDto.of(saveCombination);
+        supplementCombinationService.createSupplementCombinations(combinationCreateRequest.getSupplementIds(), saveCombination);
+
+        return combinationRepository.searchByCombination(saveCombination);
     }
 
     @Override

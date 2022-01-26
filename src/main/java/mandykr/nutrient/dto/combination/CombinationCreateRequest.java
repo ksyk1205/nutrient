@@ -17,10 +17,7 @@ public class CombinationCreateRequest {
     @Size(min = 1, max = 50)
     String caption;
 
-    @Size(min=1)
+    @Size(min=1, max = 10)
     List<Long> supplementIds = new ArrayList<>();
 
-    public CombinationCreateDto of() {
-        return new CombinationCreateDto(this.caption, this.supplementIds);
-    }
 }
