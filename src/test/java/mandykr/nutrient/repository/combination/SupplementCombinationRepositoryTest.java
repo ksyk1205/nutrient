@@ -1,10 +1,11 @@
-package mandykr.nutrient.repository;
+package mandykr.nutrient.repository.combination;
 
 import mandykr.nutrient.config.TestConfig;
 import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.combination.CombinationRepository;
+import mandykr.nutrient.repository.combination.SupplementCombinationRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;

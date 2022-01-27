@@ -1,9 +1,9 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.supplement;
 
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.SupplementCategoryDto;
+import mandykr.nutrient.dto.supplement.SupplementCategoryDto;
 import mandykr.nutrient.entity.SupplementCategory;
-import mandykr.nutrient.repository.SupplementCategoryRepository;
+import mandykr.nutrient.repository.supplement.SupplementCategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

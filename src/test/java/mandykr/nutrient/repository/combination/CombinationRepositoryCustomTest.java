@@ -6,11 +6,9 @@ import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
-import mandykr.nutrient.repository.SupplementCategoryRepository;
-import mandykr.nutrient.repository.SupplementCombinationRepository;
+import mandykr.nutrient.repository.supplement.SupplementCategoryRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 import mandykr.nutrient.util.PageRequestUtil;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;

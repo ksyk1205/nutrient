@@ -1,8 +1,9 @@
-package mandykr.nutrient.service;
+package mandykr.nutrient.service.supplement;
 
-import mandykr.nutrient.dto.SupplementCategoryDto;
+import mandykr.nutrient.dto.supplement.SupplementCategoryDto;
 import mandykr.nutrient.entity.SupplementCategory;
-import mandykr.nutrient.repository.SupplementCategoryRepository;
+import mandykr.nutrient.repository.supplement.SupplementCategoryRepository;
+import mandykr.nutrient.service.supplement.SupplementCategoryService;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

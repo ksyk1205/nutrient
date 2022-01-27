@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
-import mandykr.nutrient.repository.SupplementCategoryRepository;
+import mandykr.nutrient.repository.supplement.SupplementCategoryRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
