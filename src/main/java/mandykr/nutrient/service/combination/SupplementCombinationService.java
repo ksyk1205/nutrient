@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
-import mandykr.nutrient.repository.SupplementCombinationRepository;
+import mandykr.nutrient.repository.combination.SupplementCombinationRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,9 +1,10 @@
-package mandykr.nutrient.controller;
+package mandykr.nutrient.controller.supplement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mandykr.nutrient.dto.SupplementCategoryDto;
+import mandykr.nutrient.controller.supplement.SupplementCategoryController;
+import mandykr.nutrient.dto.supplement.SupplementCategoryDto;
 import mandykr.nutrient.entity.SupplementCategory;
-import mandykr.nutrient.service.SupplementCategoryService;
+import mandykr.nutrient.service.supplement.SupplementCategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

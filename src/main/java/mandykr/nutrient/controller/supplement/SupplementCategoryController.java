@@ -1,9 +1,9 @@
-package mandykr.nutrient.controller;
+package mandykr.nutrient.controller.supplement;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import mandykr.nutrient.dto.SupplementCategoryDto;
-import mandykr.nutrient.service.SupplementCategoryService;
+import mandykr.nutrient.dto.supplement.SupplementCategoryDto;
+import mandykr.nutrient.service.supplement.SupplementCategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotEmpty;
