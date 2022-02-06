@@ -19,7 +19,6 @@ public class SupplementCombinationService {
     private final SupplementRepository supplementRepository;
     private final SupplementCombinationRepository supplementCombinationRepository;
 
-
     public void createSupplementCombinations(List<Long> supplementIds, Combination combination) {
         //영양제 조회
         List<Supplement> supplements = supplementRepository.findAllById(supplementIds);
@@ -28,6 +27,4 @@ public class SupplementCombinationService {
                 supplements.stream().map(supplement -> new SupplementCombination(supplement, combination)).collect(Collectors.toList());
         supplementCombinationRepository.saveAll(supplementCombinations);
     }
-
-
 }

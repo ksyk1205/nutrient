@@ -3,12 +3,14 @@ package mandykr.nutrient.entity.combination;
 import lombok.*;
 import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.SupplementCombination;
+import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -37,7 +39,7 @@ public class Combination extends BaseTimeEntity {
     @Builder.Default
     private List<CombinationStarRate> combinationStarRates = new ArrayList<>();
 
-    @OneToMany(mappedBy = "combination")
+    @OneToMany(mappedBy = "combination", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @Builder.Default
     private List<SupplementCombination> supplementCombinations = new ArrayList<>();
 
@@ -54,4 +56,27 @@ public class Combination extends BaseTimeEntity {
         combinationStarRates.set(idx, combinationStarRate);
     }
 
+    public void editCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public void removeSupplementCombinations(List<Long> supplementIds) {
+        supplementCombinations = supplementCombinations.stream()
+                .filter(c -> supplementIds.stream()
+                        .anyMatch(id -> id.equals(c.getSupplement().getId())))
+                .collect(Collectors.toList());
+    }
+
+    public void addSupplementCombinations(List<Supplement> supplements) {
+        supplements.forEach(s -> {
+            if (doesNotContains(s)) {
+                supplementCombinations.add(new SupplementCombination(s, this));
+            }
+        });
+    }
+
+    private boolean doesNotContains(Supplement supplement) {
+        return supplementCombinations.stream()
+                .noneMatch(c -> supplement.equals(c.getSupplement()));
+    }
 }
