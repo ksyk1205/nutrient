@@ -40,4 +40,14 @@ public class CombinationController {
             @RequestBody @Valid CombinationCreateRequest combinationCreateRequest) {
         return success(combinationService.createCombination(combinationCreateRequest));
     }
+
+    /**
+     * 영양제 번호 List, Caption을 입력받아 영양제 조합을 수정한다.
+     */
+    @PutMapping("/combination/{id}")
+    public ApiResult<CombinationDetailDto> updateCombination(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid CombinationUpdateRequest request) {
+        return success(combinationService.updateCombination(id, request));
+    }
 }

@@ -1,6 +1,8 @@
 package mandykr.nutrient.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
@@ -9,6 +11,9 @@ import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
 public class SupplementCombination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
