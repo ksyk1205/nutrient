@@ -24,38 +24,45 @@ public class CombinationStarRateController {
 
 
     @GetMapping("{combinationId}")
-    public ApiResult<CombinationStarRateDto> getCombinationStarRateByCombination(@PathVariable Long combinationId){
+    public ApiResult<CombinationStarRateDto> getCombinationStarRateByCombination(
+        @PathVariable Long combinationId) {
         return success(
-                combinationStarRateService
-                .getCombinationStarRateByCombination(combinationId,getMember())
+            combinationStarRateService
+                .getCombinationStarRateByCombination(combinationId, getMember())
         );
     }
 
     @PostMapping("{combinationId}")
-    public ApiResult<CombinationStarRateDto> createCombinationStarRate(@PathVariable Long combinationId,
-                                                                       @Valid @RequestBody CombinationStarRateRequest request){
+    public ApiResult<CombinationStarRateDto> createCombinationStarRate(
+        @PathVariable Long combinationId,
+        @Valid @RequestBody CombinationStarRateRequest request) {
         return success(
-                combinationStarRateService
-                        .createCombinationStarRate(combinationId,getMember(), request));
+            combinationStarRateService
+                .createCombinationStarRate(combinationId, getMember(), request));
     }
+
     @PutMapping("{combinationId}/{combinationStarRateId}")
-    public ApiResult<CombinationStarRateDto> updateCombinationStarRate(@PathVariable Long combinationId,
-                                                                       @PathVariable Long combinationStarRateId,
-                                                                       @Valid @RequestBody CombinationStarRateRequest request){
+    public ApiResult<CombinationStarRateDto> updateCombinationStarRate(
+        @PathVariable Long combinationId,
+        @PathVariable Long combinationStarRateId,
+        @Valid @RequestBody CombinationStarRateRequest request) {
         return success(
-                combinationStarRateService
-                        .updateCombinationStarRate(combinationId, combinationStarRateId, getMember(), request)
+            combinationStarRateService
+                .updateCombinationStarRate(combinationId, combinationStarRateId, getMember(),
+                    request)
         );
     }
 
     @DeleteMapping("{combinationStarRateId}")
-    public ApiResult<Boolean> deleteCombinationStarRate(@PathVariable Long combinationStarRateId){
-        return success(combinationStarRateService.deleteCombinationStarRate(combinationStarRateId, getMember()));
+    public ApiResult<Boolean> deleteCombinationStarRate(@PathVariable Long combinationStarRateId) {
+        return success(combinationStarRateService
+            .deleteCombinationStarRate(combinationStarRateId, getMember()));
     }
 
 
     //임의의 member 값
     private Member getMember() {
-        return memberRepository.findById("testMemberId1").orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다,"));
+        return memberRepository.findById("testMemberId1")
+            .orElseThrow(() -> new IllegalArgumentException("Member가 존재하지 않습니다,"));
     }
 }

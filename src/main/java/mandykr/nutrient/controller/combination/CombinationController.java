@@ -50,4 +50,13 @@ public class CombinationController {
             @RequestBody @Valid CombinationUpdateRequest request) {
         return success(combinationService.updateCombination(id, request));
     }
+
+    /**
+     * 영양제조합 ID로 영양제 조합을 삭제한다.
+     */
+    @DeleteMapping("/combination/{id}")
+    public void deleteCombination(
+        @PathVariable("id") Long id) {
+        combinationService.deleteCombination(id);
+    }
 }
