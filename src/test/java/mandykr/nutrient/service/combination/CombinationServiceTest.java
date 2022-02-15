@@ -3,7 +3,6 @@ package mandykr.nutrient.service.combination;
 import mandykr.nutrient.dto.combination.CombinationCreateRequest;
 import mandykr.nutrient.dto.combination.CombinationDetailDto;
 import mandykr.nutrient.dto.combination.CombinationUpdateRequest;
-import mandykr.nutrient.entity.Member;
 import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
@@ -12,7 +11,6 @@ import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,9 +20,9 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,8 +36,6 @@ class CombinationServiceTest {
     CombinationService combinationService =
             new CombinationServiceImpl(combinationRepository, supplementCombinationService, supplementRepository);
 
-
-    Member member;
     Long combinationId = 1L;
     Combination combination;
     List<Long> supplementIds;
@@ -48,11 +44,6 @@ class CombinationServiceTest {
 
     @BeforeEach
     void setUp() {
-        member = new Member();
-        member.setName("bro");
-        member.setMemberId("TEST");
-        member.setId(1L);
-
         supplementIds = LongStream.rangeClosed(1, 5).boxed().collect(Collectors.toList());
         supplements = new ArrayList<>();
         supplementIds.forEach(id -> {

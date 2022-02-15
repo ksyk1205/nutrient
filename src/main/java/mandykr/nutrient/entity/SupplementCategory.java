@@ -12,6 +12,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class SupplementCategory {
+    public static final int MIN_DEPTH = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID")
@@ -56,7 +58,7 @@ public class SupplementCategory {
     }
 
     private void changeDepth(int depth) {
-        if (depth < 0) {
+        if (depth < MIN_DEPTH) {
             throw new IllegalArgumentException("변경할 레벨은 0 이상의 정수이어야 합니다.");
         }
         if (this.depth == depth) {
