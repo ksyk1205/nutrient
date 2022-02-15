@@ -58,10 +58,10 @@ class SupplementReplyRepositoryTest {
     @BeforeEach
     public void setup(){
         supplement = supplementRepository.save(Supplement.builder().name("test1").build());
-        Member member = new Member();
-        member.setMemberId("testMemberId1");
-        member.setName("martin");
-        this.member =  memberRepository.save(member);
+        //Member member = new Member();
+        //member.setMemberId("testMemberId1");
+        //member.setName("martin");
+        //this.member =  memberRepository.save(member);
 
         parent1 = makeParent("TEST1", 1L, 1L);
         child1_1 = makeChild("TEST1_1", 1L, 2L, parent1);

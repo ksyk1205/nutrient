@@ -39,7 +39,7 @@ class CombinationServiceTest {
             new CombinationServiceImpl(combinationRepository, supplementCombinationService, supplementRepository);
 
 
-    Member member;
+    //Member member;
     Long combinationId = 1L;
     Combination combination;
     List<Long> supplementIds;
@@ -48,10 +48,10 @@ class CombinationServiceTest {
 
     @BeforeEach
     void setUp() {
-        member = new Member();
-        member.setName("bro");
-        member.setMemberId("TEST");
-        member.setId(1L);
+        //member = new Member();
+        //member.setName("bro");
+        //member.setMemberId("TEST");
+        //member.setId(1L);
 
         supplementIds = LongStream.rangeClosed(1, 5).boxed().collect(Collectors.toList());
         supplements = new ArrayList<>();

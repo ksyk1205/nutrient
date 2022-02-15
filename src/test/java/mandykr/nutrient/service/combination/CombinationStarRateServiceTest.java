@@ -42,9 +42,9 @@ class CombinationStarRateServiceTest {
                 .rating(0.0)
                 .build();
         member = new Member();
-        member.setId(1L);
-        member.setMemberId("testMember");
-        member.setName("KIM");
+        //member.setId(1L);
+        //member.setMemberId("testMember");
+        //member.setName("KIM");
         combinationStarRate = CombinationStarRate
                 .builder()
                 .id(1L)
