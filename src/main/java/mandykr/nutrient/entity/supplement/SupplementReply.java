@@ -27,6 +27,7 @@ public class SupplementReply extends BaseTimeEntity {
 
     private String content;
 
+    @Column(name = "GROUP_PART")
     private Long groups;
 
     private Long groupOrder;

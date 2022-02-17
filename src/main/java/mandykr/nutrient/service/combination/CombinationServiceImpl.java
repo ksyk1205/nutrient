@@ -80,4 +80,11 @@ public class CombinationServiceImpl implements CombinationService{
                 .orElseThrow(EntityNotFoundException::new);
     }
 
+    @Transactional
+    public void deleteCombination(Long id){
+        Combination combination = getById(id);
+        combination.getSupplementCombinations().clear();
+        combinationRepository.delete(combination);
+    }
+
 }

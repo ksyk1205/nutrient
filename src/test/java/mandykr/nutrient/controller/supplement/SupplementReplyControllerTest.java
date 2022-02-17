@@ -79,9 +79,9 @@ class SupplementReplyControllerTest {
                         .build();
 
         Member member = new Member();
-        member.setId(1L);
-        member.setMemberId("testMember");
-        member.setName("KIM");
+        //member.setId(1L);
+        //member.setMemberId("testMember");
+        //member.setName("KIM");
         this.member = member;
 
         parent1 = makeParent(1L, "TEST1", 1L, 1L);

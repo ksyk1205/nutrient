@@ -55,9 +55,9 @@ class SupplementReplyServiceTest {
         this.supplement = Supplement.builder().id(1L).name("test1").ranking(4.2).build();
 
         Member member = new Member();
-        member.setId(1L);
-        member.setMemberId("testMember");
-        member.setName("KIM");
+        //member.setId(1L);
+        //member.setMemberId("testMember");
+        //member.setName("KIM");
         this.member = member;
 
         parent1 = makeParent(1L, "TEST1", 1L, 1L);
@@ -434,9 +434,9 @@ class SupplementReplyServiceTest {
     public void 내_댓글_아닐떄_삭제(){
         //given
         Member member2 = new Member();
-        member2.setId(2L);
-        member2.setMemberId("Member2");
-        member2.setName("bro");
+        //member2.setId(2L);
+        //member2.setMemberId("Member2");
+        //member2.setName("bro");
 
         //when
         when(supplementReplyRepository.findByIdAndMember(child1_1.getId(), member2))

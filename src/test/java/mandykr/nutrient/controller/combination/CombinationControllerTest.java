@@ -243,4 +243,17 @@ class CombinationControllerTest {
                 .andExpect(jsonPath("$.response.supplementDtoList.*",
                         hasSize(combinationDetailDto.getSupplementDtoList().size())));
     }
+
+    @Test
+    @DisplayName("영양제 조합 ID로 영양제를 삭제한다")
+    void 영양제_조합_삭제() throws Exception {
+        // given
+        Long id = 1L;
+        // when
+        ResultActions result = mockMvc.perform(
+            delete("/api/combination/{id}", id)
+            .accept(MediaType.APPLICATION_JSON));
+        // then
+
+    }
 }

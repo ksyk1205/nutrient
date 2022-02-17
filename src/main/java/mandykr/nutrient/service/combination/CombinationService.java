@@ -8,4 +8,5 @@ public interface CombinationService {
     Page<CombinationDto> getCombinations(CombinationSearchCondition condition, Pageable pageable);
     CombinationDetailDto createCombination(CombinationCreateRequest combinationCreateRequest);
     CombinationDetailDto updateCombination(Long id, CombinationUpdateRequest updateRequest);
+    void deleteCombination(Long id);
 }

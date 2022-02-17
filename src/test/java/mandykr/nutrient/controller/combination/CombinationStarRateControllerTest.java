@@ -51,9 +51,9 @@ class CombinationStarRateControllerTest {
     @BeforeEach
     public void setup(){
         member = new Member();
-        member.setId(1L);
-        member.setMemberId("testMemberId1");
-        member.setName("KIM");
+        //member.setId(1L);
+        //member.setMemberId("testMemberId1");
+        //member.setName("KIM");
         this.combination = Combination.builder()
                 .id(1L)
                 .rating(0.0)

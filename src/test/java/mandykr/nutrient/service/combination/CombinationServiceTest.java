@@ -39,7 +39,7 @@ class CombinationServiceTest {
             new CombinationServiceImpl(combinationRepository, supplementCombinationService, supplementRepository);
 
 
-    Member member;
+    //Member member;
     Long combinationId = 1L;
     Combination combination;
     List<Long> supplementIds;
@@ -48,10 +48,10 @@ class CombinationServiceTest {
 
     @BeforeEach
     void setUp() {
-        member = new Member();
-        member.setName("bro");
-        member.setMemberId("TEST");
-        member.setId(1L);
+        //member = new Member();
+        //member.setName("bro");
+        //member.setMemberId("TEST");
+        //member.setId(1L);
 
         supplementIds = LongStream.rangeClosed(1, 5).boxed().collect(Collectors.toList());
         supplements = new ArrayList<>();
@@ -64,7 +64,7 @@ class CombinationServiceTest {
                     .supplement(supplement)
                     .build());
         });
-        combination = Combination.builder().id(combinationId).build();
+        combination = Combination.builder().id(combinationId).supplementCombinations(supplementCombinations).build();
 
     }
 
@@ -157,4 +157,20 @@ class CombinationServiceTest {
         // then
         assertEquals(size + 1, combination.getSupplementCombinations().size());
     }
+
+    @Test
+    @DisplayName("영양제조합 ID로 삭제")
+    void 영양제_제거() {
+        // given
+
+        // when
+        when(combinationRepository.findById(combinationId)).thenReturn(Optional.of(combination));
+        combinationService.deleteCombination(combinationId);
+
+        // then
+        then(combinationRepository).should(times(1)).delete(combination);
+
+    }
+
+
 }
