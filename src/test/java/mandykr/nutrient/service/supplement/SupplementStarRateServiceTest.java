@@ -1,8 +1,8 @@
 package mandykr.nutrient.service.supplement;
 
-import mandykr.nutrient.dto.supplement.SupplementResponseDto;
+import mandykr.nutrient.dto.supplement.SupplementResponse;
 import mandykr.nutrient.dto.supplement.starRate.SupplementStarRateDto;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.repository.supplement.SupplementStarRateRepository;
@@ -38,9 +38,11 @@ class SupplementStarRateServiceTest {
     void before(){
         supplement = Supplement.builder().id(1L).name("testSupplement").ranking(0.0).build();
 
-        member = new Member();
-        member.setMemberId("test");
-        member.setName("name1");
+
+        member = Member.builder()
+                .name("name1")
+                .memberId("test").build();
+
 
         supplementStarRate = new SupplementStarRate(3,supplement,member);
 
@@ -77,7 +79,7 @@ class SupplementStarRateServiceTest {
     @DisplayName("별점 수정을 위하여 별점 조회 했을때 빈 객체가 반환되는지 확인한다.")
     void 별점_빈객체_조회(){
         //given
-        SupplementResponseDto supplementDto = new SupplementResponseDto();
+        SupplementResponse supplementDto = new SupplementResponse();
         //when
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
         when(starRateRepository.findBySupplementAndMember(supplement,member)).thenReturn(Optional.empty());

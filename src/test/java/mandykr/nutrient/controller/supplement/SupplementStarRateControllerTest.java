@@ -1,10 +1,10 @@
 package mandykr.nutrient.controller.supplement;
 
 import mandykr.nutrient.dto.supplement.starRate.SupplementStarRateDto;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
-import mandykr.nutrient.repository.MemberRepository;
+import mandykr.nutrient.repository.member.MemberRepository;
 import mandykr.nutrient.service.supplement.SupplementStarRateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,10 +52,10 @@ class SupplementStarRateControllerTest {
                 .ranking(0.0)
                 .deleteFlag(false).build();
 
-        member = new Member();
-        member.setId(1L);
-        member.setName("testMemberId1");
-        member.setMemberId("memberId1");
+        member = Member.builder()
+                .id(1L)
+                .name("testMemberId1")
+                .memberId("memberId1").build();
 
         supplementStarRate1 = new SupplementStarRate(1L,3,supplement,member);
         supplementStarRate2 = new SupplementStarRate(2L,4,supplement,member);

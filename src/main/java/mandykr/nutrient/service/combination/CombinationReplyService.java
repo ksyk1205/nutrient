@@ -67,6 +67,7 @@ public class CombinationReplyService {
         CombinationReply findReply = getReply(replyId);
         if (findReply.isPossiobleToDeletePhysical()) {
             replyRepository.deleteById(replyId);
+
             replyRepository.deleteAllByIdInBatch(
                     findReply.getChildList().stream()
                             .map(CombinationReply::getId)

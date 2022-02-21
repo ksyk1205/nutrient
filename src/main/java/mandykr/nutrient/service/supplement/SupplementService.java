@@ -23,10 +23,10 @@ public class SupplementService {
     private final static Double ZERO = 0.0;
 
     @Transactional(readOnly = true)
-    public SupplementResponseDto getSupplement(long supplementId) {
+    public SupplementResponse getSupplement(long supplementId) {
         Supplement supplement = getSupplementById(supplementId);
 
-        return new SupplementResponseDto(supplement);
+        return new SupplementResponse(supplement);
     }
 
     @Transactional(readOnly = true)
@@ -35,10 +35,10 @@ public class SupplementService {
 
     }
 
-    public SupplementResponseDto createSupplement(SupplementRequest supplementRequest, Long categoryId) {
+    public SupplementResponse createSupplement(SupplementRequest supplementRequest, Long categoryId) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
-        return new SupplementResponseDto(
+        return new SupplementResponse(
                 supplementRepository.save(
                         Supplement.builder()
                                 .name(supplementRequest.getName())
@@ -49,13 +49,13 @@ public class SupplementService {
 
 
 
-    public SupplementResponseDto updateSupplement(Long categoryId, Long supplementId, SupplementRequest supplementRequest) {
+    public SupplementResponse updateSupplement(Long categoryId, Long supplementId, SupplementRequest supplementRequest) {
         SupplementCategory supplementCategory = getCategory(categoryId);
 
         Supplement supplement = getSupplementById(supplementId);
         supplement.updateNameAndPrdlstAndCategory(supplementRequest.getName(), supplementRequest.getPrdlstReportNo(), supplementCategory);
 
-        return new SupplementResponseDto(supplement);
+        return new SupplementResponse(supplement);
     }
 
 

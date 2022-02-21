@@ -1,18 +1,13 @@
 package mandykr.nutrient.controller.combination;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mandykr.nutrient.controller.supplement.SupplementReplyController;
 import mandykr.nutrient.dto.combination.CombinationCreateRequest;
 import mandykr.nutrient.dto.combination.CombinationDetailDto;
 import mandykr.nutrient.dto.combination.CombinationUpdateRequest;
-import mandykr.nutrient.repository.MemberRepository;
 import mandykr.nutrient.service.combination.CombinationService;
-import mandykr.nutrient.service.combination.CombinationStarRateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,14 +18,12 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

@@ -2,10 +2,10 @@ package mandykr.nutrient.controller.combination;
 
 import mandykr.nutrient.dto.combination.starRate.CombinationStarRateDto;
 import mandykr.nutrient.dto.combination.starRate.request.CombinationStarRateRequest;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.combination.CombinationStarRate;
-import mandykr.nutrient.repository.MemberRepository;
+import mandykr.nutrient.repository.member.MemberRepository;
 import mandykr.nutrient.service.combination.CombinationStarRateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

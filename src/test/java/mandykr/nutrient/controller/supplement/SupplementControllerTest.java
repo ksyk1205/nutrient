@@ -168,7 +168,7 @@ class SupplementControllerTest {
         SupplementRequest supplementRequest = new SupplementRequest(supplement1.getName(), supplement1.getPrdlstReportNo());
         //when
         when(supplementService.createSupplement(supplementRequest, category.getId()))
-                .thenReturn(new SupplementResponseDto(supplement1));
+                .thenReturn(new SupplementResponse(supplement1));
         ResultActions perform = mockMvc.perform(post("/api/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\": \"testSupplement1\" " +
@@ -200,7 +200,7 @@ class SupplementControllerTest {
 
         //when
         when(supplementService.updateSupplement(category.getId(), updatesupplement.getId(), supplementRequest))
-                .thenReturn(new SupplementResponseDto(updatesupplement));
+                .thenReturn(new SupplementResponse(updatesupplement));
         ResultActions perform = mockMvc.perform(put("/api/1/3")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\" : \"testSupplement3\"," +
@@ -235,7 +235,7 @@ class SupplementControllerTest {
         //given
 
         //when
-        when(supplementService.getSupplement(supplement1.getId())).thenReturn(new SupplementResponseDto(supplement1));
+        when(supplementService.getSupplement(supplement1.getId())).thenReturn(new SupplementResponse(supplement1));
         ResultActions perform = mockMvc.perform(get("/api/1").accept(MediaType.APPLICATION_JSON));
 
         //then
