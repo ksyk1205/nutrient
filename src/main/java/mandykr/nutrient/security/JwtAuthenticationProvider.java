@@ -2,8 +2,6 @@ package mandykr.nutrient.security;
 
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.member.MemberResponse;
-import mandykr.nutrient.entity.member.Member;
-import mandykr.nutrient.entity.member.Role;
 import mandykr.nutrient.errors.NotFoundException;
 import mandykr.nutrient.service.member.MemberService;
 import org.springframework.dao.DataAccessException;
@@ -14,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Arrays;

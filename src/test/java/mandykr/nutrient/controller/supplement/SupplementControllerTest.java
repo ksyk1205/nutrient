@@ -1,22 +1,29 @@
 package mandykr.nutrient.controller.supplement;
 
+import mandykr.nutrient.config.SecurityConfig;
 import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
+import mandykr.nutrient.security.WithMockJwtAuthentication;
 import mandykr.nutrient.service.supplement.SupplementService;
 import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
@@ -29,11 +36,15 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.context.annotation.FilterType.ANNOTATION;
+import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(SupplementController.class)
+@WebMvcTest(controllers = SupplementController.class,
+        excludeFilters = { //!Added!
+                @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes = SecurityConfig.class) })
 @MockBean(JpaMetamodelMappingContext.class)
 class SupplementControllerTest {
     @Autowired
@@ -90,6 +101,7 @@ class SupplementControllerTest {
     }
 
     @Test
+    @WithMockUser
     void 영양제_전체_조회() throws Exception{
         //given
 
@@ -106,6 +118,7 @@ class SupplementControllerTest {
 
     @Test
     @DisplayName("카테고리별 영양제 조회")
+    @WithMockUser
     void 영양제_카테고리_조회() throws Exception{
         //given
 
@@ -122,6 +135,7 @@ class SupplementControllerTest {
 
     @Test
     @DisplayName("영양제 이름으로 조회")
+    @WithMockUser
     void 영양제이름_조회() throws Exception{
         //given
 
@@ -163,6 +177,7 @@ class SupplementControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void 영양제_등록() throws Exception{
         //given
         SupplementRequest supplementRequest = new SupplementRequest(supplement1.getName(), supplement1.getPrdlstReportNo());
@@ -187,6 +202,7 @@ class SupplementControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void 영양제_수정() throws Exception{
         //given
         Supplement updatesupplement = Supplement.builder()
@@ -218,6 +234,7 @@ class SupplementControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void 영양제_삭제() throws Exception {
         //given
 
@@ -231,6 +248,7 @@ class SupplementControllerTest {
     }
 
     @Test
+    @WithMockUser
     void 영양제_단건_조회() throws Exception{
         //given
 
@@ -252,6 +270,7 @@ class SupplementControllerTest {
     }
 
     @Test
+    @WithMockUser
     void 영양제_콤보_조회() throws Exception{
         //given
         List<SupplementSearchComboResponse> supplementSearchComboResponses = new ArrayList<>();

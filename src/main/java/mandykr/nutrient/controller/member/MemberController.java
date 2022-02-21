@@ -5,14 +5,11 @@ import mandykr.nutrient.dto.member.LoginRequest;
 import mandykr.nutrient.dto.member.LoginResult;
 import mandykr.nutrient.dto.member.MemberRequest;
 import mandykr.nutrient.dto.member.MemberResponse;
-import mandykr.nutrient.entity.member.Member;
-import mandykr.nutrient.errors.NotFoundException;
 import mandykr.nutrient.errors.UnauthorizedException;
 import mandykr.nutrient.security.Jwt;
 import mandykr.nutrient.security.JwtAuthentication;
 import mandykr.nutrient.security.JwtAuthenticationToken;
 import mandykr.nutrient.service.member.MemberService;
-import mandykr.nutrient.util.ApiUtils;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -41,7 +38,7 @@ public class MemberController {
     }
 
 
-    @PostMapping(path = "/login")
+    @PostMapping("/login")
     public ApiResult<LoginResult> login(
             @Valid @RequestBody LoginRequest request
     ) throws UnauthorizedException {
@@ -63,14 +60,4 @@ public class MemberController {
         }
     }
 
-    @GetMapping(path = "/me")
-    public ApiResult<MemberResponse> me(
-            // JwtAuthenticationTokenFilter 에서 JWT 값을 통해 사용자를 인증한다.
-            // 사용자 인증이 정상으로 완료됐다면 @AuthenticationPrincipal 어노테이션을 사용하여 인증된 사용자 정보(JwtAuthentication)에 접근할 수 있다.
-            @AuthenticationPrincipal JwtAuthentication authentication
-    ) {
-        return success(
-                memberService.getByMemberIdAndPassword(authentication.memberId, authentication.password)
-        );
-    }
 }

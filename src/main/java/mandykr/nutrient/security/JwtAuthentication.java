@@ -29,4 +29,5 @@ public class JwtAuthentication extends User {
         this.password = password;
     }
 
+
 }

@@ -22,8 +22,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final Jwt jwt;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtUnauthorizedHandler jwtUnauthorizedHandler;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final MemberService memberService;
 
 
     @Override
@@ -47,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint(jwtUnauthorizedHandler)  //handler 수정
+                .authenticationEntryPoint(jwtUnauthorizedHandler)
                 .accessDeniedHandler(jwtAccessDeniedHandler);
 
         http
@@ -69,5 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public JwtAuthenticationProvider jwtAuthenticationProvider(MemberService memberService) {
         return new JwtAuthenticationProvider(memberService);
     }
+
+
 }
 
