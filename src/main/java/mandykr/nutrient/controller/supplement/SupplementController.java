@@ -95,7 +95,7 @@ public class SupplementController {
      * @param name
      * @return
      */
-    @GetMapping("/supplement/combo")
+    @GetMapping("/combo")
     public ApiResult<List<SupplementSearchComboResponse>> getSupplementSearchCombo(
             @RequestParam(required = true) String name){
         return success(supplementService.getSupplementSearchCombo(new SupplementSearchComboRequest(name)));

@@ -4,18 +4,15 @@ import mandykr.nutrient.config.SecurityConfig;
 import mandykr.nutrient.dto.supplement.*;
 import mandykr.nutrient.entity.SupplementCategory;
 import mandykr.nutrient.entity.supplement.Supplement;
-import mandykr.nutrient.security.WithMockJwtAuthentication;
 import mandykr.nutrient.service.supplement.SupplementService;
 import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -23,32 +20,36 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.context.annotation.FilterType.ANNOTATION;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = SupplementController.class,
+@WebMvcTest(
+        value = SupplementController.class,
         excludeFilters = { //!Added!
                 @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes = SecurityConfig.class) })
 @MockBean(JpaMetamodelMappingContext.class)
 class SupplementControllerTest {
-    @Autowired
+    //@Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    WebApplicationContext webApplicationContext;
 
     @MockBean
     SupplementService supplementService;
@@ -63,6 +64,12 @@ class SupplementControllerTest {
 
     @BeforeEach
     void beforeEach(){
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                // mock 테스트에서 한글 깨짐 방지
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))
+                .build();
+
 
         parentCategory = SupplementCategory.builder().name("오메가369/피쉬오일").depth(0).build();
         category = SupplementCategory.builder().id(1L).name("오메가3").depth(1).parentCategory(parentCategory).build();
@@ -177,14 +184,14 @@ class SupplementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser
     void 영양제_등록() throws Exception{
         //given
         SupplementRequest supplementRequest = new SupplementRequest(supplement1.getName(), supplement1.getPrdlstReportNo());
         //when
         when(supplementService.createSupplement(supplementRequest, category.getId()))
                 .thenReturn(new SupplementResponse(supplement1));
-        ResultActions perform = mockMvc.perform(post("/api/1")
+        ResultActions perform = mockMvc.perform(post("/api/supplement/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\": \"testSupplement1\" " +
                         ",\"prdlstReportNo\": \"111-123\"}" ));
@@ -202,7 +209,7 @@ class SupplementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser
     void 영양제_수정() throws Exception{
         //given
         Supplement updatesupplement = Supplement.builder()
@@ -217,7 +224,7 @@ class SupplementControllerTest {
         //when
         when(supplementService.updateSupplement(category.getId(), updatesupplement.getId(), supplementRequest))
                 .thenReturn(new SupplementResponse(updatesupplement));
-        ResultActions perform = mockMvc.perform(put("/api/1/3")
+        ResultActions perform = mockMvc.perform(put("/api/supplement/1/3")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\" : \"testSupplement3\"," +
                                 "\"prdlstReportNo\" :\"111-333\"}"));
@@ -234,12 +241,12 @@ class SupplementControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
+    @WithMockUser
     void 영양제_삭제() throws Exception {
         //given
 
         //when
-        ResultActions perform = mockMvc.perform(delete("/api/1").accept(MediaType.APPLICATION_JSON));
+        ResultActions perform = mockMvc.perform(delete("/api/supplement/1").accept(MediaType.APPLICATION_JSON));
         //then
         perform.andDo(print())
                 .andExpect(status().isOk())
@@ -254,7 +261,7 @@ class SupplementControllerTest {
 
         //when
         when(supplementService.getSupplement(supplement1.getId())).thenReturn(new SupplementResponse(supplement1));
-        ResultActions perform = mockMvc.perform(get("/api/1").accept(MediaType.APPLICATION_JSON));
+        ResultActions perform = mockMvc.perform(get("/api/supplement/1").accept(MediaType.APPLICATION_JSON));
 
         //then
         perform.andDo(print())
