@@ -84,7 +84,7 @@ class SupplementServiceTest {
 
         //when
         when(supplementRepository.findById(2L)).thenReturn(Optional.of(supplement));
-        SupplementResponseDto searchSupplement = supplementService.getSupplement(2L);
+        SupplementResponse searchSupplement = supplementService.getSupplement(2L);
 
         //then
         then(supplementRepository).should(times(1)).findById(2L);
@@ -142,7 +142,7 @@ class SupplementServiceTest {
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.save(isA(Supplement.class))).thenReturn(supplement);
 
-        SupplementResponseDto testSupplement1 = supplementService.createSupplement(supplementRequest, category.getId());
+        SupplementResponse testSupplement1 = supplementService.createSupplement(supplementRequest, category.getId());
         //then
         assertThat(testSupplement1.getName()).isEqualTo(supplement.getName());
         assertThat(testSupplement1.getRanking()).isEqualTo(0.0);
@@ -157,7 +157,7 @@ class SupplementServiceTest {
 
         when(supplementCategoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(supplementRepository.findById(supplement.getId())).thenReturn(Optional.of(supplement));
-        SupplementResponseDto updateSupplement = supplementService.updateSupplement(category.getId(),supplement.getId(), supplementDto);
+        SupplementResponse updateSupplement = supplementService.updateSupplement(category.getId(),supplement.getId(), supplementDto);
         //then
         assertThat(updateSupplement.getId()).isEqualTo(supplement.getId());
     }

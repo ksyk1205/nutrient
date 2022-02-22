@@ -2,7 +2,7 @@ package mandykr.nutrient.service.supplement;
 
 import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
 import mandykr.nutrient.repository.supplement.SupplementRepository;

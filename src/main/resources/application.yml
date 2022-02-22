@@ -2,6 +2,8 @@ server:
   port: 8088
 
 spring:
+  main:
+    allow-circular-references: true
   datasource:
     url: jdbc:h2:tcp://localhost/~/nutrient
     username: sa
@@ -21,3 +23,10 @@ spring:
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace # binding parameter 확인 (p6spy 로 대체)
+
+jwt:
+  token:
+    #header: X-AUTH
+    #issuer: nutrient
+    secret: NUTRIENT_SECRET_TOKEN
+    expiry-seconds: 3600

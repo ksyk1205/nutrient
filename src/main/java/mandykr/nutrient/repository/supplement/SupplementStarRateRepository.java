@@ -1,6 +1,6 @@
 package mandykr.nutrient.repository.supplement;
 
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
 import mandykr.nutrient.entity.supplement.Supplement;
 import org.springframework.data.jpa.repository.JpaRepository;

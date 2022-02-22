@@ -2,10 +2,15 @@ package mandykr.nutrient.controller.supplement;
 
 import lombok.RequiredArgsConstructor;
 import mandykr.nutrient.dto.supplement.*;
+import mandykr.nutrient.security.JwtAuthentication;
+import mandykr.nutrient.security.JwtAuthenticationToken;
 import mandykr.nutrient.service.supplement.SupplementService;
 import mandykr.nutrient.util.ApiUtils.ApiResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,7 +20,7 @@ import static mandykr.nutrient.util.ApiUtils.success;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/supplement")
 public class SupplementController {
     private final SupplementService supplementService;
 
@@ -25,7 +30,7 @@ public class SupplementController {
      * (이름으로 조회, 카테고리로 조회)
      * @return
      */
-    @GetMapping("/supplement")
+    @GetMapping("")
     public ApiResult<Page<SupplementSearchResponse>> getSupplementList(
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String supplementName,
@@ -40,8 +45,10 @@ public class SupplementController {
      * @return
      */
     @GetMapping("/{supplementId}")
-    public ApiResult<SupplementResponseDto> getSupplement(
-            @PathVariable Long supplementId){
+    public ApiResult<SupplementResponse> getSupplement(
+            @PathVariable Long supplementId,
+            @AuthenticationPrincipal JwtAuthentication authentication){
+
         return success(supplementService.getSupplement(supplementId));
     }
 
@@ -52,7 +59,7 @@ public class SupplementController {
      * @return
      */
     @PostMapping("/{categoryId}")
-    public ApiResult<SupplementResponseDto> createSupplement(
+    public ApiResult<SupplementResponse> createSupplement(
             @PathVariable Long categoryId,
             @RequestBody @Valid SupplementRequest supplementRequest){
         return success(supplementService.createSupplement(supplementRequest,categoryId));
@@ -66,7 +73,7 @@ public class SupplementController {
      * @return
      */
     @PutMapping("/{categoryId}/{supplementId}")
-    public ApiResult<SupplementResponseDto> updateSupplement(
+    public ApiResult<SupplementResponse> updateSupplement(
             @PathVariable Long categoryId,
             @PathVariable Long supplementId,
             @RequestBody @Valid SupplementRequest supplementRequest){
@@ -88,7 +95,7 @@ public class SupplementController {
      * @param name
      * @return
      */
-    @GetMapping("/supplement/combo")
+    @GetMapping("/combo")
     public ApiResult<List<SupplementSearchComboResponse>> getSupplementSearchCombo(
             @RequestParam(required = true) String name){
         return success(supplementService.getSupplementSearchCombo(new SupplementSearchComboRequest(name)));

@@ -1,7 +1,7 @@
 package mandykr.nutrient.entity.combination;
 
 import lombok.*;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.util.BaseTimeEntity;

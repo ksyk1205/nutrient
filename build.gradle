@@ -35,6 +35,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+	// https://mvnrepository.com/artifact/com.auth0/java-jwt
+	implementation group: 'com.auth0', name: 'java-jwt', version: '3.18.2'
+
+
+
 
 	// jpa binding parameter log 확인
 	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.7.1")

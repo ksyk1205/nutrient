@@ -1,11 +1,11 @@
 package mandykr.nutrient.repository.supplement.reply;
 
 import mandykr.nutrient.config.TestConfig;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
-import mandykr.nutrient.repository.MemberRepository;
+import mandykr.nutrient.repository.member.MemberRepository;
 import mandykr.nutrient.repository.supplement.SupplementRepository;
 import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.AfterEach;

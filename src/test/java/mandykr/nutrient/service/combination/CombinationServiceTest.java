@@ -3,7 +3,7 @@ package mandykr.nutrient.service.combination;
 import mandykr.nutrient.dto.combination.CombinationCreateRequest;
 import mandykr.nutrient.dto.combination.CombinationDetailDto;
 import mandykr.nutrient.dto.combination.CombinationUpdateRequest;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.SupplementCombination;
 import mandykr.nutrient.entity.combination.Combination;
 import mandykr.nutrient.entity.supplement.Supplement;
@@ -12,7 +12,6 @@ import mandykr.nutrient.repository.supplement.SupplementRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;

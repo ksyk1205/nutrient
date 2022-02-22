@@ -2,7 +2,7 @@ package mandykr.nutrient.entity.supplement;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.util.BaseTimeEntity;
 
 import javax.persistence.*;

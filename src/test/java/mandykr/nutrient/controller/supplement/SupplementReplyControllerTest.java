@@ -2,10 +2,10 @@ package mandykr.nutrient.controller.supplement;
 
 import mandykr.nutrient.dto.supplement.reply.SupplementReplyDto;
 import mandykr.nutrient.dto.supplement.reply.request.SupplementReplyRequest;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementReply;
-import mandykr.nutrient.repository.MemberRepository;
+import mandykr.nutrient.repository.member.MemberRepository;
 import mandykr.nutrient.service.supplement.SupplementReplyService;
 import mandykr.nutrient.util.PageRequestUtil;
 import org.junit.jupiter.api.BeforeEach;

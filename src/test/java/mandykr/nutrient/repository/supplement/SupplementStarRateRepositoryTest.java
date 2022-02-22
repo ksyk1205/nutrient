@@ -1,10 +1,10 @@
 package mandykr.nutrient.repository.supplement;
 
 import mandykr.nutrient.config.TestConfig;
-import mandykr.nutrient.entity.Member;
+import mandykr.nutrient.entity.member.Member;
 import mandykr.nutrient.entity.supplement.Supplement;
 import mandykr.nutrient.entity.supplement.SupplementStarRate;
-import mandykr.nutrient.repository.MemberRepository;
+import mandykr.nutrient.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,13 +39,13 @@ class SupplementStarRateRepositoryTest {
     void before(){
         supplement = supplementRepository.save(Supplement.builder().name("testSupplement").ranking(0.0).build()); ;
 
-        member = new Member();
-        member.setMemberId("test");
-        member.setName("name1");
+        member = Member.builder()
+                .name("name1")
+                .memberId("test").build();
 
-        member2 = new Member();
-        member2.setMemberId("test2");
-        member2.setName("name2");
+        member = Member.builder()
+                .name("name2")
+                .memberId("test2").build();
 
         supplementStarRate = supplementStarRateRepository.save(new SupplementStarRate(3, supplement, member));;
         supplementStarRate2 = supplementStarRateRepository.save(new SupplementStarRate(2, supplement, member2));
